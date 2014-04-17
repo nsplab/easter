@@ -8,7 +8,7 @@ import random
 
 sampling_frq = 2400.0
 num_scans    = 16
-num_channels = 26
+num_channels = 15
 sampling_step = 1.0/sampling_frq
 
 #########################
@@ -38,7 +38,7 @@ counter = 0
 sample_num = 0
 prev_time = 0
 prev_tuple = 0
-stop_time = time.time()+301
+stop_time = time.time()+61#301
 while time.time() < stop_time:
         string = socket.recv()
         #print string
@@ -53,6 +53,7 @@ while time.time() < stop_time:
         for scan in range(0, num_scans):
                 EEG = []
                 for i in range(0, num_channels):
+			#print i,": ",eegs[scan*num_channels+i+1]
                         EEG.append(float(eegs[scan*num_channels+i+1]))
                 holders = ','.join('?' * (num_channels+1))
                 sql = 'INSERT INTO eeg VALUES({0})'.format(holders)

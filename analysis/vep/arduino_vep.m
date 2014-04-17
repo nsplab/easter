@@ -1,7 +1,8 @@
+%sampling rate is hardcoded at 9600 Hz
 fs = 9600;
 
 % ask the user to select the data file
-%run('../loaddata.m');
+%run('../utilities/loaddata.m');
 
 fid = fopen([pathname filename], 'r');
 digitalinCh = 65;

@@ -40,9 +40,10 @@ hpf = design(hp, 'butter');
 lp2 = fdesign.lowpass('Fp,Fst,Ap,Ast',(300.0),(350.0),1,90,fs);             %lowpass filter; passband 300 Hz, stopband 350 Hz, butterworth; uses 
 lpf2 = design(lp2, 'butter');                                               %default stopband attenuation 90 dB and passband ripple of 1 dB.
 
-n60 = fdesign.lowpass('Fp,Fst,Ap,Ast',(300.0),(350.0),1,90,fs);             %notch filter 60 Hz
-n60 = design(lp2, 'butter');                                               %default stopband attenuation 90 dB and passband ripple of 1 dB.
-
+n60 = fdesign.notch('N,F0,Q,Ap',6,60,10,1,fs);                             %set parameters for 60 Hz notch filter  (N - filter order, F0 - center frequency, Q - quality factor, Ap - passband ripple (decibels)
+n120 = fdesign.notch('N,F0,Q,Ap',6,120,10,1,fs);                           %set parameters for 120 Hz notch filter (N - filter order, F0 - center frequency, Q - quality factor, Ap - passband ripple (decibels)
+nf60 = design(n60);                                                        %implement 60 Hz notch filter
+nf120nf120 = design(n120);                                                 %implement 120 Hz notch filter
                         
 %//////////////////////////////////
 

@@ -26,12 +26,24 @@ end
 
 
 %///// hardcoded values
-fs = 9600;					%sampling rate is hardcoded at 9600 Hz; determined by recording code
-						%that controls g.hiamp (see /code/easter/recording/
+fs = 9600;                                                                  %sampling rate is hardcoded at 9600 Hz; determined by recording code
+                                                                            %that controls g.hiamp (see /code/easter/recording/
 
-digitalinCh = 65;				%designate the digital input channel, which is used to record
-						%the LED state to align EEG data with onset or offset to generate VEP graphs 
+digitalinCh = 65;                                                           %designate the digital input channel, which is used to record
+                                                                            %the LED state to align EEG data with onset or offset to generate VEP graphs 
 
+
+                                                                            % construct various possible filters to be used on the EEG channels
+hp = fdesign.highpass('Fst,Fp,Ast,Ap',(90.0),(105.0),90,1,fs);              %highpass filter; passband 90 Hz, stopband 105 Hz, sampling freqency fs
+hpf = design(hp, 'butter');
+
+lp2 = fdesign.lowpass('Fp,Fst,Ap,Ast',(300.0),(350.0),1,90,fs);             %lowpass filter; passband 300 Hz, stopband 350 Hz, butterworth; uses 
+lpf2 = design(lp2, 'butter');                                               %default stopband attenuation 90 dB and passband ripple of 1 dB.
+
+n60 = fdesign.lowpass('Fp,Fst,Ap,Ast',(300.0),(350.0),1,90,fs);             %notch filter 60 Hz
+n60 = design(lp2, 'butter');                                               %default stopband attenuation 90 dB and passband ripple of 1 dB.
+
+                        
 %//////////////////////////////////
 
 
@@ -59,14 +71,6 @@ t1 = diff(tmp);					%compute any edges in the digital trace
 t2 = find(t1==LED_ON_edge);				%find the edges that correspond to LED turning on
 
 
-%//////// construct various possible filters to be used on the EEG channels
-hp = fdesign.highpass('Fst,Fp,Ast,Ap',(90.0),(105.0),90,1,fs);		%highpass filter; passband 90 Hz, stopband 105 Hz, sampling freqency fs
-hpf = design(hp, 'butter');
-
-lp2 = fdesign.lowpass('Fp,Fst,Ap,Ast',(300.0),(350.0),1,90,fs);		%lowpass filter; passband 300 Hz, stopband 350 Hz, butterworth; uses 
-lpf2 = design(lp2, 'butter');						%default stopband attenuation 90 dB and passband ripple of 1 dB.
-%lp = fdesign.lowpass('Fp,Fst,Ap,Ast',(5.0),(10.0),1,90,fs);		%another lowpass filter option, passband 5 Hz, stopband 10 Hz.
-%lpf = design(lp, 'butter');
 
 
 
@@ -129,5 +133,5 @@ hold off
 tmp = title(['VEP: '  allData{1}(i)]);
 set(tmp,'interpreter','none');
 
-saveas(fgh, ['matlab_data/' S{i} '.fig']);		%save the matlab figure to file
+%saveas(fgh, ['matlab_data/' S{i} '.fig']);		%save the matlab figure to file
 

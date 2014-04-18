@@ -20,6 +20,10 @@ void setup() {
   pinMode(triggerPin, OUTPUT);
   // this starts our PWM clock at 980 Hz with a 50% duty cycle
   analogWrite(3, 127);
+  
+  // initialize state of LED and Digital-in pins    
+  digitalWrite(digitalinPin, triggerState);
+  digitalWrite(triggerPin, triggerState);
 }
 
 // called by interrupt

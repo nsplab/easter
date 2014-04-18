@@ -9,4 +9,4 @@ Files:
 
 How to record BAEP:
 ===================
-
+- run "record_BAEP.py", which will open a small window with a text field 

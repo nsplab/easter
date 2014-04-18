@@ -32,9 +32,11 @@ fs = 9600;                                                                  %sam
 digitalinCh = 65;                                                           %designate the digital input channel, which is used to record
                                                                             %the LED state to align EEG data with onset or offset to generate VEP graphs 
 
-
-                                                                            % construct various possible filters to be used on the EEG channels
-hp = fdesign.highpass('Fst,Fp,Ast,Ap',(90.0),(105.0),90,1,fs);              %highpass filter; passband 90 Hz, stopband 105 Hz, sampling freqency fs
+use_lpf = 1;                                                               %0 or 1; use the lowpass filter hardcoded in the lines below
+use_hpf = 1;                                                               %0 or 1; use the highpass filter hardcoded in the lines below
+use_nf_60_120 = 1;                                                         %0 or 1; use the 60 and 120 Hz notch filters
+                                                                           % construct various possible filters to be used on the EEG channels
+hp = fdesign.highpass('Fst,Fp,Ast,Ap',(90.0),(105.0),90,1,fs);             %highpass filter; passband 90 Hz, stopband 105 Hz, sampling freqency fs
 hpf = design(hp, 'butter');
 
 lp2 = fdesign.lowpass('Fp,Fst,Ap,Ast',(300.0),(350.0),1,90,fs);             %lowpass filter; passband 300 Hz, stopband 350 Hz, butterworth; uses 

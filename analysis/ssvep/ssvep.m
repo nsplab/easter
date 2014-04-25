@@ -20,11 +20,15 @@ t1 = diff(tmp);
 t2 = find(t1==1);
 t3 = find(t1==-1);
 
+if isempty(t3)
+    t3 = length(dataColumn);
+end
+
 cutSecondsBegining = 10;
 cutSecondsEnd = 15;
 
-cutLengthB = fs * cutSecondsBegining;
-cutLengthE = fs * cutSecondsEnd;
+cutLengthB = t2; %fs * cutSecondsBegining;
+cutLengthE = t3; %fs * cutSecondsEnd;
 
 % choose the colormap for the plots
 CM = colorcube(size(data,1)+1);
@@ -40,13 +44,13 @@ legends = [];
 dataname = 'SSVEP';
 
 % draw the figure with white background and full screen
-figure('Color',[1 1 1],'units','normalized','outerposition',[0 0 1 1]);
+fgh = figure('Color',[1 1 1],'units','normalized','outerposition',[0 0 1 1]);
 hold on
 
 % compute PSD of all channels and plot the PSD + 95% confidence intervals
 for ii=1:size(data,1)
     ii
-    [pxx, f] = pwelch(data{ii,2}((1+cutLengthB):(end-(cutLengthE))), (windlength), noverlap, windlength, fs);
+    [pxx, f] = pwelch(data{ii,2}((1+cutLengthB):(cutLengthE)), (windlength), noverlap, windlength, fs);
     %[pxx, f, pxxc] = pwelch(dataExp{scalpCh(i),2}((1+cutLengthB):(end-(cutLengthE))), (windlength), noverlap, windlength, fs, 'ConfidenceLevel', 0.95);
     %[pxxC, fC, pxxcC] = pwelch(dataCtr{scalpCh(i),2}((1+cutLengthB):(end-(cutLengthE))), (windlength), noverlap, windlength, fs, 'ConfidenceLevel', 0.95);
     
@@ -81,5 +85,5 @@ set(tmp,'interpreter','none');
 tmp = title(['SSVEP: '  allData{1}(i)]);
 set(tmp,'interpreter','none');
 
-saveas(fgh, ['matlab_data/' S{i} '.fig']);
+%saveas(fgh, ['matlab_data/' S{i} '.fig']);
 

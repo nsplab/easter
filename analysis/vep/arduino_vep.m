@@ -17,6 +17,7 @@
 
 %///// hardcoded values that you should keep unchanged
 
+fs = original_sampling_rate_in_Hz;
                                                                            %digital input channel convention is low is LED OFF, high is LED ON; verified for VEP aruino recording code with 5rabbit, 6rabbit, 7rabbit, etc.
 LED_ON_edge = 1;                                                           %LED turns on with rising edge of digital in channel (diff = 1)
 LED_OFF_edge = -1;                                                         %LED turns off with falling edge of digital in channel (diff = -1)
@@ -155,7 +156,7 @@ legend(plotline_handles_ON, data{channels_plotted,1})
 hold on
 plot([0 0], ylim, 'linewidth',4)
 %tmp = title([ 'VEP ON Response: ' filename ' | GND: nose |  # samples =' int2str(length(t2)) ]);
-if ~isnan(allData)
+if length(allData) == 1
     tmp = title(['VEP ON Response: '  allData{1}(i)]);
 else
     tmp = title(['VEP ON Response']);
@@ -172,7 +173,7 @@ legend(plotline_handles_OFF, data{channels_plotted,1})
 hold on
 plot([0 0], ylim,'b--','linewidth',4)
 %tmp = title([ 'VEP OFF Response: ' filename ' | GND: nose |  # samples =' int2str(length(t2)) ]);
-if ~isnan(allData)
+if length(allData) == 1
     tmp = title(['VEP OFF Response: '  allData{1}(i)]);
 else
     tmp = title(['VEP OFF Response']);

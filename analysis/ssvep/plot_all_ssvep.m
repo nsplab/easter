@@ -23,10 +23,12 @@
 %///////////////////////////////////////////////
 %rabbit_ID = '7rabbit_apr_15_2014';                                         %'7rabbit_apr_15_2014' corresponds to the experiment performed 4/15/14
 rabbit_ID = '8rabbit_apr_24_2014';
+%rabbit_ID = '9rabbit_may_6_2014';
 
 decimate_factor = 10;                                                      % decimate the data to speed up plotting (decimate_factor = 1 is no decimation; 10 is reasonable)
                                                                            %(this Matlab function implements proper downsampling using anti-aliasing, with decimate.m).
-
+publication_quality = 2;                                                   % generate the high quality figures with confidence intervals. this is much slower than having it set to zero
+                                                                           % 0:, 1:with confidence intervals , 2:without confidence intervals
 
 maxNumberOfChannels = 10;                                                  %# of consecutive analog input channels, starting with channel 1, to extract from the project easter binary files
                                                                            %(which contain 64 analog channels and the digital in channel (channel 65)
@@ -55,6 +57,7 @@ pathname_matdata = ['../../../../data/easter/' rabbit_ID '/neuro/matlab_data/ssv
 switch rabbit_ID
     case '7rabbit_apr_15_2014'
     case '8rabbit_apr_24_2014'
+    case '9rabbit_may_6_2014'
         channelNames_VEP = {'Disconnected','Endo','Mid head','Disconnected','Right Eye','Right Leg','Back Head','Left Eye','Bottom Precordial','Top Precordial'};
         plot_only_neuro_and_endo_channels = 0;                             % choose to plot only neuro and endo channels, excluding disconnected or precordial channels
         gtechGND = 'Nose';
@@ -96,10 +99,15 @@ end
 % function call to arduino_vep.m
 %////////////////////////////////////////////////////////////////////////////////////////
 
+ssvep_data = {};
+
 for i=1:length(S),				%for each data file in the directory
     filename = S{i};
     filename
     fid = fopen([pathname filename], 'r');
+    
+    ssvep_data{i,1} = filename;
+    ssvep_data{i,2} = allData{1}(i);
     
     data = cell(0,2);
     dataDecimated = cell(0,2);
@@ -129,7 +137,14 @@ for i=1:length(S),				%for each data file in the directory
     dataColumnDigDecimated = dataColumnDig(1:decimate_factor:end);                      %throw out intermediate samples to keep them aligned to the decimated channel data
     cleanDigitalInDecimated = (dataColumnDigDecimated>0);                                        %make sure the digital In takes on binary values: take any negative excursions to 0
     
-    run('ssvep.m');
+    switch publication_quality
+        case 1
+        case 2
+            run('publish_ssvep_v2.m');
+        case 3
+            run('ssvep.m');
+    end
+    
     
     sampling_rate_in_Hz = original_sampling_rate_in_Hz;
     save([pathname_matdata S{i} '.mat'], 'data', 'sampling_rate_in_Hz', 'gtechGND','channelNames_VEP','cleanDigitalIn');
@@ -138,6 +153,8 @@ for i=1:length(S),				%for each data file in the directory
     
     saveas(fgh, [pathname_matdata S{i} '.fig']);
 end
+
+save([pathname_matdata 'ssvep_data.mat'], 'ssvep_data');
 
 %GND = gtechGND;                                                            %label indicating position of gtech ground (differential input to the g.HiAmp)
 %fs = original_sampling_rate_in_Hz/decimate_factor;                         %variable name 'fs' is used by arduino_vep.m

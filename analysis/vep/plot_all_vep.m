@@ -21,8 +21,13 @@
 %///////////////////////////////////////////////
 % START BLOCK: Hardcoded variables
 %///////////////////////////////////////////////
+rabbit_ID = '6rabbit_apr_11_2014';                                         %'7rabbit_apr_15_2014' corresponds to the experiment performed 4/15/14
 %rabbit_ID = '7rabbit_apr_15_2014';                                         %'7rabbit_apr_15_2014' corresponds to the experiment performed 4/15/14
-rabbit_ID = '8rabbit_apr_24_2014';
+%rabbit_ID = '8rabbit_apr_24_2014';
+%rabbit_ID = '9rabbit_may_6_2014';
+
+publication_quality = 3;                                                   % generate the high quality figures with confidence intervals. this is much slower than having it set to zero
+                                                                           % 0:, 1:with confidence intervals , 2:without confidence intervals, 3: use dashed lines instead of transparent ares for confidence areas
 
 decimate_factor = 10;                                                      % decimate the data to speed up plotting (decimate_factor = 1 is no decimation; 10 is reasonable)
                                                                            %(this Matlab function implements proper downsampling using anti-aliasing, with decimate.m).
@@ -53,13 +58,12 @@ pathname_matdata = ['../../../../data/easter/' rabbit_ID '/neuro/matlab_data/vep
 
 %Channel labels during VEP for all rabbits (5,6,7, etc.)
 switch rabbit_ID
-    case '7rabbit_apr_15_2014'
-    case '8rabbit_apr_24_2014'
+    case {'7rabbit_apr_15_2014', '8rabbit_apr_24_2014', '9rabbit_may_6_2014'}
         channelNames_VEP = {'Disconnected','Endo','Mid head','Disconnected','Right Eye','Right Leg','Back Head','Left Eye','Bottom Precordial','Top Precordial'};
         plot_only_neuro_and_endo_channels = 0;                             % choose to plot only neuro and endo channels, excluding disconnected or precordial channels
         gtechGND = 'Nose';
         earth = 'Left Leg';
-    case '6rabbit_apr_15_2014'
+    case '6rabbit_apr_11_2014'
         channelNames_VEP = {'Disconnected','Endo','Mid head','Disconnected','Right Eye','Right Leg','Back Head','Left Eye','Bottom Precordial','Top Precordial'};
     case '5rabbit_apr_15_2014'
 %        channelNames_VEP = 
@@ -96,10 +100,17 @@ end
 % function call to arduino_vep.m
 %////////////////////////////////////////////////////////////////////////////////////////
 
+vep_data = {};
+
 for i=1:length(S),				%for each data file in the directory
     filename = S{i};
     filename
     fid = fopen([pathname filename], 'r');
+
+    vep_data{i}.filename = filename;                                       %vep_data will be stored to a .mat file, a single variable containing all the essential processed VEP data from this subject
+    vep_data{i}.allData = allData{1}(i);                                   %vep_data will be stored to a .mat file, a single variable containing all the essential processed VEP data from this subject
+%    vep_data{i,1} = filename;
+%    vep_data{i,2} = allData{1}(i);
     
     data = cell(0,2);
     dataDecimated = cell(0,2);
@@ -129,15 +140,27 @@ for i=1:length(S),				%for each data file in the directory
     dataColumnDigDecimated = dataColumnDig(1:decimate_factor:end);                      %throw out intermediate samples to keep them aligned to the decimated channel data
     cleanDigitalInDecimated = (dataColumnDigDecimated>0);                                        %make sure the digital In takes on binary values: take any negative excursions to 0
     
-    run('arduino_vep.m');
+    if publication_quality > 0
+       run('publish_vep_v2.m');
+    else
+       run('arduino_vep.m');
+    end
     
     sampling_rate_in_Hz = original_sampling_rate_in_Hz;
     save([pathname_matdata S{i} '.mat'], 'data', 'sampling_rate_in_Hz', 'gtechGND','channelNames_VEP','cleanDigitalIn');
     sampling_rate_in_Hz = original_sampling_rate_in_Hz / decimate_factor;
     save([pathname_matdata S{i} '_decimated.mat'], 'dataDecimated', 'sampling_rate_in_Hz', 'gtechGND','channelNames_VEP','cleanDigitalInDecimated');
     
-    saveas(fgh, [pathname_matdata S{i} '.fig']);
+    if publication_quality == 1
+        saveas(fgh, [pathname_matdata S{i} '_pub.fig']);
+    elseif publication_quality == 3
+        saveas(fgh, [pathname_matdata S{i} '_pub_dashedCI.fig']);
+    else
+        saveas(fgh, [pathname_matdata S{i} '.fig']);
+    end
 end
+
+save([pathname_matdata 'vep_data.mat'], 'vep_data');
 
 GND = gtechGND;                                                            %label indicating position of gtech ground (differential input to the g.HiAmp)
 fs = original_sampling_rate_in_Hz/decimate_factor;                         %variable name 'fs' is used by arduino_vep.m

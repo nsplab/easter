@@ -81,7 +81,8 @@ for i=1:length(scalpCh)
     size(m)
     
     %mod_mean = @(x) mean(x(1:60,:));
-    mod_mean = @(x) mean(x(1:30,:));
+    %mod_mean = @(x) mean(x(1:30,:));
+    mod_mean = @(x) mean(x);
     confMean = bootci(500, {mod_mean, m}, 'alpha', 0.01, 'type', 'per');
     
     px=[f', fliplr(f')];

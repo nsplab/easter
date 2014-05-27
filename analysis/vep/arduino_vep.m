@@ -28,27 +28,30 @@ LED_OFF_edge = -1;                                                         %LED 
 %////////////////////////////////////////////////////////////////////
 
 % OPTION 1 /////// Choose how much time you would like to plot pre- and post- event onset                                                                            
-preEventPlot_sec = 0.1;                                                    %time in seconds to extend plot prior to event time (marked as time zero)
-postEventPlot_sec = 1/0.9/2;                                               %time in seconds to extend plot following event time (marked as time zero). 0.9 Hz was frequency of light onset in VEP controlled by Arduino 
+preEventPlot_sec = 0.2;                                                    %time in seconds to extend plot prior to event time (marked as time zero)
+postEventPlot_sec = 1/0.8/2;                                               %time in seconds to extend plot following event time (marked as time zero). 0.9 Hz was frequency of light onset in VEP controlled by Arduino 
 
 
 % OPTION 2 /////// Choose which filters you want to use in the analysis                                                                            
 use_lpf = 0;                                                               %0 or 1; use the lowpass filter hardcoded in the lines below
-use_hpf = 0;                                                               %0 or 1; use the highpass filter hardcoded in the lines below
-use_nf_60_120 = 0;                                                         %0 or 1; use the 60 and 120 Hz notch filters
+use_hpf = 1;                                                               %0 or 1; use the highpass filter hardcoded in the lines below
+use_nf_60_120 = 1;                                                         %0 or 1; use the 60 and 120 Hz notch filters
 
 
 % OPTION 3 /////// Choose desired properties of the lowpass, highpass, and notch filter options
-hp = fdesign.highpass('Fst,Fp,Ast,Ap',(90.0),(105.0),90,1,fs);             %highpass filter; passband 90 Hz, stopband 105 Hz, 1dB passband ripple, 90 dB stopband attenuation, sampling frequency fs, butterworth 
+hp = fdesign.highpass('Fst,Fp,Ast,Ap',(1.0),(2.0),90,1,fs);             %highpass filter; passband 90 Hz, stopband 105 Hz, 1dB passband ripple, 90 dB stopband attenuation, sampling frequency fs, butterworth 
 hpf = design(hp, 'butter');
 
 lp = fdesign.lowpass('Fp,Fst,Ap,Ast',(300.0),(350.0),1,90,fs);             %lowpass filter; passband 300 Hz, stopband 350 Hz, 1dB passband ripple, 90 dB stopband attenuation, sampling frequency fs, butterworth 
 lpf = design(lp, 'butter');                                              
 
-n60 = fdesign.notch('N,F0,Q,Ap',6,60,10,1,fs);                             %set parameters for 60 Hz notch filter  (N - filter order, F0 - center frequency, Q - quality factor, Ap - passband ripple (decibels)
+n60 = fdesign.notch('N,F0,BW,Ap',6,60,20,2,fs); % wider notch filter at 60 (from about 51 to 71 Hz)
+%n60 = fdesign.notch('N,F0,Q,Ap',6,60,10,1,fs);                             %set parameters for 60 Hz notch filter  (N - filter order, F0 - center frequency, Q - quality factor, Ap - passband ripple (decibels)
 n120 = fdesign.notch('N,F0,Q,Ap',6,120,10,1,fs);                           %set parameters for 120 Hz notch filter (N - filter order, F0 - center frequency, Q - quality factor, Ap - passband ripple (decibels)
+n180 = fdesign.notch('N,F0,Q,Ap',6,180,10,1,fs);                           %set parameters for 120 Hz notch filter (N - filter order, F0 - center frequency, Q - quality factor, Ap - passband ripple (decibels)
 nf60 = design(n60);                                                        %implement 60 Hz notch filter
 nf120 = design(n120);                                                      %implement 120 Hz notch filter
+nf180 = design(n180);                                                      %implement 120 Hz notch filter
                         
 %////////////////////////////////////////////////////////////////////
 %////////////////////////////////////////////////////////////////////
@@ -83,7 +86,7 @@ channels_plotted = [];                                                     %keep
                                                                            %used for the figure legends
     
 for ii=1:size(data,1)                                                      %for each channel
-
+    ii
                                                                            %plot_only_neuro_and_endo_channels - set in plot_all_vep.m
     if (plot_only_neuro_and_endo_channels) && ((strcmp(data{ii,1},'Disconnected') || strcmp(data{ii,1},'Top Precordial') || strcmp(data{ii,1},'Bottom Precordial') || strcmp(data{ii,1},'Right Leg') ))
         disp(['Channel Skipped: ' int2str(ii)]);
@@ -100,14 +103,15 @@ for ii=1:size(data,1)                                                      %for 
     %//////////////////////////////////////////////////////////////////////
     if use_nf_60_120
         chData = filtfilt(nf60.sosMatrix, nf60.ScaleValues,chData);
-        chData = filtfilt(nf60.sosMatrix, nf120.ScaleValues,chData);
+        chData = filtfilt(nf120.sosMatrix, nf120.ScaleValues,chData);
+        chData = filtfilt(nf180.sosMatrix, nf180.ScaleValues,chData);
     end
     if use_hpf
         chData = filtfilt(hpf.sosMatrix, hpf.ScaleValues,chData);
     end
     if use_lpf
         chData = filtfilt(lpf.sosMatrix, lpf.ScaleValues,chData);
-    end    
+    end
     %//////////////////////////////////////////////////////////////////////
     
 
@@ -118,9 +122,10 @@ for ii=1:size(data,1)                                                      %for 
 
     chData_all_single_trial_collection_ON = [];                            %matrix of all single trial responses for the single channel stored in chData, aligned to ON (rising edges of digital input signal)
     for jj=2:length(event_index_LED_ON)-1,                                 %for each LED ON event, snip out that segment and append it as a row in chData_all_single_trial_responses_ON
+        
         chData_all_single_trial_collection_ON(end+1, 1:totalEventPlot_samples)...
-            = detrend(chData((event_index_LED_ON(jj)-preEventPlot_samples):...
-                            (event_index_LED_ON(jj)+postEventPlot_samples)));
+            = (chData((event_index_LED_ON(jj)-preEventPlot_samples):...
+                            (event_index_LED_ON(jj)+postEventPlot_samples)) );
     end
     chData_trial_averaged_ON = mean(chData_all_single_trial_collection_ON);%record the trial-averaged response aligned to LED ON (rising edges of digital input signal)
 
@@ -136,7 +141,7 @@ for ii=1:size(data,1)                                                      %for 
     chData_all_single_trial_collection_OFF = [];                            %matrix of all single trial responses for the single channel stored in chData, aligned to OFF (rising edges of digital input signal)
     for jj=2:length(event_index_LED_OFF)-1,                                 %for each LED OFF event, snip out that segment and append it as a row in chData_all_single_trial_responses_OFF
         chData_all_single_trial_collection_OFF(end+1, 1:totalEventPlot_samples)...
-            = detrend(chData((event_index_LED_OFF(jj)-preEventPlot_samples):...%segment and detrend signal from this individual trial and channel
+            = (chData((event_index_LED_OFF(jj)-preEventPlot_samples):...%segment and detrend signal from this individual trial and channel
                             (event_index_LED_OFF(jj)+postEventPlot_samples)));
     end
     chData_trial_averaged_OFF = mean(chData_all_single_trial_collection_OFF);%record the trial-averaged response aligned to LED ON (rising edges of digital input signal)

@@ -3,11 +3,9 @@ import threading
 import time
 import zmq
 import shlex
-import sqlite3
 import sys
 import os
 import random
-import portio
 
 from Tkinter import *
 

@@ -22,13 +22,16 @@ void setup() {
   analogWrite(3, 127);
   
   analogReference(DEFAULT);
+  
+  digitalWrite(triggerPin, LOW);
+  digitalWrite(digitalinPin, LOW);
 }
 
 // called by interrupt
 void clockCounter() {
   int sensorValue = analogRead(A0);
   float voltage = sensorValue * (5.0 / 1023.0);
-  if (voltage >= 0.0000001) {
+  if (voltage >= 0.1) { // voltage for trigger - found by trial and error, may need to change
     statePulse = true;
     if (statePulse != prevStatePulse) {
       prevStatePulse = true;
@@ -40,19 +43,10 @@ void clockCounter() {
     }
     
     
-  } else {
-    statePulse = false;
-    if (statePulse != prevStatePulse) {
-      prevStatePulse = false;
-      if (pCounter == 300) {
-        digitalWrite(triggerPin, LOW);
-        digitalWrite(digitalinPin, LOW);
-      }
-    }
-    
   }
 }
 
 void loop() {
   
 }
+

@@ -35,7 +35,7 @@ postEventPlot_sec = 1/0.8942;                                               %tim
 % OPTION 2 /////// Choose which filters you want to use in the analysis                                                                            
 use_lpf = 1;                                                               %0 or 1; use the lowpass filter hardcoded in the lines below
 use_hpf = 0;                                                               %0 or 1; use the highpass filter hardcoded in the lines below
-use_nf_60_120 = 1;                                                         %0 or 1; use the 60 and 120 Hz notch filters
+use_nf_60_120_180 = 1;                                                     %0 or 1; use the 60, 120, and 180 Hz notch filters
 
 
 % OPTION 3 /////// Choose desired properties of the lowpass, highpass, and notch filter options
@@ -54,10 +54,10 @@ lpf = design(lp, 'butter');
 n60 = fdesign.notch('N,F0,BW,Ap',6,60,20,2,fs); % wider notch filter at 60 (from about 51 to 71 Hz)
 %n60 = fdesign.notch('N,F0,Q,Ap',6,60,10,1,fs);                             %set parameters for 60 Hz notch filter  (N - filter order, F0 - center frequency, Q - quality factor, Ap - passband ripple (decibels)
 n120 = fdesign.notch('N,F0,Q,Ap',6,120,10,1,fs);                           %set parameters for 120 Hz notch filter (N - filter order, F0 - center frequency, Q - quality factor, Ap - passband ripple (decibels)
-n180 = fdesign.notch('N,F0,Q,Ap',6,180,10,1,fs);                           %set parameters for 120 Hz notch filter (N - filter order, F0 - center frequency, Q - quality factor, Ap - passband ripple (decibels)
+n180 = fdesign.notch('N,F0,Q,Ap',6,180,10,1,fs);                           %set parameters for 180 Hz notch filter (N - filter order, F0 - center frequency, Q - quality factor, Ap - passband ripple (decibels)
 nf60 = design(n60);                                                        %implement 60 Hz notch filter
 nf120 = design(n120);                                                      %implement 120 Hz notch filter
-nf180 = design(n180);                                                      %implement 120 Hz notch filter
+nf180 = design(n180);                                                      %implement 180 Hz notch filter
                         
 %////////////////////////////////////////////////////////////////////
 %////////////////////////////////////////////////////////////////////
@@ -108,7 +108,7 @@ for ii=1:length(channelToPlot)                                                  
     %//////////////////////////////////////////////////////////////////////
     %/// filter the data if it's been requested in hardcoded block above
     %//////////////////////////////////////////////////////////////////////
-    if use_nf_60_120
+    if use_nf_60_120_180
         chData = filtfilt(nf60.sosMatrix, nf60.ScaleValues,chData);
         chData = filtfilt(nf120.sosMatrix, nf120.ScaleValues,chData);
         chData = filtfilt(nf180.sosMatrix, nf180.ScaleValues,chData);

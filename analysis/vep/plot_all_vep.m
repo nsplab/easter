@@ -119,7 +119,6 @@ for i=1:length(S),				%for each data file in the directory
         fseek(fid, 4*(j-1), 'bof');
         dataColumn = fread(fid, Inf, 'single', 4*64);
         channelName = channelNames_VEP{j};
-        channelNames_VEP
 
         data(j,1) = {channelName};
         data(j,2) = {dataColumn};

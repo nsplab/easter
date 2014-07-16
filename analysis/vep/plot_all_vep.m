@@ -21,10 +21,10 @@
 %///////////////////////////////////////////////
 % START BLOCK: Hardcoded variables
 %///////////////////////////////////////////////
-rabbit_ID = '6rabbit_apr_11_2014';                                         %'7rabbit_apr_15_2014' corresponds to the experiment performed 4/15/14
+%rabbit_ID = '6rabbit_apr_11_2014';                                         %'7rabbit_apr_15_2014' corresponds to the experiment performed 4/15/14
 %rabbit_ID = '7rabbit_apr_15_2014';                                         %'7rabbit_apr_15_2014' corresponds to the experiment performed 4/15/14
 %rabbit_ID = '8rabbit_apr_24_2014';
-%rabbit_ID = '9rabbit_may_6_2014';
+rabbit_ID = '9rabbit_may_6_2014';
 
 publication_quality = 3;                                                   % generate the high quality figures with confidence intervals. this is much slower than having it set to zero
                                                                            % 0:, 1:with confidence intervals , 2:without confidence intervals, 3: use dashed lines instead of transparent ares for confidence areas
@@ -100,7 +100,7 @@ end
 % function call to arduino_vep.m
 %////////////////////////////////////////////////////////////////////////////////////////
 
-vep_data = {};
+vep_data = cell(size(S));
 
 for i=1:length(S),				%for each data file in the directory
     filename = S{i};
@@ -112,21 +112,22 @@ for i=1:length(S),				%for each data file in the directory
 %    vep_data{i,1} = filename;
 %    vep_data{i,2} = allData{1}(i);
     
-    data = cell(0,2);
-    dataDecimated = cell(0,2);
+    data = cell(maxNumberOfChannels,2);
+    dataDecimated = cell(maxNumberOfChannels,2);
 
     for j=1:maxNumberOfChannels,                                           %for the jth analog channel (excluding the digital in channel), load the signal into a vector in original_data{j,2}
         fseek(fid, 4*(j-1), 'bof');
         dataColumn = fread(fid, Inf, 'single', 4*64);
         channelName = channelNames_VEP{j};
+        channelNames_VEP
 
-        data(end+1,1) = {channelName};
-        data(end,2) = {dataColumn};
+        data(j,1) = {channelName};
+        data(j,2) = {dataColumn};
         
         dataColumnDecimated = decimate(dataColumn,decimate_factor);                 %decimate the data by the requested factor for speed
 
-        dataDecimated(end+1,1) = {channelName};
-        dataDecimated(end,2) = {dataColumnDecimated};
+        dataDecimated(j,1) = {channelName};
+        dataDecimated(j,2) = {dataColumnDecimated};
     end
     
     fseek(fid, 4*(digitalinCh-1), 'bof');                                      %fseek sets the pointer to the first value read in the file. 4 represents 4 bytes.

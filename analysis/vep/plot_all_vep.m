@@ -92,7 +92,7 @@ else
     % specific for rabbit 8
     C = strfind(allData{1}, '- VEP'); % get rows with '- VEP' in them
     rows = find(~cellfun('isempty', C));
-    allData{1} = allData{1}(rows);
+    allData = allData{1}(rows);
 end
 
 %////////////////////////////////////////////////////////////////////////////////////////
@@ -108,7 +108,7 @@ for i=1:length(S),				%for each data file in the directory
     fid = fopen([pathname filename], 'r');
 
     vep_data{i}.filename = filename;                                       %vep_data will be stored to a .mat file, a single variable containing all the essential processed VEP data from this subject
-    vep_data{i}.allData = allData{1}(i);                                   %vep_data will be stored to a .mat file, a single variable containing all the essential processed VEP data from this subject
+    vep_data{i}.allData = allData(i);                                   %vep_data will be stored to a .mat file, a single variable containing all the essential processed VEP data from this subject
 %    vep_data{i,1} = filename;
 %    vep_data{i,2} = allData{1}(i);
     

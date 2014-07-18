@@ -24,7 +24,8 @@
 %rabbit_ID = '6rabbit_apr_11_2014';                                         %'7rabbit_apr_15_2014' corresponds to the experiment performed 4/15/14
 %rabbit_ID = '7rabbit_apr_15_2014';                                         %'7rabbit_apr_15_2014' corresponds to the experiment performed 4/15/14
 %rabbit_ID = '8rabbit_apr_24_2014';
-rabbit_ID = '9rabbit_may_6_2014';
+%rabbit_ID = '9rabbit_may_6_2014';
+rabbit_ID = '10rabbit_may_15_2014';
 
 publication_quality = 3;                                                   % generate the high quality figures with confidence intervals. this is much slower than having it set to zero
                                                                            % 0:, 1:with confidence intervals , 2:without confidence intervals, 3: use dashed lines instead of transparent ares for confidence areas
@@ -58,7 +59,7 @@ pathname_matdata = ['../../../../data/easter/' rabbit_ID '/neuro/matlab_data/vep
 
 %Channel labels during VEP for all rabbits (5,6,7, etc.)
 switch rabbit_ID
-    case {'7rabbit_apr_15_2014', '8rabbit_apr_24_2014', '9rabbit_may_6_2014'}
+    case {'7rabbit_apr_15_2014', '8rabbit_apr_24_2014', '9rabbit_may_6_2014', '10rabbit_may_15_2014'}
         channelNames_VEP = {'Disconnected','Endo','Mid head','Disconnected','Right Eye','Right Leg','Back Head','Left Eye','Bottom Precordial','Top Precordial'};
         plot_only_neuro_and_endo_channels = 0;                             % choose to plot only neuro and endo channels, excluding disconnected or precordial channels
         gtechGND = 'Nose';

@@ -8,20 +8,16 @@ noverlap = windlength * noverlapPercent;
 % ask the user to select the data file
 %run('../loaddata.m');
 
-fid = fopen([pathname filename], 'r');
-digitalinCh = 65;
-fseek(fid, 4*(digitalinCh-1), 'bof');
-dataColumn = fread(fid, Inf, 'single', 4*64);
-time_axis = (0:length(dataColumn)-1)*1.0/fs;
-figure;plot(time_axis,dataColumn);
+time_axis = (0:length(dataColumnDig)-1)*1.0/fs;
+figure;plot(time_axis,dataColumnDig);
 
-tmp = (dataColumn>0);
+tmp = (dataColumnDig>0);
 t1 = diff(tmp);
 t2 = find(t1==1);
 t3 = find(t1==-1);
 
 if isempty(t3)
-    t3 = length(dataColumn);
+    t3 = length(dataColumnDig);
 end
 
 cutSecondsBegining = 10;

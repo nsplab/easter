@@ -1,0 +1,64 @@
+[x] for the paper, please make a legend at the top right of the figure in nice big lettering that explains the different line colors
+[x] with the figures scaled down (by necessity), it is no longer clear which peaks dominate in the PSD graphs
+      One option to make the peaks clearer is to only plot a single point for the max power near each harmonic
+      why not make a small bar graph centered on each frequency, the endo bar graph would be plotted in the back, and would have the thickest width
+      in fact, with this representation, you could use grey for all of the line colors you have now
+      the point of retaining the PSD's would be to show that there is just noise between the dominant peaks
+      i guess circles connected by lines might be ok too (instead of the bar graph thing)
+      you could plot the endo and the scalp electrode with the highest peak power for each point
+      and retain all of the electrodes and the endo for the greyed out lines in the background
+[x] the purple and the magenta are almost too close by the way
+[?] the axis numbers are also too small
+[x] The black lines are from the disconnected electrodes
+    those need to be omitted from these main paper figures, and perhaps separately included in supplementary figures
+[ ] where is the VEP off response going to fit in?
+    perhaps a 4th column?
+    The two straightforward options are to either make a 4th column or just have it as supplementary
+[ ] once this greying out thing is implemented, the PSD graphs will hopefully be a lot easier to examine - the goal is to allow the reader to *instantly* see the takehome message with their eyes: endo performs better than the best scalp electrode at a select, anatomically sensible location
+[ ] <<4th column too crowded>> give it a try, especially once you've improved the PSD graphs' visual communication
+[x] why don't we delete the cervicovertebral dens?
+[ ] is there cardiac activity by that point?
+[x] the y-axis scales should be the same for all graphs where you're asking the reader to make comparisons. can you tell me where you've violated this rule in rabbit 9, column 1?
+    looks like every VEP on has a different y-axis scale
+    i think +/-15 for all of them should be appropriate
+    it's ok if the confidence intervals spill outside that range
+    we can tell the reader the confidence intervals are off the chart if that happens
+[ ] does cervical vertebral dens have an outlier that causes the confidence intervals to look so wierd and ugly?
+[ ] for basilar tip 1 and 2 in rabbit 9, you could consider creating a zoomed inset panel (see alex's paper for an example) that helps the reader see that there still is a tiny scalp response, but to be able to compare it against the size of the basilar tip 1 response
+[x]     disconnected electrodes definitely need to be deleted from all of these panels, although they do underscore how important the control conditions are for the steady state evoked potentials
+[ ]     in the PMC article, search the phrase "A variability decline across multiple cortical areas" to get to the section that discusses their use of the Fano Factor
+        http://www.ncbi.nlm.nih.gov/pubmed/20173745
+        http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2828350/
+        http://web.stanford.edu/~shenoy/GroupCodePacks.htm
+        see "Variance Matlab code package". i don't think this is a big deal to implement.
+        they also use a "mean-mached fano factor". read to understand what this is and why they did it. these metrics may be arbitrary
+        they also used "FA" or factor analysis. read about exactly what this is, and why it is or isn't justified. please be prepared to explain to me in detailed technical terms
+        be sure you've read the shenoy paper in detail (don't take a day to do this - maybe just 1-3 hours)
+[ ]     overall, continue to obsess on what the big picture claims we need to make are and whether the organization in your figures achieves that.
+        one final thought - rabbit 9 is intended to show how the evoked potentials die out as the brain bleeds...
+        each row has a corresponding CT scan that we could show if it illustrates the presence or absence of bleed. the final MRI, taken only after the study, shows the presence of the bleed as well. think about how you want to integrate this imaging information in your figures.
+[ ]     do we need to split each of these 2 figures? perhaps we need to have one figure that's just VEP on + VEP off, and one that's just SSVEP + SSAEP
+            (for each rabbit)
+[ ]         ok... please take these formatting suggestions, and obsess over what the biggest picture, highest impact claims are for this paper, and how the figures *instantly* allow the reader to recognize the claims. your PSD figures presently are not adequate to achieve this effect
+[x] x ticks with 0 or 1 decimal
+[x] separate figs with on/off vep as 1 and ssvep/ssaep as other
+[x] remove titles?
+[x] change ssaep ylim to -3 to 7 (rather than -3 to 6)
+[ ] qrs plots
+     all electrodes + digital in
+     function of position
+     document spikes in data
+[x] label only every other ssvep harmonic (maybe only for high freq) first skip 163
+[ ] why ssaep scalp electrodes change over time / trials
+      possibly guidewire/catheter blocking blood flow
+      maybe guidewire acting as antenna?
+      plot rabbit 10 baseline
+      check if rabbit 9 has baseline
+[x] check single trials by eye for vep (check for outliers)
+[ ] shenoy metrics for variation quenching
+[ ] show higher freq for ssaep?
+
+[ ] highpass 15 Hz? for vep
+    / notch at ~10 Hz
+    / just remove trials that exceed +/- 50 uV
+[ ] ram chat message on fri 2-3 pm?

@@ -1,0 +1,23 @@
+3 sources of signals/noise:
+  - (X) electronics [noise]
+  - (Y) biological activity not related to experiment stimulus [noise]
+  - (Z) biological activity related to experiment stimulus [signal]
+
+3 Experiments:
+  - Experimental condition (actually running the experiment)
+      - Signal Components: X + Y + Z
+  - Live animal control (live animal with light/audio blocked by cardboard/distance)
+      - Signal Components: X + Y
+  - Dead animal control (dead animal with lights/audio)
+      - Signal Components: X
+
+Evoked Potentials:
+  - VEP: Visually Evoked Potential
+  - SSVEP: Steady-State Visually Evoked Potential
+      - 3 frequencies
+  - SSAEP: Steady-State Auditory Evoked Potential
+      - 3 frequencies
+  - BAEP: Brainstem Auditory Evoked Potential
+      - did not obtain any data
+
+[1] Visually Evoked Potentials by Donnell J. Creel <http://webvision.med.utah.edu/book/electrophysiology/visually-evoked-potentials/>

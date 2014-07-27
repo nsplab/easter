@@ -1,0 +1,19 @@
+basilar tip comparisons
+endo electrodes on front
+for vep also show 100 to 500 ms
+
+vep late cut off -50 ms to 100 ms -- only show 100 - 500
+vep - live and dead controls
+vep off response
+coefficient of variation / phantom effect? (Shenoy paper) for vep
+page numbers
+Looks best:
+  ssvep 40 Hz
+  ssaep 86 Hz
+for ssvep/ssaep,
+    general large signal at all freq = disconnected
+    large signal at low freq = ???
+    large signal at high freq = qrs complex from heart (especially lower down) and from hvac turning on
+
+Mark leaving penn for 1 month on 8/3
+test your adaptive filter in complete form with him @ Penn using the TDT and emg mid-next week (7/28)

@@ -161,6 +161,8 @@ for rabbit_ID = {'9rabbit_may_6_2014', '10rabbit_may_15_2014'}
             f4 = figure('units', 'pixels', 'outerposition', [0 0 1366 768]);
             f5 = figure('units', 'pixels', 'outerposition', [0 0 1366 768]);
 
+            qrs_plot(0.125 * cardiacData, cardiacData, name, 'black', f1, f2, f3, f4, f5);
+
             for ii=1:length(channelToPlot)
                 fprintf('ii: %d, %d\n', ii, channelToPlot(ii));
 
@@ -178,8 +180,6 @@ for rabbit_ID = {'9rabbit_may_6_2014', '10rabbit_may_15_2014'}
                 qrs_plot(chData, cardiacData, name, CM(ii, :), 0, 0, 0, f4, f5);
 
             end
-
-            qrs_plot(0.15 * cardiacData, cardiacData, name, 'black', f1, f2, f3, f4, f5);
 
             ansdkasnd
 

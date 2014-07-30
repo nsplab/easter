@@ -145,7 +145,7 @@ for rabbit_ID = {'9rabbit_may_6_2014', '10rabbit_may_15_2014'}
             dataColumnDig = fread(fid, Inf, 'single', 4*64);
             cleanDigitalIn = (dataColumnDig>0);
 
-            cardiacData = data{find(strcmp(data, 'Bottom Precordial')), 2};
+            cardiacData = data{strcmp(data, 'Bottom Precordial'), 2};
 
             cardiacData = filtfilt(nf60.sosMatrix, nf60.ScaleValues, cardiacData);
             cardiacData = filtfilt(nf120.sosMatrix, nf120.ScaleValues, cardiacData);
@@ -161,6 +161,8 @@ for rabbit_ID = {'9rabbit_may_6_2014', '10rabbit_may_15_2014'}
             f4 = figure('units', 'pixels', 'outerposition', [0 0 1366 768]);
             f5 = figure('units', 'pixels', 'outerposition', [0 0 1366 768]);
 
+            figure(f4);
+            plot([0 0], [-120 120], 'color', 'black', 'linewidth', 4);
             qrs_plot(0.125 * cardiacData, cardiacData, name, 'black', f1, f2, f3, f4, f5);
 
             for ii=1:length(channelToPlot)

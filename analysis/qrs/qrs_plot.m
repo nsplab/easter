@@ -4,7 +4,7 @@ function [] = qrs_plot(chData, cardiacData, name, color, f1, f2, f3, f4, f5)
     % cardiacData probably has to be unfiltered to work
     assert(all(size(chData) == size(cardiacData)));
     %tic
-    [pks,locs]=findpeaks(cardiacData,'minpeakdistance', round(0.18 * 9600));
+    [~,locs]=findpeaks(cardiacData,'minpeakdistance', round(0.18 * 9600));
     %toc
     %locs = locs(2:(end-1));
 
@@ -73,7 +73,7 @@ function [] = qrs_plot(chData, cardiacData, name, color, f1, f2, f3, f4, f5)
     assert(all(start < r_peak));
     assert(all(r_peak < finish));
 
-    dt = finish - start;
+    %dt = finish - start;
     max_before = max(r_peak - start);
     max_after = max(finish - r_peak);
     median_before = median(r_peak - start);
@@ -92,8 +92,8 @@ function [] = qrs_plot(chData, cardiacData, name, color, f1, f2, f3, f4, f5)
 
     %% Remove trials that have extreme values
     invalid = any(abs(padded) > 1e3, 2); % for some reason after applying hpf/lpf/nf, first and last area have extreme values
-    num_invalid = sum(invalid)
-    assert(sum(invalid) < 15);
+    num_invalid = sum(invalid);
+    assert(num_invalid < 15);
     padded = padded(~invalid, :);
 
     qrs = nanmean(padded, 1)';

@@ -61,7 +61,7 @@ function [] = qrs_plot(chData, cardiacData, name, color, f1, f2, f3, f4, f5)
         scatter(1:numel(dt), dt / 9600 * 1000, 36, color);
         xlabel('Interval Number');
         ylabel('Interval Length (ms)');
-        title('Time Between R Peaks');
+        title('Time Between Complexes');
         xlim([0 numel(dt)]);
         ylim([150 300]);
     
@@ -87,12 +87,16 @@ function [] = qrs_plot(chData, cardiacData, name, color, f1, f2, f3, f4, f5)
     assert(all(r_peak < finish));
 
     dt = finish - start;
+    max_before = max(r_peak - start);
+    max_after = max(finish - r_peak);
+    median_before = median(r_peak - start);
+    median_after = median(finish - r_peak);
 
     %% Gather and align the channel data
     %padded = nan(numel(r_peak), max(dt));
-    padded = zeros(numel(r_peak), max(dt));
+    padded = zeros(numel(r_peak), max_before + max_after);
     for i = 1:numel(r_peak)
-        padded(i, 1:(finish(i)-start(i))) = chData(start(i):(finish(i)-1));
+        padded(i, (start(i):(finish(i)-1)) - r_peak(i) + max_before + 1) = chData(start(i):(finish(i)-1));
     end
 
     %% Check that every column/row has a non-nan value
@@ -111,16 +115,17 @@ function [] = qrs_plot(chData, cardiacData, name, color, f1, f2, f3, f4, f5)
         %% Plot Mean and Confidence Interval
         figure(f4);
         hold on;
-        plot((1:numel(qrs)) / 9600, qrs, 'color', color, 'linewidth', 2);
+        plot(((1:numel(qrs)) - max_before) / 9600, qrs, 'color', color, 'linewidth', 2);
         confMean = bootci(100, @nanmean, padded);
-        plot((1:numel(qrs)) / 9600, confMean(1,:),'--','color',color,'linewidth',2);
-        plot((1:numel(qrs)) / 9600, confMean(2,:),'--','color',color,'linewidth',2);
+        plot(((1:numel(qrs)) - max_before) / 9600, confMean(1,:),'--','color',color,'linewidth',2);
+        plot(((1:numel(qrs)) - max_before) / 9600, confMean(2,:),'--','color',color,'linewidth',2);
     
         xlabel('Time (seconds)');
         ylabel('$\mu V$', 'interpreter', 'LaTeX');
         title('QRS Complex Shape');
-        xlim([0 numel(qrs) / 9600]);
-        ylim([-100 100]);
+        %xlim([0 numel(qrs) / 9600]);
+        xlim([-median_before, median_after] / 9600);
+        ylim([-120 120]);
         set(findall(f4,'type','text'),'fontSize',40,'fontWeight','normal', 'color', [0,0,0]);
         set(gca,'FontSize',40);
     
@@ -131,12 +136,16 @@ function [] = qrs_plot(chData, cardiacData, name, color, f1, f2, f3, f4, f5)
     if (nargin >= 9 && f5 ~= 0)
         %% Plot all curves
         figure(f5);
-        plot((1:numel(qrs)) / 9600, padded, 'color', color);
+        hold on;
+        plot(((1:numel(qrs)) - max_before) / 9600, padded, 'color', color);
         xlabel('Time (seconds)');
         ylabel('$\mu V$', 'interpreter', 'LaTeX');
         title('QRS Complex Shape');
-        xlim([0 numel(qrs) / 9600]);
-        ylim([-100 100]);
+        %xlim([0 numel(qrs) / 9600]);
+        xlim([-median_before, median_after] / 9600);
+        ylim([-120 120]);
+        set(findall(f4,'type','text'),'fontSize',40,'fontWeight','normal', 'color', [0,0,0]);
+        set(gca,'FontSize',40);
     
         %save2pdf(['matlab_data/' name '_' int2str(channel) '_qrs_all.pdf'], f3, 1200);
         save2pdf(['matlab_data/' name '_qrs_all.pdf'], f5, 1200);

@@ -40,7 +40,7 @@ for rabbit_ID = {'9rabbit_may_6_2014', '10rabbit_may_15_2014'}
 
     switch rabbit_ID
         case '9rabbit_may_6_2014'
-            vep_indices = [10 2 10 11 12 13 3];
+            vep_indices = [2 10 11 12 13 3];
             ssvep_indices = [5 29 32 38 8];
             ssaep_indices = [8 32 35 41 11];
         case '10rabbit_may_15_2014'
@@ -182,8 +182,6 @@ for rabbit_ID = {'9rabbit_may_6_2014', '10rabbit_may_15_2014'}
                 qrs_plot(chData, cardiacData, name, CM(ii, :), 0, 0, 0, f4, f5);
 
             end
-
-            ansdkasnd
 
             %saveas(f1, ['matlab_data/' name '_' int2str(channel) '_r_peak.fig']);
             saveas(f1, ['matlab_data/' name '_r_peak.fig']);

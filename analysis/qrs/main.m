@@ -179,9 +179,30 @@ for rabbit_ID = {'9rabbit_may_6_2014', '10rabbit_may_15_2014'}
 
             end
 
-            qrs_plot(0.2 * cardiacData, cardiacData, name, 'black', f1, f2, f3, f4, f5);
+            qrs_plot(0.15 * cardiacData, cardiacData, name, 'black', f1, f2, f3, f4, f5);
 
             ansdkasnd
+
+            %saveas(f1, ['matlab_data/' name '_' int2str(channel) '_r_peak.fig']);
+            saveas(f1, ['matlab_data/' name '_r_peak.fig']);
+
+            %saveas(f1, ['matlab_data/' name '_' int2str(channel) '_dt.fig']);
+            %save2pdf(['matlab_data/' name '_' int2str(channel) '_dt.pdf'], f2, 1200);
+            saveas(f2, ['matlab_data/' name '_dt.fig']);
+            save2pdf(['matlab_data/' name '_dt.pdf'], f2, 1200);
+
+            %saveas(f1, ['matlab_data/' name '_' int2str(channel) '_dt.fig']);
+            %save2pdf(['matlab_data/' name '_' int2str(channel) '_dt.pdf'], f3, 1200);
+            saveas(f3, ['matlab_data/' name '_dt.fig']);
+            save2pdf(['matlab_data/' name '_dt.pdf'], f3, 1200);
+
+            %save2pdf(['matlab_data/' name '_' int2str(channel) '_qrs.pdf'], f4, 1200);
+            save2pdf(['matlab_data/' name '_qrs.pdf'], f4, 1200);
+
+
+            %save2pdf(['matlab_data/' name '_' int2str(channel) '_qrs_all.pdf'], f3, 1200);
+            save2pdf(['matlab_data/' name '_qrs_all.pdf'], f5, 1200);
+
             close all;
 
         end

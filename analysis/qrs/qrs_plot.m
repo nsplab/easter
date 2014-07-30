@@ -23,9 +23,6 @@ function [] = qrs_plot(chData, cardiacData, name, color, f1, f2, f3, f4, f5)
         ylabel('$\mu V$', 'interpreter', 'LaTeX');
         title('Detected R Wave');
         xlim([0 numel(cardiacData) / 9600]);
-    
-        %saveas(f1, ['matlab_data/' name '_' int2str(channel) '_r_peak.fig']);
-        saveas(f1, ['matlab_data/' name '_r_peak.fig']);
     end
 
     if (nargin >= 6 && f2 ~= 0)
@@ -45,11 +42,6 @@ function [] = qrs_plot(chData, cardiacData, name, color, f1, f2, f3, f4, f5)
         %figure(f1);
         %xlim(locs(b) / 9600 + [-0.4 0.4]);
         %locs(b + (-1:1)) / 9600 * 1000
-    
-        %saveas(f1, ['matlab_data/' name '_' int2str(channel) '_dt.fig']);
-        %save2pdf(['matlab_data/' name '_' int2str(channel) '_dt.pdf'], f2, 1200);
-        saveas(f2, ['matlab_data/' name '_dt.fig']);
-        save2pdf(['matlab_data/' name '_dt.pdf'], f2, 1200);
     end
 
     %% Compute interval (include first, exclude last)
@@ -69,11 +61,6 @@ function [] = qrs_plot(chData, cardiacData, name, color, f1, f2, f3, f4, f5)
         %figure(f1);
         %xlim(locs(b) / 9600 + [-0.4 0.4]);
         %locs(b + (-1:1)) / 9600 * 1000
-    
-        %saveas(f1, ['matlab_data/' name '_' int2str(channel) '_dt.fig']);
-        %save2pdf(['matlab_data/' name '_' int2str(channel) '_dt.pdf'], f3, 1200);
-        saveas(f3, ['matlab_data/' name '_dt.fig']);
-        save2pdf(['matlab_data/' name '_dt.pdf'], f3, 1200);
     end
 
     %% Compute start, R peak, end, and length of each interval
@@ -128,9 +115,6 @@ function [] = qrs_plot(chData, cardiacData, name, color, f1, f2, f3, f4, f5)
         ylim([-120 120]);
         set(findall(f4,'type','text'),'fontSize',40,'fontWeight','normal', 'color', [0,0,0]);
         set(gca,'FontSize',40);
-    
-        %save2pdf(['matlab_data/' name '_' int2str(channel) '_qrs.pdf'], f4, 1200);
-        save2pdf(['matlab_data/' name '_qrs.pdf'], f4, 1200);
     end
 
     if (nargin >= 9 && f5 ~= 0)
@@ -146,9 +130,6 @@ function [] = qrs_plot(chData, cardiacData, name, color, f1, f2, f3, f4, f5)
         ylim([-120 120]);
         set(findall(f4,'type','text'),'fontSize',40,'fontWeight','normal', 'color', [0,0,0]);
         set(gca,'FontSize',40);
-    
-        %save2pdf(['matlab_data/' name '_' int2str(channel) '_qrs_all.pdf'], f3, 1200);
-        save2pdf(['matlab_data/' name '_qrs_all.pdf'], f5, 1200);
     end
 
     %% Remove qrs

@@ -1,0 +1,141 @@
+\documentclass[]{article}
+
+\usepackage[margin=1.0in]{geometry}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{hyperref}
+
+\pagestyle{plain}
+
+% scale:
+% 0.161
+% 0.126
+% 0.126
+
+% 0.161
+% 0.126
+% 0.126
+\begin{document}
+%\begin{minipage}{6in}
+%\centering
+%\raisebox{-0.5\height}{\includegraphics[height=0.75in]{brain.pdf}}
+%\hspace*{.2in}
+%\raisebox{-0.5\height}{\includegraphics[height=0.3in]{brain.pdf}}
+%\end{minipage}
+
+\begin{figure}[H]
+\begin{center}
+\raisebox{-0.5\height}{\includegraphics[scale=0.2]{brain.pdf}}
+\hspace{0.2cm}
+\raisebox{-0.5\height}{\includegraphics[scale=1.0]{../config/legend.pdf}} \\
+\vspace{0.5cm}
+\begin{tabular}{ccc}
+& VEP On Response & VEP Off Response \\
+\raisebox{-0.5\height}{\rotatebox{90}{Basilar Tip}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.161]{../vep/matlab_data/_Thu_15_05_2014_11_57_42_vep_.pdf}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.161]{../vep/matlab_data/_Thu_15_05_2014_11_57_42_vep__off.pdf}} \\
+\raisebox{-0.5\height}{\rotatebox{90}{Mid-Basilar}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.161]{../vep/matlab_data/_Thu_15_05_2014_14_13_26_vep_.pdf}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.161]{../vep/matlab_data/_Thu_15_05_2014_14_13_26_vep__off.pdf}} \\
+\raisebox{-0.5\height}{\rotatebox{90}{Vertebro-basilar}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.161]{../vep/matlab_data/_Thu_15_05_2014_15_54_54_vep_.pdf}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.161]{../vep/matlab_data/_Thu_15_05_2014_15_54_54_vep__off.pdf}} \\
+\raisebox{-0.5\height}{\rotatebox{90}{Basilar Tip}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.161]{../vep/matlab_data/_Thu_15_05_2014_16_47_47_vep_.pdf}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.161]{../vep/matlab_data/_Thu_15_05_2014_16_47_47_vep__off.pdf}}
+\vspace{0.2cm} \\
+\hline
+% TODO add space
+\raisebox{-0.5\height}{\rotatebox{90}{Live Control}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.161]{../vep/matlab_data/_Thu_15_05_2014_12_15_47_vep_ctr.pdf}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.161]{../vep/matlab_data/_Thu_15_05_2014_12_15_47_vep_ctr_off.pdf}}
+\end{tabular}
+\caption{Rabbit 10 VEP.}
+\end{center}
+\end{figure}
+
+\begin{figure}[H]
+\begin{center}
+\begin{tabular}{ccc}
+& SSVEP 40 Hz & SSAEP 86 Hz \\
+\raisebox{-0.5\height}{\rotatebox{90}{Basilar Tip}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.161]{../ssavep/matlab_data/_Thu_15_05_2014_12_08_22_ssvep_40.pdf}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.161]{../ssavep/matlab_data/_Thu_15_05_2014_12_31_02_ssaep_86.pdf}} \\
+\raisebox{-0.5\height}{\rotatebox{90}{Mid-Basilar}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.161]{../ssavep/matlab_data/_Thu_15_05_2014_14_20_24_ssvep_40.pdf}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.161]{../ssavep/matlab_data/_Thu_15_05_2014_14_26_54_ssaep_86.pdf}} \\
+\raisebox{-0.5\height}{\rotatebox{90}{Vertebro-basilar}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.161]{../ssavep/matlab_data/_Thu_15_05_2014_16_02_44_ssvep_40.pdf}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.161]{../ssavep/matlab_data/_Thu_15_05_2014_16_12_19_ssaep_86.pdf}} \\
+\raisebox{-0.5\height}{\rotatebox{90}{Basilar Tip}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.161]{../ssavep/matlab_data/_Thu_15_05_2014_16_38_47_ssvep_40.pdf}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.161]{../ssavep/matlab_data/_Thu_15_05_2014_16_58_34_ssaep_86.pdf}}
+\vspace{0.2cm} \\
+\hline
+% TODO add space
+\raisebox{-0.5\height}{\rotatebox{90}{Live Control}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.161]{../ssavep/matlab_data/_Thu_15_05_2014_12_13_26_ssvep_ctr_40.pdf}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.161]{../ssavep/matlab_data/_Thu_15_05_2014_12_26_26_ssaep_ctr_86.pdf}}
+\end{tabular}
+\caption{Rabbit 10 experimental responses.}
+\end{center}
+\end{figure}
+
+\begin{figure}[H]
+\begin{center}
+\begin{tabular}{cccc}
+& VEP & SSVEP 40 Hz & SSAEP 86 Hz \\
+\rotatebox{90}{\hspace{0.5cm}Basilar Tip} &
+\includegraphics[scale=0.150]{../qrs/matlab_data/_Thu_15_05_2014_11_57_42_vep__qrs-crop.pdf} &
+\includegraphics[scale=0.150]{../qrs/matlab_data/_Thu_15_05_2014_12_08_22_ssvep_40_qrs-crop.pdf} &
+\includegraphics[scale=0.150]{../qrs/matlab_data/_Thu_15_05_2014_12_31_02_ssaep_86_qrs-crop.pdf} \\
+\rotatebox{90}{\hspace{0.5cm}Mid-Basilar} &
+\includegraphics[scale=0.150]{../qrs/matlab_data/_Thu_15_05_2014_14_13_26_vep__qrs-crop.pdf} &
+\includegraphics[scale=0.150]{../qrs/matlab_data/_Thu_15_05_2014_14_20_24_ssvep_40_qrs-crop.pdf} &
+\includegraphics[scale=0.150]{../qrs/matlab_data/_Thu_15_05_2014_14_26_54_ssaep_86_qrs-crop.pdf} \\
+\rotatebox{90}{\hspace{0.5cm}Vertebro-basilar} &
+\includegraphics[scale=0.150]{../qrs/matlab_data/_Thu_15_05_2014_15_54_54_vep__qrs-crop.pdf} &
+\includegraphics[scale=0.150]{../qrs/matlab_data/_Thu_15_05_2014_16_02_44_ssvep_40_qrs-crop.pdf} &
+\includegraphics[scale=0.150]{../qrs/matlab_data/_Thu_15_05_2014_16_12_19_ssaep_86_qrs-crop.pdf} \\
+\rotatebox{90}{\hspace{0.5cm}Basilar Tip} &
+\includegraphics[scale=0.150]{../qrs/matlab_data/_Thu_15_05_2014_16_47_47_vep__qrs-crop.pdf} &
+\includegraphics[scale=0.150]{../qrs/matlab_data/_Thu_15_05_2014_16_38_47_ssvep_40_qrs-crop.pdf} &
+\includegraphics[scale=0.150]{../qrs/matlab_data/_Thu_15_05_2014_16_58_34_ssaep_86_qrs-crop.pdf}
+\end{tabular}
+\caption{Rabbit 10 experimental responses. Cardiac activity is multiplied by 0.125.}
+\end{center}
+\end{figure}
+
+%\begin{figure}[H]
+%\begin{center}
+%\begin{tabular}{cccc}
+%& VEP On Response & SSVEP 40 Hz & SSAEP 86 Hz \\
+%\rotatebox{90}{\hspace{0.5cm}Basilar Tip} &
+%\includegraphics[scale=0.150]{../qrs/matlab_data/_Tue_06_05_2014_11_17_10_vep__qrs-crop.pdf} &
+%\includegraphics[scale=0.150]{../qrs/matlab_data/_Tue_06_05_2014_11_14_51_ssvep_40_qrs-crop.pdf} &
+%\includegraphics[scale=0.150]{../qrs/matlab_data/_Tue_06_05_2014_11_37_22_ssaep_86_qrs-crop.pdf} \\
+%\rotatebox{90}{\hspace{0.5cm}Mid-Basilar} &
+%\includegraphics[scale=0.150]{../qrs/matlab_data/_Tue_06_05_2014_14_04_18_vep__qrs-crop.pdf} &
+%\includegraphics[scale=0.150]{../qrs/matlab_data/_Tue_06_05_2014_14_02_01_ssvep_40_qrs-crop.pdf} &
+%\includegraphics[scale=0.150]{../qrs/matlab_data/_Tue_06_05_2014_14_11_09_ssaep_86_qrs-crop.pdf} \\
+%\rotatebox{90}{\hspace{0.5cm}Vertebro-basilar} &
+%\includegraphics[scale=0.150]{../qrs/matlab_data/_Tue_06_05_2014_14_44_57_vep__qrs-crop.pdf} &
+%\includegraphics[scale=0.150]{../qrs/matlab_data/_Tue_06_05_2014_14_41_46_ssvep_40_qrs-crop.pdf} &
+%\includegraphics[scale=0.150]{../qrs/matlab_data/_Tue_06_05_2014_14_53_21_ssaep_86_qrs-crop.pdf} \\
+%%\rotatebox{90}{\hspace{0cm}Cervical Vertebral Dens} &
+%%\includegraphics[scale=0.150]{../qrs/matlab_data/_Tue_06_05_2014_15_13_50_vep__qrs-crop.pdf} &
+%%\includegraphics[scale=0.150]{../qrs/matlab_data/_Tue_06_05_2014_15_11_25_ssvep_40_qrs-crop.pdf} &
+%%\includegraphics[scale=0.150]{../qrs/matlab_data/_Tue_06_05_2014_15_20_29_ssaep_86_qrs-crop.pdf} \\
+%\rotatebox{90}{\hspace{0.5cm}Basilar Tip} &
+%\includegraphics[scale=0.150]{../qrs/matlab_data/_Tue_06_05_2014_15_50_43_vep__qrs-crop.pdf} &
+%\includegraphics[scale=0.150]{../qrs/matlab_data/_Tue_06_05_2014_15_48_24_ssvep_50_qrs-crop.pdf} &
+%\includegraphics[scale=0.150]{../qrs/matlab_data/_Tue_06_05_2014_15_57_52_ssaep_86_qrs-crop.pdf}
+%\end{tabular}
+%\caption{Rabbit 9 experimental responses. Cardiac activity is multiplied by 0.125.}
+%\end{center}
+%\end{figure}
+
+\end{document}
+

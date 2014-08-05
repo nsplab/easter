@@ -6,7 +6,7 @@ addpath('../utilities');
 %% Constants
 channelNames_VEP = {'Disconnected','Endo','Mid head','Disconnected','Right Eye','Right Leg','Back Head','Left Eye','Bottom Precordial','Top Precordial'};
 maxNumberOfChannels = 10;
-digitalinCh = 65;
+digitalInCh = 65;
 channelToPlot = [2,3,5,7,8];
 %channelToPlot = [2];
 fs = 9600;
@@ -33,6 +33,8 @@ n180 = fdesign.notch('N,F0,Q,Ap',6,180,10,1,fs);
 nf60 = design(n60);
 nf120 = design(n120);
 nf180 = design(n180);
+
+filters = {hpf, lpf, nf60, nf120, nf180};
 
 for rabbit_ID = {'9rabbit_may_6_2014', '10rabbit_may_15_2014'}
     rabbit_ID = rabbit_ID{1};
@@ -67,50 +69,7 @@ for rabbit_ID = {'9rabbit_may_6_2014', '10rabbit_may_15_2014'}
         pathname = ['../../../../data/easter/' rabbit_ID '/neuro/binary_data/' experiment '/'];
         pathname_matdata = ['../../../../data/easter/' rabbit_ID '/neuro/matlab_data/' experiment '/'];
 
-        C = strfind(neuro_experiment_log{1}, ['- ' upper(experiment)]); % get rows with '- VEP' in them
-        rows = find(~cellfun('isempty', C));
-        allData = neuro_experiment_log{1}(rows);
-
-        tmp = dir(pathname);
-        S = {tmp(3:end).name}; 
-
-        %% Check for matching experiment log and data files
-        assert(length(S) == length(allData)); % check that the experiment log and data files have the same number of VEP runs
-        for i = 1:length(S)
-            % Hard coded parsing of file name
-            assert(strcmp(S{i}(1), '_'))
-            S_day = S{i}(2:4);
-            assert(strcmp(S{i}(5), '_'))
-            S_date = S{i}(6:7);
-            assert(strcmp(S{i}(8), '.'))
-            S_month = S{i}(9:10);
-            assert(strcmp(S{i}(11), '.'))
-            S_month = S{i}(12:15);
-            assert(strcmp(S{i}(16), '_'))
-            S_hour = S{i}(17:18);
-            assert(strcmp(S{i}(19:21), '%3A'))
-            S_minute = S{i}(22:23);
-            assert(strcmp(S{i}(24:26), '%3A'))
-            S_second = S{i}(27:28);
-            assert(strcmp(S{i}(29 + (0:numel(experiment)+1)), ['_' experiment '_']))
-            S_extra = S{i}(29+numel(experiment)+2:end);
-        
-            % Hard coded parsing of experiment log
-            header = allData{i};
-            if header(2) == ':'
-                header = ['0' header]; % one digit hour - pad with extra 0
-            end
-            header_hour = header(1:2);
-            assert(strcmp(header(3), ':'))
-            header_minute = header(4:5);
-            assert(strcmp(header(6), ':'))
-            header_second = header(7:8);
-        
-            % Check for explicit match
-            assert(strcmp(S_hour, header_hour));
-            assert(strcmp(S_minute, header_minute));
-            assert(strcmp(S_second, header_second));
-        end
+        [ S, allData ] = get_information(pathname, pathname_comments, upper(experiment));
 
         indices = eval([experiment '_indices']);
         for i_ = 1:numel(indices)
@@ -128,42 +87,28 @@ for rabbit_ID = {'9rabbit_may_6_2014', '10rabbit_may_15_2014'}
             fprintf('i_: %d / %d,\ti: %d,\t%s, \t%s\n', i_, numel(indices), i, filename, name);
 
             %% Load data
-            fid = fopen([pathname filename], 'r');
-
-            data = cell(maxNumberOfChannels, 2);
-
-            for j=1:maxNumberOfChannels
-                fseek(fid, 4*(j-1), 'bof');
-                dataColumn = fread(fid, Inf, 'single', 4*64);
-                channelName = channelNames_VEP{j};
-
-                data(j,1) = {channelName};
-                data(j,2) = {dataColumn};
-            end
-
-            fseek(fid, 4*(digitalinCh-1), 'bof');
-            dataColumnDig = fread(fid, Inf, 'single', 4*64);
-            cleanDigitalIn = (dataColumnDig>0);
+            [ data, cleanDigitalIn ] = load_data([pathname filename], maxNumberOfChannels, digitalInCh, channelNames_VEP);
 
             cardiacData = data{strcmp(data, 'Bottom Precordial'), 2};
 
-            cardiacData = filtfilt(nf60.sosMatrix, nf60.ScaleValues, cardiacData);
-            cardiacData = filtfilt(nf120.sosMatrix, nf120.ScaleValues, cardiacData);
-            cardiacData = filtfilt(nf180.sosMatrix, nf180.ScaleValues, cardiacData);
+            cardiacData = run_filters(cardiacData, filters);
 
-            cardiacData = filtfilt(hpf.sosMatrix, hpf.ScaleValues, cardiacData);
+            f1 = figure('units', 'pixels', 'outerposition', [0 0 1366 768], 'visible', 'off');
+            f2 = figure('units', 'pixels', 'outerposition', [0 0 1366 768], 'visible', 'off');
+            f3 = figure('units', 'pixels', 'outerposition', [0 0 1366 768], 'visible', 'off');
+            f4 = figure('units', 'pixels', 'outerposition', [0 0 1366 768], 'visible', 'off');
+            f5 = figure('units', 'pixels', 'outerposition', [0 0 1366 768], 'visible', 'off');
 
-            cardiacData = filtfilt(lpf.sosMatrix, lpf.ScaleValues, cardiacData);
-
-            f1 = figure('units', 'pixels', 'outerposition', [0 0 1366 768]);
-            f2 = figure('units', 'pixels', 'outerposition', [0 0 1366 768]);
-            f3 = figure('units', 'pixels', 'outerposition', [0 0 1366 768]);
-            f4 = figure('units', 'pixels', 'outerposition', [0 0 1366 768]);
-            f5 = figure('units', 'pixels', 'outerposition', [0 0 1366 768]);
-
-            figure(f4);
+            %figure(f4);
+            set(0, 'CurrentFigure', f4);
             plot([0 0], [-120 120], 'color', 'black', 'linewidth', 4);
-            qrs_plot(0.125 * cardiacData, cardiacData, name, 'black', f1, f2, f3, f4, f5);
+
+            %figure(f5);
+            set(0, 'CurrentFigure', f5);
+            plot([0 0], [-120 120], 'color', 'black', 'linewidth', 4);
+
+            %qrs_plot(0.125 * cardiacData, cardiacData, name, 'black', f1, f2, f3, f4, f5);
+            qrs_plot(0.15 * cardiacData, cardiacData, name, 'black', f1, f2, f3, f4, f5);
 
             for ii=1:length(channelToPlot)
                 fprintf('ii: %d, %d\n', ii, channelToPlot(ii));
@@ -171,13 +116,7 @@ for rabbit_ID = {'9rabbit_may_6_2014', '10rabbit_may_15_2014'}
                 chData = data{channelToPlot(ii),2};
 
                 % Apply filters
-                chData = filtfilt(nf60.sosMatrix, nf60.ScaleValues,chData);
-                chData = filtfilt(nf120.sosMatrix, nf120.ScaleValues,chData);
-                chData = filtfilt(nf180.sosMatrix, nf180.ScaleValues,chData);
-
-                chData = filtfilt(hpf.sosMatrix, hpf.ScaleValues,chData);
-
-                chData = filtfilt(lpf.sosMatrix, lpf.ScaleValues,chData);
+                chData = run_filters(chData, filters);
 
                 qrs_plot(chData, cardiacData, name, CM(ii, :), 0, 0, 0, f4, f5);
 

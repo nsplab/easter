@@ -46,7 +46,7 @@ decimate_factor = 10;                                                      % dec
 maxNumberOfChannels = 10;                                                  %# of consecutive analog input channels, starting with channel 1, to extract from the project easter binary files
                                                                            %(which contain 64 analog channels and the digital in channel (channel 65)
 
-digitalinCh = 65;                                                          %designate the digital input channel, which is used to record
+digitalInCh = 65;                                                          %designate the digital input channel, which is used to record
                                                                            %the LED state to align EEG data with onset or offset to generate VEP graphs 
 
 original_sampling_rate_in_Hz = 9600;                                       % data is acquired with the g.Tech g.HiAmp at 9600 Hz. this is fixed for convenience. at higher rates, the 
@@ -66,89 +66,20 @@ pathname_comments = ['../../../../data/easter/' rabbit_ID '/neuro/neuro_experime
 
 pathname_matdata = ['../../../../data/easter/' rabbit_ID '/neuro/matlab_data/vep/'];
 
-%Channel labels during VEP for all rabbits (5,6,7, etc.)
-switch rabbit_ID
-    case {'7rabbit_apr_15_2014', '8rabbit_apr_24_2014', '9rabbit_may_6_2014', '10rabbit_may_15_2014'}
-        channelNames_VEP = {'Disconnected','Endo','Mid head','Disconnected','Right Eye','Right Leg','Back Head','Left Eye','Bottom Precordial','Top Precordial'};
-        plot_only_neuro_and_endo_channels = 0;                             % choose to plot only neuro and endo channels, excluding disconnected or precordial channels
-        gtechGND = 'Nose';
-        earth = 'Left Leg';
-    case '6rabbit_apr_11_2014'
-        channelNames_VEP = {'Disconnected','Endo','Mid head','Disconnected','Right Eye','Right Leg','Back Head','Left Eye','Bottom Precordial','Top Precordial'};
-    case '5rabbit_apr_15_2014'
-%        channelNames_VEP = 
-end
+[ channelNames, gtechGND, earth ] = rabbit_information(rabbit_ID);
 %///////////////////////////////////////////////
 % END BLOCK: Hardcoded variables
 %///////////////////////////////////////////////
 
 
 
-tmp = dir(pathname);                                                       % get the list of data filenames for this particular type of evoked potential
-S = {tmp(3:end).name};                                                     % chop out the '.' and '..' filename entries that are in every directory
-%                                                                          %note from Ram, 4/18/14: do *not* sort by modification time - this may change; instead, rely on lexicographic sort of name which contains timestamp
-%S = [tmp(:).datenum].';                                                   
-%[S,S] = sort(S);
-%S = {tmp(S).name};                                                        
-
-
-
-fid = fopen(pathname_comments);
-if fid==-1						%if the vep.txt comments file doesn't exist, display an error message to the console and skip the textscan
-	disp('Hey - you may want to create vep.txt to populate the titles in these figures. See plot_all_vep.m for details.');
-	allData = [];
-else
-	allData = textscan(fid,'%s','Delimiter','\n');
-    % specific for rabbit 8
-    C = strfind(allData{1}, '- VEP'); % get rows with '- VEP' in them
-    rows = find(~cellfun('isempty', C));
-    allData = allData{1}(rows);
-end
+[ S, allData ] = get_information(pathname, pathname_comments, 'VEP')
 
 %////////////////////////////////////////////////////////////////////////////////////////
 % START BLOCK: Extract Data from Project Easter Binary Files to Prep for
 % function call to arduino_vep.m
 %////////////////////////////////////////////////////////////////////////////////////////
 
-vep_data = cell(size(S));
-
-%% Check for matching experiment log and data files
-assert(length(S) == length(allData)); % check that the experiment log and data files have the same number of VEP runs
-for i = 1:length(S)
-  % Hard coded parsing of file name
-  assert(strcmp(S{i}(1), '_'))
-  S_day = S{i}(2:4);
-  assert(strcmp(S{i}(5), '_'))
-  S_date = S{i}(6:7);
-  assert(strcmp(S{i}(8), '.'))
-  S_month = S{i}(9:10);
-  assert(strcmp(S{i}(11), '.'))
-  S_month = S{i}(12:15);
-  assert(strcmp(S{i}(16), '_'))
-  S_hour = S{i}(17:18);
-  assert(strcmp(S{i}(19:21), '%3A'))
-  S_minute = S{i}(22:23);
-  assert(strcmp(S{i}(24:26), '%3A'))
-  S_second = S{i}(27:28);
-  assert(strcmp(S{i}(29:33), '_vep_'))
-  S_extra = S{i}(34:end);
-
-  % Hard coded parsing of experiment log
-  header = allData{i};
-  if header(2) == ':'
-      header = ['0' header]; % one digit hour - pad with extra 0
-  end
-  header_hour = header(1:2);
-  assert(strcmp(header(3), ':'))
-  header_minute = header(4:5);
-  assert(strcmp(header(6), ':'))
-  header_second = header(7:8);
-
-  % Check for explicit match
-  assert(strcmp(S_hour, header_hour));
-  assert(strcmp(S_minute, header_minute));
-  assert(strcmp(S_second, header_second));
-end
 
 if (nargin < 2)
     publication_quality = 2;
@@ -177,45 +108,8 @@ end
 for i = trials_list
     filename = S{i};
     fprintf('filename: %s,\t%d / %d\n', filename, i, length(S));
-    fid = fopen([pathname filename], 'r');
 
-    vep_data{i}.filename = filename;                                       %vep_data will be stored to a .mat file, a single variable containing all the essential processed VEP data from this subject
-    vep_data{i}.allData = allData(i);                                   %vep_data will be stored to a .mat file, a single variable containing all the essential processed VEP data from this subject
-%    vep_data{i,1} = filename;
-%    vep_data{i,2} = allData{1}(i);
-    
-    data = cell(maxNumberOfChannels,2);
-    dataDecimated = cell(maxNumberOfChannels,2);
-
-    SIZE = Inf;
-    if strcmp(rabbit_ID, '8rabbit_apr_24_2014') && i == 2 % this trial is a bit cut off at the end
-        SIZE = 2143610;
-    end
-    for j=1:maxNumberOfChannels,                                           %for the jth analog channel (excluding the digital in channel), load the signal into a vector in original_data{j,2}
-        %fprintf('Loading channel %d / %d\n', j, maxNumberOfChannels);
-        fseek(fid, 4*(j-1), 'bof');
-        dataColumn = fread(fid, SIZE, 'single', 4*64);
-        channelName = channelNames_VEP{j};
-
-        data(j,1) = {channelName};
-        data(j,2) = {dataColumn};
-        
-        dataColumnDecimated = decimate(dataColumn,decimate_factor);                 %decimate the data by the requested factor for speed
-
-        dataDecimated(j,1) = {channelName};
-        dataDecimated(j,2) = {dataColumnDecimated};
-    end
-    
-    fseek(fid, 4*(digitalinCh-1), 'bof');                                      %fseek sets the pointer to the first value read in the file. 4 represents 4 bytes.
-                                                                               %we're starting to read from the digital input channel, the first value of which is
-                                                                               %4*(digitalinCh-1) bytes into the file.
-    dataColumnDig = fread(fid, SIZE, 'single', 4*64);                           %fread iteratively reads values the file and places them into the vector 'dataColumn', 
-                                                                               %representing all amplitudes from the current channel.. Inf causes fread to continue until it 
-                                                                               %reaches EOF (end of file). 4*64 tells fread to skip 4*64 bytes to get the next value (assumes 65 channels recorded)
-    cleanDigitalIn = (dataColumnDig>0);
-    
-    dataColumnDigDecimated = dataColumnDig(1:decimate_factor:end);                      %throw out intermediate samples to keep them aligned to the decimated channel data
-    cleanDigitalInDecimated = (dataColumnDigDecimated>0);                                        %make sure the digital In takes on binary values: take any negative excursions to 0
+    [ data, cleanDigitalIn ] = load_data([pathname filename], maxNumberOfChannels, digitalInCh, channelNames)
 
     if publication_quality > 0
         run('publish_vep_v2.m');
@@ -226,151 +120,7 @@ for i = trials_list
        run('arduino_vep.m');
     end
     
-    %sampling_rate_in_Hz = original_sampling_rate_in_Hz;
-    %save([pathname_matdata S{i} '.mat'], 'data', 'sampling_rate_in_Hz', 'gtechGND','channelNames_VEP','cleanDigitalIn');
-    %sampling_rate_in_Hz = original_sampling_rate_in_Hz / decimate_factor;
-    %save([pathname_matdata S{i} '_decimated.mat'], 'dataDecimated', 'sampling_rate_in_Hz', 'gtechGND','channelNames_VEP','cleanDigitalInDecimated');
-    
-    %if publication_quality == 1
-    %    saveas(fgh, [pathname_matdata S{i} '_pub.fig']);
-    %elseif publication_quality == 3
-    %    saveas(fgh, [pathname_matdata S{i} '_pub_dashedCI.fig']);
-    %else
-    %    saveas(fgh, [pathname_matdata S{i} '.fig']);
-    %end
     close all;
 end
 
-%save([pathname_matdata 'vep_data.mat'], 'vep_data');
-
-%GND = gtechGND;                                                            %label indicating position of gtech ground (differential input to the g.HiAmp)
-%fs = original_sampling_rate_in_Hz/decimate_factor;                         %variable name 'fs' is used by arduino_vep.m
-
-
-%//////////////////////////////////
-% Load the Digital Input Channel (65)
-%//////////////////////////////////
-% read the digital input channel, which contains the LED state
-% (in 7rabbit, this channel is low when LED is on, and high when LED is off;
-% in 6rabbit and 5rabbit, this channel is low when LED is off, and high when LED is on;
-% this convention is set by the arduino code in /code/easter/recording.
-% for experiments subsequent to 7rabbit, the arduino code was set back to the
-% intuitive convention of low when LED is off, and high when LED is on.
-%time_axis = (0:length(dataColumnDig)-1)*1.0/fs;                           %define a time axis, based on sampling rate (fs) and the length of the recording
-%figure;plot(time_axis,dataColumnDig);                                     %plot and visualize the digital input channel
-%//////////////////////////////////
-%//////////////////////////////////////////////////////////
-% END BLOCK: Extract Data from Project Easter Binary Files
-%//////////////////////////////////////////////////////////
-
-
-return;
-
-
-
-%////////////////////////////////////////////////////////////////////////////////////////
-% START BLOCK: Create Stimulus-Locked Figures, one for each data file in the directory
-%////////////////////////////////////////////////////////////////////////////////////////
-
-%for i=1:length(S)				%for each data file in the directory (sorted by name which contains timestamp and listed in variable S)
-%    run('arduino_vep.m');
-%end
-%///////////////////////////////////////////////
-% END BLOCK
-%///////////////////////////////////////////////
-
-
-
-%{
-
-
-
-
-%///////////////////////////////////////////////
-% START BLOCK:  generate a structure that documents the
-% electrode positions for each channel, in every run that was recorded
-%///////////////////////////////////////////////
-
-
-
-% generate a structure that documents the electrode positions for each channel, in every run that was recorded
-% row index:   filename index
-% column 1:	   filename of the data
-% columns 2 to 11: name/position of the channels (example: 'Mid head')
-% last column: 	   which channels was used as GND
-a = cell(length(S)-2,2);
-for i=1:length(S)-2,
-    a{i,1} = S(i);
-    a{i,2} = 'Disconnected';
-    a{i,3} = 'Endo';
-    a{i,4} = 'Mid head';
-    a{i,5} = 'Disconnected';
-    a{i,6} = 'Right Eye';
-    a{i,7} = 'Right Leg';
-    a{i,8} = 'Back Head';
-    a{i,9} = 'Left Eye';
-    a{i,10} = 'Top Precordial';
-    a{i,11} = 'Bottom Precordial';
-    a{i,12} = 'Nose';
-end
-
-all_experiments_channels = cell(size(a,1), size(a,2));
-all_experiments_channels(2:end+1,:) = a(1:end,:);
-all_experiments_channels(1,1) = {'filename'};
-all_experiments_channels(1,2:end-1) = {'channel name'};
-all_experiments_channels(1,end) = {'GND'};
-%///////////////////////////////////////////////
-% END BLOCK
-%///////////////////////////////////////////////
-
-
-%////////////////////////////////////////////////////////////////////////////////////////
-% START BLOCK: Compute and store a decimated version of the data for easy subsequent access in Matlab
-%////////////////////////////////////////////////////////////////////////////////////////
-
-decimated_sampling_rate_in_Hz = original_sampling_rate_in_Hz/decimate_factor;
-
-for i=1:length(S),				%for each data file in the directory, decimate and save
-    dontUseGUI = 1;
-    S{i}
-    filename = S{i};
-    pwd
-    fid = fopen([pathname filename], 'r');
-    
-    original_data = cell(0,2);
-    data_decimated = cell(0,2);
-    
-    maxNumberOfChannels = 10;
-    for j=1:maxNumberOfChannels,
-        fseek(fid, 4*(j-1), 'bof');
-        dataColumn = fread(fid, Inf, 'single', 4*64);
-        channelName = a{i,j+1};
-        
-        original_data(end+1,1) = {channelName};
-        original_data(end,2) = {dataColumn};
-        
-        dataColumn_decimated = decimate(dataColumn, decimate_factor);
-        data_decimated(end+1,1) = {channelName};
-        data_decimated(end,2) = {dataColumn_decimated};
-
-    end
-    
-    GND = a{i,12};
-    data = original_data;
-    sampling_rate_in_Hz = original_sampling_rate_in_Hz;
-%    save([S{i} '.mat'], 'data', 'sampling_rate_in_Hz', 'GND','all_experiments_channels');
-
-    data = data_decimated;
-    sampling_rate_in_Hz = decimated_sampling_rate_in_Hz;
-%    save(['../data/neuro/matlab_data' S{i} '_decimated.mat'], 'data', 'sampling_rate_in_Hz', 'GND','all_experiments_channels');
-
-%    data = original_data;
-%    run('arduino_vep.m');
-end
-%///////////////////////////////////////////////
-% END BLOCK
-%///////////////////////////////////////////////
-
-
-%}
 end

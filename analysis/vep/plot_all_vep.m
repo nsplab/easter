@@ -89,38 +89,34 @@ if (nargin < 3)
     trials_list = 1:numel(S);
 end
 
+filters = get_filters(original_sampling_rate_in_Hz, true, true, true, true, true);
+cardiac_filters = get_filters(original_sampling_rate_in_Hz, true, false, false, false, false);
 
-% rabbit10
-%for i=1:length(S),				%for each data file in the directory
-%for i=1:length(S),				%for each data file in the directory
+preEventPlot_sec = 0.05;                                                    %time in seconds to extend plot prior to event time (marked as time zero)
+postEventPlot_sec = 0.1;
 
-%for i = [2 10 11 13 3] % rabbit 9
-%for i = [12] % rabbit 9
-%for i = [2 10 11 12 13 3] % rabbit 9
-%for i = [2 10 11] % rabbit 9
-%for i = [12 13 3] % rabbit 9
-%for i = [4 10 12 15 5] % rabbit 10
-%for i = [10]
-%for i = [1] % rabbit 9/10 baseline
-%for i = length(S)
-%for i = 10 % mid-basilar (happens to be same for rabbit 9 and 10
-%for i = 11
+channelToPlot = [2,3,5,7,8];
+%CM = [hex2dec('e9'), hex2dec('00'), hex2dec('3a'); hex2dec('ff'), hex2dec('ba'),hex2dec('00'); hex2dec('18'),hex2dec('26'),hex2dec('b0'); hex2dec('58'),hex2dec('e0'), hex2dec('00'); hex2dec('00'),hex2dec('00'),hex2dec('00')];
+CM = [hex2dec('e9'), hex2dec('00'), hex2dec('3a');
+      hex2dec('ff'), hex2dec('ba'), hex2dec('00');
+      hex2dec('40'), hex2dec('40'), hex2dec('ff');
+      hex2dec('58'), hex2dec('e0'), hex2dec('00');
+      hex2dec('b0'), hex2dec('00'), hex2dec('b0')];
+
+CM = CM/256;
+
+
 for i = trials_list
     filename = S{i};
     fprintf('filename: %s,\t%d / %d\n', filename, i, length(S));
 
     [ data, cleanDigitalIn ] = load_data([pathname filename], maxNumberOfChannels, digitalInCh, channelNames);
 
-    if publication_quality > 0
-        run('publish_vep_v2.m');
-        %run('publish_vep_off_v2.m');
-        %run('publish_vep_all.m');
-        %run('publish_fano.m');
-    else
-       run('arduino_vep.m');
-    end
-    
+    publish_vep_v2(data, cleanDigitalIn, original_sampling_rate_in_Hz, publication_quality, filters, cardiac_filters, preEventPlot_sec, postEventPlot_sec, allData{i}, clean_name(S{i}), channelToPlot, CM, 'On');
+    publish_vep_v2(data, cleanDigitalIn, original_sampling_rate_in_Hz, publication_quality, filters, cardiac_filters, preEventPlot_sec, postEventPlot_sec, allData{i}, clean_name(S{i}), channelToPlot, CM, 'Off');
+
     close all;
 end
 
 end
+

@@ -73,7 +73,7 @@ pathname_matdata = ['../../../../data/easter/' rabbit_ID '/neuro/matlab_data/vep
 
 
 
-[ S, allData ] = get_information(pathname, pathname_comments, 'VEP')
+[ S, allData ] = get_information(pathname, pathname_comments, 'VEP');
 
 %////////////////////////////////////////////////////////////////////////////////////////
 % START BLOCK: Extract Data from Project Easter Binary Files to Prep for

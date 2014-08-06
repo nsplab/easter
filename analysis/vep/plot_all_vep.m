@@ -109,7 +109,7 @@ for i = trials_list
     filename = S{i};
     fprintf('filename: %s,\t%d / %d\n', filename, i, length(S));
 
-    [ data, cleanDigitalIn ] = load_data([pathname filename], maxNumberOfChannels, digitalInCh, channelNames)
+    [ data, cleanDigitalIn ] = load_data([pathname filename], maxNumberOfChannels, digitalInCh, channelNames);
 
     if publication_quality > 0
         run('publish_vep_v2.m');

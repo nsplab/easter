@@ -17,18 +17,27 @@
 %	
 %	The analysis code assumes a fixed sampling rate of 9600 Hz and digital input channel # of 65 (both designated in arduino_vep.m)
 
+function plot_all_vep(rabbit_ID, publication_quality, trials_list)
+
+addpath('../config');
+addpath('../utilities');
 
 %///////////////////////////////////////////////
 % START BLOCK: Hardcoded variables
 %///////////////////////////////////////////////
+%rabbit_ID = '1rabbit_dec_10_2012';
+%rabbit_ID = '2rabbit_jan_23_2013';
+%rabbit_ID = '4rabbit_feb_5_2014';
+%rabbit_ID = '5rabbit_mar_4_2014';
 %rabbit_ID = '6rabbit_apr_11_2014';                                         %'7rabbit_apr_15_2014' corresponds to the experiment performed 4/15/14
 %rabbit_ID = '7rabbit_apr_15_2014';                                         %'7rabbit_apr_15_2014' corresponds to the experiment performed 4/15/14
 %rabbit_ID = '8rabbit_apr_24_2014';
 %rabbit_ID = '9rabbit_may_6_2014';
-rabbit_ID = '10rabbit_may_15_2014';
+%rabbit_ID = '10rabbit_may_15_2014';
 
-publication_quality = 3;                                                   % generate the high quality figures with confidence intervals. this is much slower than having it set to zero
+%publication_quality = 3;                                                   % generate the high quality figures with confidence intervals. this is much slower than having it set to zero
                                                                            % 0:, 1:with confidence intervals , 2:without confidence intervals, 3: use dashed lines instead of transparent ares for confidence areas
+% TODO: for some reason, publication quality 1 (shaded confidence intervals) does not save properly to pdf or eps
 
 decimate_factor = 10;                                                      % decimate the data to speed up plotting (decimate_factor = 1 is no decimation; 10 is reasonable)
                                                                            %(this Matlab function implements proper downsampling using anti-aliasing, with decimate.m).
@@ -141,9 +150,33 @@ for i = 1:length(S)
   assert(strcmp(S_second, header_second));
 end
 
-for i=1:length(S),				%for each data file in the directory
+if (nargin < 2)
+    publication_quality = 2;
+end
+
+if (nargin < 3)
+    trials_list = 1:numel(S);
+end
+
+
+% rabbit10
+%for i=1:length(S),				%for each data file in the directory
+%for i=1:length(S),				%for each data file in the directory
+
+%for i = [2 10 11 13 3] % rabbit 9
+%for i = [12] % rabbit 9
+%for i = [2 10 11 12 13 3] % rabbit 9
+%for i = [2 10 11] % rabbit 9
+%for i = [12 13 3] % rabbit 9
+%for i = [4 10 12 15 5] % rabbit 10
+%for i = [10]
+%for i = [1] % rabbit 9/10 baseline
+%for i = length(S)
+%for i = 10 % mid-basilar (happens to be same for rabbit 9 and 10
+%for i = 11
+for i = trials_list
     filename = S{i};
-    filename
+    fprintf('filename: %s,\t%d / %d\n', filename, i, length(S));
     fid = fopen([pathname filename], 'r');
 
     vep_data{i}.filename = filename;                                       %vep_data will be stored to a .mat file, a single variable containing all the essential processed VEP data from this subject
@@ -154,9 +187,14 @@ for i=1:length(S),				%for each data file in the directory
     data = cell(maxNumberOfChannels,2);
     dataDecimated = cell(maxNumberOfChannels,2);
 
+    SIZE = Inf;
+    if strcmp(rabbit_ID, '8rabbit_apr_24_2014') && i == 2 % this trial is a bit cut off at the end
+        SIZE = 2143610;
+    end
     for j=1:maxNumberOfChannels,                                           %for the jth analog channel (excluding the digital in channel), load the signal into a vector in original_data{j,2}
+        %fprintf('Loading channel %d / %d\n', j, maxNumberOfChannels);
         fseek(fid, 4*(j-1), 'bof');
-        dataColumn = fread(fid, Inf, 'single', 4*64);
+        dataColumn = fread(fid, SIZE, 'single', 4*64);
         channelName = channelNames_VEP{j};
 
         data(j,1) = {channelName};
@@ -171,38 +209,42 @@ for i=1:length(S),				%for each data file in the directory
     fseek(fid, 4*(digitalinCh-1), 'bof');                                      %fseek sets the pointer to the first value read in the file. 4 represents 4 bytes.
                                                                                %we're starting to read from the digital input channel, the first value of which is
                                                                                %4*(digitalinCh-1) bytes into the file.
-    dataColumnDig = fread(fid, Inf, 'single', 4*64);                           %fread iteratively reads values the file and places them into the vector 'dataColumn', 
+    dataColumnDig = fread(fid, SIZE, 'single', 4*64);                           %fread iteratively reads values the file and places them into the vector 'dataColumn', 
                                                                                %representing all amplitudes from the current channel.. Inf causes fread to continue until it 
                                                                                %reaches EOF (end of file). 4*64 tells fread to skip 4*64 bytes to get the next value (assumes 65 channels recorded)
     cleanDigitalIn = (dataColumnDig>0);
     
     dataColumnDigDecimated = dataColumnDig(1:decimate_factor:end);                      %throw out intermediate samples to keep them aligned to the decimated channel data
     cleanDigitalInDecimated = (dataColumnDigDecimated>0);                                        %make sure the digital In takes on binary values: take any negative excursions to 0
-    
+
     if publication_quality > 0
-       run('publish_vep_v2.m');
+        run('publish_vep_v2.m');
+        %run('publish_vep_off_v2.m');
+        %run('publish_vep_all.m');
+        %run('publish_fano.m');
     else
        run('arduino_vep.m');
     end
     
-    sampling_rate_in_Hz = original_sampling_rate_in_Hz;
-    save([pathname_matdata S{i} '.mat'], 'data', 'sampling_rate_in_Hz', 'gtechGND','channelNames_VEP','cleanDigitalIn');
-    sampling_rate_in_Hz = original_sampling_rate_in_Hz / decimate_factor;
-    save([pathname_matdata S{i} '_decimated.mat'], 'dataDecimated', 'sampling_rate_in_Hz', 'gtechGND','channelNames_VEP','cleanDigitalInDecimated');
+    %sampling_rate_in_Hz = original_sampling_rate_in_Hz;
+    %save([pathname_matdata S{i} '.mat'], 'data', 'sampling_rate_in_Hz', 'gtechGND','channelNames_VEP','cleanDigitalIn');
+    %sampling_rate_in_Hz = original_sampling_rate_in_Hz / decimate_factor;
+    %save([pathname_matdata S{i} '_decimated.mat'], 'dataDecimated', 'sampling_rate_in_Hz', 'gtechGND','channelNames_VEP','cleanDigitalInDecimated');
     
-    if publication_quality == 1
-        saveas(fgh, [pathname_matdata S{i} '_pub.fig']);
-    elseif publication_quality == 3
-        saveas(fgh, [pathname_matdata S{i} '_pub_dashedCI.fig']);
-    else
-        saveas(fgh, [pathname_matdata S{i} '.fig']);
-    end
+    %if publication_quality == 1
+    %    saveas(fgh, [pathname_matdata S{i} '_pub.fig']);
+    %elseif publication_quality == 3
+    %    saveas(fgh, [pathname_matdata S{i} '_pub_dashedCI.fig']);
+    %else
+    %    saveas(fgh, [pathname_matdata S{i} '.fig']);
+    %end
+    close all;
 end
 
-save([pathname_matdata 'vep_data.mat'], 'vep_data');
+%save([pathname_matdata 'vep_data.mat'], 'vep_data');
 
-GND = gtechGND;                                                            %label indicating position of gtech ground (differential input to the g.HiAmp)
-fs = original_sampling_rate_in_Hz/decimate_factor;                         %variable name 'fs' is used by arduino_vep.m
+%GND = gtechGND;                                                            %label indicating position of gtech ground (differential input to the g.HiAmp)
+%fs = original_sampling_rate_in_Hz/decimate_factor;                         %variable name 'fs' is used by arduino_vep.m
 
 
 %//////////////////////////////////
@@ -331,3 +373,4 @@ end
 
 
 %}
+end

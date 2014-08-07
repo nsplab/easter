@@ -65,6 +65,7 @@
 \hline
 Location & Basilar Tip & Mid-Basilar & VB Junction & Basilar Tip & Basilar Tip  & Basilar Tip \\
 Time     & 11:57:42    & 14:13:26    & 15:54:54    & 16:47:47    & 12:15:47     & 17:22:22 \\
+% Time     & 11:57:42    & 14:13:26    & 15:54:54    & 16:47:47    & 12:15:47     & 17:22:22 \\ % TODO: time relative to anesthesia? relative to surgery
 \hline
 \raisebox{-0.5\height}{\rotatebox{90}{VEP On}} &
 \raisebox{-0.5\height}{\includegraphics[scale=0.32]{../vep/matlab_data/_Thu_15_05_2014_11_57_42_vep__labelled-crop.pdf}} &
@@ -146,23 +147,23 @@ Time     & 11:57:42    & 14:13:26    & 15:54:54    & 16:47:47    & 12:15:47     
 
 \begin{figure}[H]
 \begin{center}
-\begin{tabular}{c|cc|c}
+\begin{tabular}{cc|cc}
 \raisebox{-0.5\height}{\multirow{3}{*}{
 \begin{tabular}{c}
 Cardiac-Aligned  Measurements \vspace{0.7cm} \\
 \includegraphics[scale=0.64]{../qrs/matlab_data/_Thu_15_05_2014_14_13_26_vep__qrs-crop.pdf}
 \end{tabular}
 }} &
-Raw Trace & VEP-Aligned \\
+& Raw Trace & VEP-Aligned \\
 \hline
 &
+\raisebox{-0.5\height}{\rotatebox{90}{Contaminated}} &
 \raisebox{-0.5\height}{\includegraphics[scale=0.32]{../qrs/matlab_data/_Thu_15_05_2014_14_13_26_vep__start-crop.pdf}} &
-\raisebox{-0.5\height}{\includegraphics[scale=0.32]{../vep/matlab_data/_Thu_15_05_2014_14_13_26_vep__cardiac_labelled-crop.pdf}} &
-\rotatebox{180}{\raisebox{-0.5\height}{\rotatebox{90}{Contaminated}}} \\
+\raisebox{-0.5\height}{\includegraphics[scale=0.32]{../vep/matlab_data/_Thu_15_05_2014_14_13_26_vep__cardiac_labelled-crop.pdf}} \\
 &
+\raisebox{-0.5\height}{\rotatebox{90}{Cleaned}} &
 \raisebox{-0.5\height}{\includegraphics[scale=0.32]{../qrs/matlab_data/_Thu_15_05_2014_14_13_26_vep__end-crop.pdf}} &
-\raisebox{-0.5\height}{\includegraphics[scale=0.32]{../vep/matlab_data/_Thu_15_05_2014_14_13_26_vep__labelled-crop.pdf}} &
-\rotatebox{180}{\raisebox{-0.5\height}{\rotatebox{90}{Cleaned}}}
+\raisebox{-0.5\height}{\includegraphics[scale=0.32]{../vep/matlab_data/_Thu_15_05_2014_14_13_26_vep__labelled-crop.pdf}} \\
 \end{tabular}
 
 

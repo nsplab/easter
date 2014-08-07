@@ -23,7 +23,8 @@
 %///////////////////////////////////////////////
 clear;
 
-rabbit_ID = '9rabbit_may_6_2014';
+%rabbit_ID = '9rabbit_may_6_2014';
+rabbit_ID = '10rabbit_may_15_2014';
 fs = 9600;
 
 publication_quality = 3;                                                   % generate the high quality figures with confidence intervals. this is much slower than having it set to zero
@@ -80,7 +81,8 @@ CM = [hex2dec('e9'), hex2dec('00'), hex2dec('3a');
 
 CM = CM/256;
 
-channelToPlot = [2,3,5,7,8];
+%channelToPlot = [2,3,5,7,8];
+channelToPlot = [2,9,10];
 
 
 
@@ -165,8 +167,8 @@ nf120 = design(n120);
 nf180 = design(n180);
 
 %for i=12
-for i = [2 10 11 12 13 3] % rabbit 9
-%for i = [4 10 12 15 5] % rabbit 10
+%for i = [2 10 11 12 13 3] % rabbit 9
+for i = [4 10 12 15 5] % rabbit 10
 
 
     close all;
@@ -207,13 +209,18 @@ for i = [2 10 11 12 13 3] % rabbit 9
     dataColumnDigDecimated = dataColumnDig(1:decimate_factor:end);                      %throw out intermediate samples to keep them aligned to the decimated channel data
     cleanDigitalInDecimated = (dataColumnDigDecimated>0);                                        %make sure the digital In takes on binary values: take any negative excursions to 0
 
-
-    fgh = figure('Color',[1 1 1],'units','pixels','outerposition',[0 0 1366 768]);
-    hold on;
+    name = S{i};
+    name(name == '.') = '_';
+    while any(name == '%')
+        index = find(name == '%', 1);
+        name = [name(1:(index-1)) '_' name((index+3):end)];
+    end
 
     plotline = [];
-    %for ii=1:length(channelToPlot)
-    for ii=1
+    for ii=1:length(channelToPlot)
+    %for ii=1
+        fgh = figure('Color',[1 1 1],'units','pixels','outerposition',[0 0 1366 768]);
+        hold on;
     
         fprintf(['ii: ' int2str(ii) '\n']);
 
@@ -227,32 +234,66 @@ for i = [2 10 11 12 13 3] % rabbit 9
         %chData = filtfilt(hpf.sosMatrix, hpf.ScaleValues,chData);
 
         %chData = filtfilt(lpf.sosMatrix, lpf.ScaleValues,chData);
+
         plotline = [plotline plot((1:numel(chData))/original_sampling_rate_in_Hz, chData, 'color', CM(ii,:))];
+
+        xlim([0 numel(chData)/original_sampling_rate_in_Hz]);
+        xlabel('Time (seconds)');
+        ylabel('$\mu V$','Interpreter','LaTex');
+
+        title(sprintf('Unprocessed: %s, %s\n%s', name, rabbit_ID, allData{i}), 'Interpreter', 'None');
+
+        set(findall(fgh,'type','text'),'fontSize',15,'fontWeight','normal', 'color', [0,0,0]);
+        set(gca,'FontSize',15);
+
+        saveas(fgh, ['matlab_data/' name int2str(channelToPlot(ii)) '_unprocessed'], 'fig');
+        save2pdf(['matlab_data/' name int2str(channelToPlot(ii)) '_unprocessed' '.pdf'], fgh, 1200);      %save the matlab figure to file
+
+        %switch i % rabbit 9
+        %    case 2 % basilar tip
+        %        xlim([84 89]);
+        %    case 10 % mid-basilar
+        %        xlim([73 78]);
+        %    case 11 % vb junction
+        %        xlim([19 24]);
+        %    case 12 % cervical vertebral dens
+        %        xlim([14 19]);
+        %    case 13 % basilar tip
+        %        xlim([20 25]);
+        %    case 3 % live control
+        %        xlim([20 25]);
+        %end
+        switch i % rabbit 9
+            case 4 % basilar tip
+                xlim([33 38]);
+            case 10 % mid-basilar
+                xlim([114 119]);
+            case 12 % vb junction
+                xlim([170 175]);
+            case 15 % basilar tip
+                xlim([40 45]);
+            case 5 % live control
+                xlim([83 88]);
+        end
+        xl = xlim;
+        interval = (9600*xl(1)):(9600*xl(2));
+        interval = interval(interval > 0);
+        interval = interval(interval <= numel(chData));
+        yl = [min(chData(interval)) max(chData(interval))];
+        ylim(yl);
+
+        saveas(fgh, ['matlab_data/' name int2str(channelToPlot(ii)) '_qrs'], 'fig');
+        save2pdf(['matlab_data/' name int2str(channelToPlot(ii)) '_qrs' '.pdf'], fgh, 1200);      %save the matlab figure to file
     end
 
-    legend(plotline, data{channelToPlot,1})
-
-    xlim([0 numel(chData)/original_sampling_rate_in_Hz]);
-    xlabel('Time (seconds)');
-    ylabel('$\mu V$','Interpreter','LaTex');
+    %legend(plotline, data{channelToPlot,1})
 
     % Rabbit 9, i = 12, no filters
     %xlim([32, 40]);
     %ylim([-1.81 -1.795] * 1e5);
 
-    name = S{i};
-    name(name == '.') = '_';
-    while any(name == '%')
-        index = find(name == '%', 1);
-        name = [name(1:(index-1)) '_' name((index+3):end)];
-    end
 
-    title(sprintf('Unprocessed: %s, %s\n%s', name, rabbit_ID, allData{i}), 'Interpreter', 'None');
 
-    set(findall(fgh,'type','text'),'fontSize',20,'fontWeight','normal', 'color', [0,0,0]);
-    set(gca,'FontSize',20);
-
-    save2pdf(['matlab_data/' name '_unprocessed' '.pdf'], fgh, 1200);      %save the matlab figure to file
 
 
 end

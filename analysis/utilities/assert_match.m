@@ -16,7 +16,7 @@ for i = 1:length(S)
   S_minute = S{i}(22:23);
   assert(strcmp(S{i}(24:26), '%3A'))
   S_second = S{i}(27:28);
-  assert(strcmp(S{i}(29:35), '_ssvep_'))
+  %assert(strcmp(S{i}(29:35), '_ssvep_')) % TODO - make this check experiment type
   S_extra = S{i}(34:end);
 
   % Hard coded parsing of experiment log

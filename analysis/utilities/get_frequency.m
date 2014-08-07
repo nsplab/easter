@@ -12,9 +12,10 @@ if ~isempty(strfind(comment{1}(9:35), '12'))
 end
 if ~isempty(strfind(comment{1}(9:35), '40'))
     nominal_frequency = [nominal_frequency 40];
-    frequency = [frequency 40.8333];
+    %frequency = [frequency 40.8333];
+    frequency = [frequency (40 + 5 / 6)];
 end
-if ~isempty(strfind(comment{1}(9:35), '42'))
+if ~isempty(strfind(comment{1}(9:45), '42'))
     nominal_frequency = [nominal_frequency 42];
     frequency = [frequency 42]; % TODO: check if this is exact
 end
@@ -25,6 +26,10 @@ end
 if ~isempty(strfind(comment{1}(9:35), '51'))
     nominal_frequency = [nominal_frequency 51];
     frequency = [frequency 51]; % TODO: check if this is exact
+end
+if ~isempty(strfind(comment{1}(9:35), '86'))
+    nominal_frequency = [nominal_frequency 86];
+    frequency = [frequency 86]; % TODO: check if this is exact
 end
 
 assert(numel(nominal_frequency) == 1);

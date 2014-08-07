@@ -17,7 +17,7 @@
 [ ] once this greying out thing is implemented, the PSD graphs will hopefully be a lot easier to examine - the goal is to allow the reader to *instantly* see the takehome message with their eyes: endo performs better than the best scalp electrode at a select, anatomically sensible location
 [ ] <<4th column too crowded>> give it a try, especially once you've improved the PSD graphs' visual communication
 [x] why don't we delete the cervicovertebral dens?
-[ ] is there cardiac activity by that point?
+[x ] is there cardiac activity by that point?
 [x] the y-axis scales should be the same for all graphs where you're asking the reader to make comparisons. can you tell me where you've violated this rule in rabbit 9, column 1?
     looks like every VEP on has a different y-axis scale
     i think +/-15 for all of them should be appropriate
@@ -37,7 +37,7 @@
 [ ]     overall, continue to obsess on what the big picture claims we need to make are and whether the organization in your figures achieves that.
         one final thought - rabbit 9 is intended to show how the evoked potentials die out as the brain bleeds...
         each row has a corresponding CT scan that we could show if it illustrates the presence or absence of bleed. the final MRI, taken only after the study, shows the presence of the bleed as well. think about how you want to integrate this imaging information in your figures.
-[ ]     do we need to split each of these 2 figures? perhaps we need to have one figure that's just VEP on + VEP off, and one that's just SSVEP + SSAEP
+[x]     do we need to split each of these 2 figures? perhaps we need to have one figure that's just VEP on + VEP off, and one that's just SSVEP + SSAEP
             (for each rabbit)
 [ ]         ok... please take these formatting suggestions, and obsess over what the biggest picture, highest impact claims are for this paper, and how the figures *instantly* allow the reader to recognize the claims. your PSD figures presently are not adequate to achieve this effect
 [x] x ticks with 0 or 1 decimal
@@ -61,4 +61,117 @@
 [ ] highpass 15 Hz? for vep
     / notch at ~10 Hz
     / just remove trials that exceed +/- 50 uV
-[ ] ram chat message on fri 2-3 pm?
+[ ] Please also check if rabbits 6-8 have endo basilar tip recordings you could include. Also, some of them may also have baseline scalp only recordings where the endo procedure hadn't started yet.
+
+[x] only trim for mid-basilar [ended up realizing that noise was cardiac activity]
+      - plot single trial (one of the sinusoids)
+      - plot removed trials
+      - plot kept trials
+    (then redo vep plot)
+[x] qrs and unprocessed plots for rabbit 10
+[x] overlay qrs for cardiac
+[ ] shenoy metrics
+
+[ ] baseline frequency measurements for each electrode (do scalp electrodes have lower snr at high freq?)
+[ ] plot qrs complex from - to + time 0 at R peak
+[ ] use vep code for all electrodes and cardiac (may need to be scaled)
+[ ] impedence plots (function of frequency for magnitude and phase)
+
+endo needs to have ... to be successful
+  1) position dependent signal
+  2) signal needs to have high snr
+[ ] rabbit 10 delete back of head electrode? seems to be garbage
+    why does it go up and down even when the rabbit should be brain-dead
+[ ] SSAEP now up to 4.8 khz - fix x axis label
+    60 hz harmonics?
+[ ] plot ssaep in time space (use vep code)
+
+[ ] plot baseline (trials with no endo) for rabbit 9 and 10
+[ ] try to plot basilar tip for rabbits 5? - 8
+[ ] vep y axis needs to be slightly bigger than -15 to 15
+
+[x] paper ready figure for qrs progression
+    endo, scalp electrodes (true scale)
+    cardiac (scaled down)
+    same vertical scale for all plots
+    0 centered on R Peak
+
+[ ] rabbit 6/8 basilar tip cardiac is insignificant?
+
+figures
+  cardiac
+  vep
+  spectral content (baseline/resting state spectral content)
+    resting state power spectral density
+    live (with cardiac subtracted), and dead control (use baseline)
+[ ] trials numbers for qrs, vep, ...
+[ ] time length for power spectral density
+[ ] remove back of head electrode
+[ ] 60 hz dots look funny for when the xlim is really wide
+[ ] baseline - do not show endo (which is disconnected)
+[ ] stop trying to remove cardiac activity from dead control
+[ ] disconnected electrode is good representation for artifactual response - to prempt reviewer criticism
+[ ] quality of psd's and psd log ratios need to be improved
+      - broad band differences in experiment vs baseline
+      - variance in the ratio
+      - example:
+         - manipulate percent window overlap
+         - window length?
+[ ] Demonstrate that endo has broad-band signal (and differentiate this from broad band noise)
+[ ] difference between baseline and dead = contribution of brain activity that is not stimulus related
+[ ] signal = brain from stimulus + brain without stimulus + (cardiac + other non-brain biological) + ambient noise + artifact
+[ ] live - experimental
+[ ] log rest - log dead
+
+[x] widen harmonic tolerance to 5 Hz
+[ ] delete 60 Hz harmonic red dots (omit data in this interval)
+[ ] experimental baseline y axis is labelled wrong
+[ ] regenerate two spectral_content pdfs
+[ ] generate difference.pdf as ratio.pdf
+
+8/2/14 2pm - call cell
+
+[ ] surf report - penn project, scalp electrode measurements, experiment - baseline, baseline - dead (or ratio)
+ecog bci
+evoked potentials in rabbit model
+  try to understand different contributions to rabbit model
+  4 components of stimulus: non-bio, bio, 
+
+[ ] identify literature that says ssvep is from cortex
+    visual potential from optic track
+    ssaep from interior colliculus
+[ ] rabbit 9 ssavp 86 Hz - check for massive shift in power
+[x] supplementary version of fig 2 (everything is control trial)
+[x] rabbit 10 replace fig 2 with mid-basilar?
+[ ] time axis on the top of figure 2
+[ ] rabbit 10 resting state basilar tip 2
+[x] ssvep and ssaep are swapped
+[ ] raw log(experiment) and log(control) for rabbit 8
+[ ] resting state - dead control is kind of pointless right now (exact same trial being subtracted)
+[ ] resting state for ssvep, vep (and for ssaep other frequencies)
+[ ] do not low pass ekg
+[ ] make vep on line slightly thicker
+[x] bounding box for each of the plots
+[ ] confidence interval for ssvep, ssaep non-harmonics
+[ ] cross spectrum
+
+[x] remove rabbit 8
+[x] merge controls into fig 2
+[x] plot resting for rabbit 9/8
+[ ] write numerical analysis
+      - section on cardiac removal
+      - 1 paragraph per analysis
+      - do not omit things like 0.25 overlap
+      - number of trials / amount of time for figure
+[ ] confidence intervals as maximum of non-harmonics
+[ ] vep frequency filter
+[ ] filenames in images
+    number in caption with filename
+[x] a few more frequency markers on x axis
+[x] possibly remove harmonic data
+[x] possibly remove circles for ssavep
+[ ] check page size for papers
+[x] strech vertical dimension for all figures
+[x] more space between text in plots
+[x] ticks for y axis
+[x] log scale for ssavep

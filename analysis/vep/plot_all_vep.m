@@ -17,10 +17,11 @@
 %	
 %	The analysis code assumes a fixed sampling rate of 9600 Hz and digital input channel # of 65 (both designated in arduino_vep.m)
 
-function plot_all_vep(rabbit_ID, publication_quality, trials_list)
+function plot_all_vep(rabbit_ID, publication_quality, trials_list, filter_qrs)
 
 addpath('../config');
 addpath('../utilities');
+addpath('../qrs');
 
 %///////////////////////////////////////////////
 % START BLOCK: Hardcoded variables
@@ -89,22 +90,20 @@ if (nargin < 3)
     trials_list = 1:numel(S);
 end
 
-filters = get_filters(original_sampling_rate_in_Hz, true, true, true, true, true);
+if (nargin < 4)
+    filter_qrs = true;
+end
+
+%filters = get_filters(original_sampling_rate_in_Hz, true, true, true, true, true);
+%filters = get_filters(original_sampling_rate_in_Hz, true, true, false, false, false);
+%filters = get_filters(original_sampling_rate_in_Hz, true, false, true, false, false);
+filters = get_filters(original_sampling_rate_in_Hz, true, false, false, false, false);
 cardiac_filters = get_filters(original_sampling_rate_in_Hz, true, false, false, false, false);
 
 preEventPlot_sec = 0.05;                                                    %time in seconds to extend plot prior to event time (marked as time zero)
 postEventPlot_sec = 0.1;
 
-channelToPlot = [2,3,5,7,8];
-%CM = [hex2dec('e9'), hex2dec('00'), hex2dec('3a'); hex2dec('ff'), hex2dec('ba'),hex2dec('00'); hex2dec('18'),hex2dec('26'),hex2dec('b0'); hex2dec('58'),hex2dec('e0'), hex2dec('00'); hex2dec('00'),hex2dec('00'),hex2dec('00')];
-CM = [hex2dec('e9'), hex2dec('00'), hex2dec('3a');
-      hex2dec('ff'), hex2dec('ba'), hex2dec('00');
-      hex2dec('40'), hex2dec('40'), hex2dec('ff');
-      hex2dec('58'), hex2dec('e0'), hex2dec('00');
-      hex2dec('b0'), hex2dec('00'), hex2dec('b0')];
-
-CM = CM/256;
-
+[ channelToPlot, CM ] = plot_settings();
 
 for i = trials_list
     filename = S{i};
@@ -112,8 +111,8 @@ for i = trials_list
 
     [ data, cleanDigitalIn ] = load_data([pathname filename], maxNumberOfChannels, digitalInCh, channelNames);
 
-    publish_vep_v2(data, cleanDigitalIn, original_sampling_rate_in_Hz, publication_quality, filters, cardiac_filters, preEventPlot_sec, postEventPlot_sec, allData{i}, clean_name(S{i}), channelToPlot, CM, 'On');
-    publish_vep_v2(data, cleanDigitalIn, original_sampling_rate_in_Hz, publication_quality, filters, cardiac_filters, preEventPlot_sec, postEventPlot_sec, allData{i}, clean_name(S{i}), channelToPlot, CM, 'Off');
+    publish_vep_v2(data, cleanDigitalIn, original_sampling_rate_in_Hz, publication_quality, filters, cardiac_filters, preEventPlot_sec, postEventPlot_sec, allData{i}, clean_name(S{i}), channelToPlot, CM, 'On', filter_qrs);
+    publish_vep_v2(data, cleanDigitalIn, original_sampling_rate_in_Hz, publication_quality, filters, cardiac_filters, preEventPlot_sec, postEventPlot_sec, allData{i}, clean_name(S{i}), channelToPlot, CM, 'Off', filter_qrs);
 
     close all;
 end

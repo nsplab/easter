@@ -1,6 +1,6 @@
-function [] = qrs_removal(chData, cardiacData, name, color, f1, f2, f3, f4, f5)
+function [ chData ] = qrs_removal(chData, cardiacData, name, color, f1, f2, f3, f4, f5)
 
-    font_size = 20;
+    font_size = 10;
 
     % chData must be at least high pass filtered (to get rid of drifting
     % cardiacData probably has to be unfiltered to work
@@ -116,7 +116,7 @@ function [] = qrs_removal(chData, cardiacData, name, color, f1, f2, f3, f4, f5)
         %figure(f4);
         set(0, 'CurrentFigure', f4);
         hold on;
-        time_axis = ((1:numel(qrs)) - max_before) / 9600;
+        time_axis = ((1:numel(qrs)) - max_before) / 9600 * 1000;
         plot(time_axis, qrs, 'color', color, 'linewidth', 2);
         confMean = bootci(100, @nanmean, padded);
         %plot(time_axis, confMean(1,:),'--','color',color,'linewidth',2);
@@ -125,16 +125,18 @@ function [] = qrs_removal(chData, cardiacData, name, color, f1, f2, f3, f4, f5)
         py = [confMean(1,:), fliplr(confMean(2,:))];
         patch(px,py,1,'FaceColor',color,'EdgeColor','none');
     
-        xlabel('Time (seconds)');
+        xlabel('Time (ms)');
         ylabel('$\mu V$', 'interpreter', 'LaTeX');
-        set(findall(f4,'type','text'),'fontSize',font_size,'fontWeight','normal', 'color', [0 0 0]); % Mostly to get rid of the italics from latex
         %title(sprintf('QRS Complex Shape: %d trials', size(padded, 1)));
         %xlim([0 numel(qrs) / 9600]);
-        xlim([-median_before, median_after] / 9600);
+        xlim([-median_before, median_after] / 9600 * 1000);
         %ylim([-120 120]);
-        ylim([-150 150]);
+        %ylim([-150 150]);
+        ylim([-200 200]);
         set(findall(f4,'type','text'),'fontSize',font_size,'fontWeight','normal', 'color', [0,0,0]);
-        title(sprintf('QRS Complex Shape: %d trials', size(padded, 1)), 'Color', 'White');
+        %set(gca, 'YTick', [-150, -100, -50, 0, 50, 100, 150]);
+        set(gca,'YTick',[-200,-100,0,100,200]);
+        %title(sprintf('QRS Complex Shape: %d trials', size(padded, 1)), 'Color', 'White');
         set(gca,'FontSize',font_size);
     end
 

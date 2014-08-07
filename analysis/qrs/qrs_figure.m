@@ -41,12 +41,17 @@ margins = 100; % extra space for labels
 position = [0 0 (width + 2 * margins) (height + 2 * margins)];
 
 % Open invisible screen for figure
-f1 = figure('Color',[1 1 1],'units','pixels','position',position, 'visible', 'on'); axes('units', 'pixel', 'position', [margins margins width height]);
-f2 = figure('Color',[1 1 1],'units','pixels','position',position, 'visible', 'on'); axes('units', 'pixel', 'position', [margins margins width height]);
-f3 = figure('Color',[1 1 1],'units','pixels','position',position, 'visible', 'on'); axes('units', 'pixel', 'position', [margins margins width height]);
-f4 = figure('Color',[1 1 1],'units','pixels','position',position, 'visible', 'on'); axes('units', 'pixel', 'position', [margins margins width height]);
-f5 = figure('Color',[1 1 1],'units','pixels','position',position, 'visible', 'on'); axes('units', 'pixel', 'position', [margins margins width height]);
+f_start = figure('Color',[1 1 1],'units','pixels','position',position, 'visible', 'off'); axes('units', 'pixel', 'position', [margins margins width height]);
+f_end = figure('Color',[1 1 1],'units','pixels','position',position, 'visible', 'off'); axes('units', 'pixel', 'position', [margins margins width height]);
+f1 = figure('Color',[1 1 1],'units','pixels','position',position, 'visible', 'off'); axes('units', 'pixel', 'position', [margins margins width height]);
+f2 = figure('Color',[1 1 1],'units','pixels','position',position, 'visible', 'off'); axes('units', 'pixel', 'position', [margins margins width height]);
+f3 = figure('Color',[1 1 1],'units','pixels','position',position, 'visible', 'off'); axes('units', 'pixel', 'position', [margins margins width height]);
+f4 = figure('Color',[1 1 1],'units','pixels','position',position, 'visible', 'off'); axes('units', 'pixel', 'position', [margins margins width height]);
+f5 = figure('Color',[1 1 1],'units','pixels','position',position, 'visible', 'off'); axes('units', 'pixel', 'position', [margins margins width height]);
 
+interval = [10 11];
+time = interval(1)*9600:interval(2)*9600;
+time_axis = (time - time(1)) / 9600 * 1000;
 
 %figure(f4);
 set(0, 'CurrentFigure', f4);
@@ -56,8 +61,17 @@ plot([0 0], [-200 200], 'color', 'black', 'linewidth', 2);
 set(0, 'CurrentFigure', f5);
 plot([0 0], [-200 200], 'color', 'black', 'linewidth', 2);
 
+set(0, 'CurrentFigure', f_start);
+hold on;
+plot(time_axis, 0.20 * cardiacData(time), 'LineWidth', 2, 'Color', 'black');
+
+set(0, 'CurrentFigure', f_end);
+hold on;
+plot(time_axis, 0.20 * cardiacData(time), 'LineWidth', 2, 'Color', 'black');
+
 %qrs_removal(0.125 * cardiacData, cardiacData, name, 'black', f1, f2, f3, f4, f5);
-qrs_removal(0.15 * cardiacData, cardiacData, name, 'black', f1, f2, f3, f4, f5);
+qrs_removal(0.20 * cardiacData, cardiacData, name, 'black', f1, f2, f3, f4, f5);
+%qrs_removal(0.20 * cardiacData, cardiacData, name, 'black');
 
 for ii=1:length(channelToPlot)
     fprintf('ii: %d, %d\n', ii, channelToPlot(ii));
@@ -67,7 +81,14 @@ for ii=1:length(channelToPlot)
     % Apply filters
     chData = run_filters(chData, filters);
 
-    qrs_removal(chData, cardiacData, name, CM(ii, :), f1, f2, f3, f4, f5);
+    set(0, 'CurrentFigure', f_start);
+    plot(time_axis, chData(time), 'LineWidth', 2, 'Color', CM(ii, :));
+
+    chData = qrs_removal(chData, cardiacData, name, CM(ii, :), f1, f2, f3, f4, f5);
+    %chData = qrs_removal(chData, cardiacData);
+
+    set(0, 'CurrentFigure', f_end);
+    plot(time_axis, chData(time), 'LineWidth', 2, 'Color', CM(ii, :));
 
 end
 
@@ -91,4 +112,28 @@ plot2svg(['matlab_data/' name '_qrs.svg'], f4, 'png')
 
 %save2pdf(['matlab_data/' name '_' int2str(channel) '_qrs_all.pdf'], f3, 1200);
 save2pdf(['matlab_data/' name '_qrs_all.pdf'], f5, 150);
+
+font_size = 20;
+
+set(0, 'CurrentFigure', f_start);
+xlabel('Time (ms)');
+ylabel('$\mu V$', 'interpreter', 'LaTeX');
+set(gca,'YTick',[-200,-100,0,100,200]);
+xlim(time_axis([1, end]));
+ylim([-200, 200]);
+set(findall(f_start,'type','text'),'fontSize',font_size,'fontWeight','normal', 'color', [0,0,0]);
+set(gca,'FontSize',font_size);
+
+
+set(0, 'CurrentFigure', f_end);
+xlabel('Time (ms)');
+ylabel('$\mu V$', 'interpreter', 'LaTeX');
+set(gca,'YTick',[-200,-100,0,100,200]);
+xlim(time_axis([1, end]));
+ylim([-200, 200]);
+set(findall(f_end,'type','text'),'fontSize',font_size,'fontWeight','normal', 'color', [0,0,0]);
+set(gca,'FontSize',font_size);
+
+save2pdf(['matlab_data/' name '_start.pdf'], f_start, 150);
+save2pdf(['matlab_data/' name '_end.pdf'], f_end, 150);
 

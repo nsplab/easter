@@ -88,8 +88,10 @@ time_axis = (-preEventPlot_samples:postEventPlot_samples)/fs*1000;         %prep
 
 %fgh = figure('Color',[1 1 1],'units','normalized',...                      %get the figure handle, and draw the figure with white background and full screen
 %                                                'outerposition',[0 0 1 1]);
-fgh = figure('Color',[1 1 1],'units','pixels',...                      %get the figure handle, and draw the figure with white background and full screen
-                                                'outerposition',[0 0 1366 768]);
+%fgh = figure('Color',[1 1 1],'units','pixels',...                      %get the figure handle, and draw the figure with white background and full screen
+%                                                'outerposition',[0 0 1366 768]);
+fgh = figure('Color',[1 1 1],'units','pixels','outerposition',[0 0 1366 768],'visible','off');
+
 %CM = colorcube(size(data,1)+1);                                            % choose the colormap for the plots
 hold on;
 
@@ -133,6 +135,7 @@ for ii=1:length(channelToPlot)                                                  
     if use_lpf
         chData = filtfilt(lpf.sosMatrix, lpf.ScaleValues,chData);
     end    
+    chData = qrs_removal(chData, data{find(strcmp(data, 'Bottom Precordial')), 2});
     toc
     %fig = gcf;
     %figure;
@@ -194,6 +197,15 @@ for ii=1:length(channelToPlot)                                                  
             = detrend(chData((event_index_LED_ON(jj)-preEventPlot_samples):...
                             (event_index_LED_ON(jj)+postEventPlot_samples)));
     end
+    %if (strcmp(S{i}, '_Thu_15.05.2014_14%3A13%3A26_vep_'))
+    %    %valid = ~any(abs(chData_all_single_trial_collection_ON) > thresh, 2);
+    %    askdnadknad
+    %    valid = ~any(chData_all_single_trial_collection_ON > 92, 2);
+    %    chData_all_single_trial_collection_ON = chData_all_single_trial_collection_ON(valid, :);
+    %    fprintf('size: %d %d\n\n', size(chData_all_single_trial_collection_ON, 1), size(chData_all_single_trial_collection_ON, 2));
+    %end
+
+
     chData_trial_averaged_ON = mean(chData_all_single_trial_collection_ON);%record the trial-averaged response aligned to LED ON (rising edges of digital input signal)
     %size(chData_all_single_trial_collection_ON)
     
@@ -223,7 +235,27 @@ for ii=1:length(channelToPlot)                                                  
 %    subplot(2,1,1);hold on;
     hold on;
     %plotline_handles_ON(end+1) = plot(time_axis, chData_all_single_trial_collection_ON,'color',CM(ii,:),'linewidth',2);
-    plot(time_axis, chData_all_single_trial_collection_ON,'color',CM(ii,:),'linewidth',1);
+    plot(time_axis, chData_all_single_trial_collection_ON,'color',CM(ii,:),'linewidth',2);
+    %% remove qrs mean
+    %amount = round(0.4* 9600);
+    %time_steps = size(chData_all_single_trial_collection_ON, 2);
+    %trials = size(chData_all_single_trial_collection_ON, 1);
+    %[~, index] = max(chData_all_single_trial_collection_ON(:, 1:amount),[],2);
+    %%plot(time_axis, chData_all_single_trial_collection_ON,'color',CM(ii,:),'linewidth',1);
+    %padded = nan(trials, time_steps + amount);
+    %for count = 1:trials
+    %%for count = 1:10
+    %    plot(time_axis - index(count)/9600*1000, chData_all_single_trial_collection_ON(count, :),'color',CM(ii,:),'linewidth',1);
+    %    padded(count, amount - index(count) + (1:time_steps)) = chData_all_single_trial_collection_ON(count, :);
+    %end
+    %qrs = nanmean(padded, 1);
+    %%plot((-amount-preEventPlot_samples:postEventPlot_samples)/fs*1000, qrs, 'color', 'black', 'linewidth', 3);
+    %%figure;
+    %%hold on;
+    %for count = 1:trials
+    %    chData_all_single_trial_collection_ON(count, :) = padded(count, amount - index(count) + (1:time_steps)) - qrs(amount - index(count) + (1:time_steps));
+    %    %plot(time_axis - index(count)/9600*1000, chData_all_single_trial_collection_ON(count, :),'color',CM(ii,:),'linewidth',1);
+    %end
        
     %//////////////////////////////////////////////////////////////////////
     %/// compute and plot the average event-aligned LED OFF response for this
@@ -420,8 +452,12 @@ ylabel('$\mu V$','Interpreter','LaTex');
 
 set(findall(fgh,'type','text'),'fontSize',40,'fontWeight','normal', 'color', [0,0,0]);
 set(gca,'FontSize',40);
+set(gca, 'YTick', -200:50:200);
 
+
+%name = [S{i} '_aligned'];
 name = [S{i} '_all'];
+%name = [S{i} '_all_qrs'];
 name(name == '.') = '_';
 while any(name == '%')
     index = find(name == '%', 1);
@@ -432,6 +468,7 @@ end
 %save2pdf(pdf_name, f, 300);
 
 saveas(fgh, ['matlab_data/' name '.fig']);      %save the matlab figure to file
+save2pdf(['matlab_data/' name '_full.pdf'], fgh, 1200);      %save the matlab figure to file
 
 xlim([100, 500]);
 save2pdf(['matlab_data/' name '_late.pdf'], fgh, 1200);      %save the matlab figure to file
@@ -439,7 +476,6 @@ save2pdf(['matlab_data/' name '_late.pdf'], fgh, 1200);      %save the matlab fi
 xlim([-50, 100]);
 saveas(fgh, ['matlab_data/' name '.epsc']);     %save the matlab figure to file
 %saveas(fgh, ['matlab_data/' name '.pdf']);      %save the matlab figure to file
-save2pdf(['matlab_data/' name '.pdf'], fgh, 1200);      %save the matlab figure to file
+save2pdf(['matlab_data/' name '.pdf'], fgh, 150);      %save the matlab figure to file
 save2pdf(['matlab_data/' name '_300.pdf'], fgh, 300);      %save the matlab figure to file
-
 

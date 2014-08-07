@@ -88,8 +88,9 @@ time_axis = (-preEventPlot_samples:postEventPlot_samples)/fs*1000;         %prep
 
 %fgh = figure('Color',[1 1 1],'units','normalized',...                      %get the figure handle, and draw the figure with white background and full screen
 %                                                'outerposition',[0 0 1 1]);
-fgh = figure('Color',[1 1 1],'units','pixels',...                      %get the figure handle, and draw the figure with white background and full screen
-                                                'outerposition',[0 0 1366 768]);
+%fgh = figure('Color',[1 1 1],'units','pixels',...                      %get the figure handle, and draw the figure with white background and full screen
+%                                                'outerposition',[0 0 1366 768]);
+fgh = figure('Color',[1 1 1],'units','pixels','outerposition',[0 0 1366 768],'visible','off');
 %CM = colorcube(size(data,1)+1);                                            % choose the colormap for the plots
 hold on;
 
@@ -133,6 +134,8 @@ for ii=1:length(channelToPlot)                                                  
     if use_lpf
         chData = filtfilt(lpf.sosMatrix, lpf.ScaleValues,chData);
     end    
+    chData = qrs_removal(chData, data{find(strcmp(data, 'Bottom Precordial')), 2});
+
     toc
     %fig = gcf;
     %figure;
@@ -194,6 +197,32 @@ for ii=1:length(channelToPlot)                                                  
             = detrend(chData((event_index_LED_ON(jj)-preEventPlot_samples):...
                             (event_index_LED_ON(jj)+postEventPlot_samples)));
     end
+    %sorted = sort(max(abs(chData_all_single_trial_collection_ON),[],2));
+    %thresh = sorted(ceil(0.95 * numel(sorted))); % TODO: use selection algorithm, rather than sort
+    %valid = ~any(abs(chData_all_single_trial_collection_ON) > thresh, 2);
+    %chData_all_single_trial_collection_ON = chData_all_single_trial_collection_ON(valid, :);
+    %fprintf('thresh: %f\nsize: %d %d\n\n', thresh, size(chData_all_single_trial_collection_ON, 1), size(chData_all_single_trial_collection_ON, 2));
+    if ((strcmp(S{i}, '_Tue_06.05.2014_14%3A04%3A18_vep_') || strcmp(S{i}, '_Thu_15.05.2014_14%3A13%3A26_vep_')) && (channelToPlot(ii) == 2)) % remove for mid-basilar experiment rabbit 9 and 10 endo
+
+        % remove qrs mean
+        fprintf('remove qrs mean\n');
+        amount = round(0.4* 9600);
+        time_steps = size(chData_all_single_trial_collection_ON, 2);
+        trials = size(chData_all_single_trial_collection_ON, 1);
+        [~, index] = max(chData_all_single_trial_collection_ON(:, 1:amount),[],2);
+        %plot(time_axis, chData_all_single_trial_collection_ON,'color',CM(ii,:),'linewidth',1);
+        padded = nan(trials, time_steps + amount);
+        for count = 1:trials
+            padded(count, amount - index(count) + (1:time_steps)) = chData_all_single_trial_collection_ON(count, :);
+        end
+        qrs = nanmean(padded, 1);
+        for count = 1:trials
+            chData_all_single_trial_collection_ON(count, :) = padded(count, amount - index(count) + (1:time_steps)) - qrs(amount - index(count) + (1:time_steps));
+        end
+    end
+
+
+
     chData_trial_averaged_ON = mean(chData_all_single_trial_collection_ON);%record the trial-averaged response aligned to LED ON (rising edges of digital input signal)
     %size(chData_all_single_trial_collection_ON)
     
@@ -305,7 +334,7 @@ end
 hold on;
 ylim([-15 15]);
 yrange = ylim;
-yrange
+%yrange
 digitalInOffset = yrange(1) - ((abs(yrange(1)) + abs(yrange(2))) / 40);
 
 digitalIn_all_single_trial_collection_ON = [];
@@ -390,6 +419,7 @@ if ~isempty(allData)
 else
     %tmp = title(['VEP ON Response: ' int2str(size(chData_all_single_trial_collection_ON, 1)) ' trials']);
 end
+title(sprintf('VEP Off Response: %d trials', size(chData_all_single_trial_collection_ON, 1)));
 %set(tmp,'interpreter','none');
 xlabel('Time (ms) relative to LED Off at time zero');
 ylabel('$\mu V$','Interpreter','LaTex');
@@ -437,6 +467,6 @@ save2pdf(['matlab_data/' name '_late.pdf'], fgh, 1200);      %save the matlab fi
 xlim([-50, 100]);
 saveas(fgh, ['matlab_data/' name '.epsc']);     %save the matlab figure to file
 %saveas(fgh, ['matlab_data/' name '.pdf']);      %save the matlab figure to file
-save2pdf(['matlab_data/' name '.pdf'], fgh, 1200);      %save the matlab figure to file
+save2pdf(['matlab_data/' name '.pdf'], fgh, 150);      %save the matlab figure to file
 
 

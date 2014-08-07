@@ -53,7 +53,7 @@ function [ chData ] = qrs_removal(chData, cardiacData, name, color, f1, f2, f3, 
     end
 
     %% Compute interval (include first, exclude last)
-    cutoff = [1; locs(1:(end-1)) + round(diff(locs) / 2); numel(chData) + 1];
+    cutoff = [1; locs(1:(end-1)) + round(0.63 * diff(locs)); numel(chData) + 1];
 
     if (nargin >= 7 && f3 ~= 0)
         %% Plot Distance between midpoints

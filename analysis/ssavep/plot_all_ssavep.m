@@ -86,15 +86,10 @@ end
 %////////////////////////////////////////////////////////////////////////////////////////
 windlengthSeconds = 2;
 noverlapPercent = 0.25;%windlength * 0.25; % number overlap percent
-channelToPlot = [2,3,5,7,8];
-filters = [];
-CM = [hex2dec('e9'), hex2dec('00'), hex2dec('3a');
-      hex2dec('ff'), hex2dec('ba'), hex2dec('00');
-      hex2dec('40'), hex2dec('40'), hex2dec('ff');
-      hex2dec('58'), hex2dec('e0'), hex2dec('00');
-      hex2dec('b0'), hex2dec('00'), hex2dec('b0')];
-CM = CM/256;
 
+[ channelToPlot, CM ] = plot_settings();
+
+filters = get_filters(original_sampling_rate_in_Hz, true, false, false, false, false);
 
 
 for i = trials_list
@@ -104,6 +99,14 @@ for i = trials_list
 
     [ data, cleanDigitalIn ] = load_data([pathname filename], maxNumberOfChannels, digitalInCh, channelNames);
 
-    publish_ssavep(data, original_sampling_rate_in_Hz, windlengthSeconds, noverlapPercent, cleanDigitalIn, channelToPlot, filters, CM, ssavep, filename, allData(i), publication_quality, S{i})
+    %figure;
+    %hold on;
+    %chData = data{2, 2};
+    %%chData = run_filters(chData, filters);
+    %plot((1:numel(chData))/9600, chData);
+    %yl = ylim;
+    %plot((1:numel(chData))/9600, (cleanDigitalIn * 0.8 + 0.1) * (yl(2) - yl(1)) + yl(1));
+
+    publish_ssavep(data, original_sampling_rate_in_Hz, windlengthSeconds, noverlapPercent, cleanDigitalIn, channelToPlot, filters, CM, ssavep, filename, allData(i), publication_quality, clean_name(S{i}));
 end
 

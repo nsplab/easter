@@ -15,6 +15,38 @@
 
 %% Rabbit 10 = Subject 1
 %% Rabbit 9 = Subject 2
+
+\section{Methods}
+This section describes the computational analysis performed on the data.
+For all analog channels, the data was first processed with a high-pass Butterworth filter with a stopband-edge frequency of 2 Hz, a passband-edge frequency of 10 Hz, a stopband attenuation of 90 dB, and passband ripple of 1 dB.
+Afterwards, cardiac removal is performed on all channels using the methods described in section \ref{section:cardiac}.
+
+\subsection{Visual Evoked Potential}
+During the VEP experiments, the digital in channel was synchronized with the LED turning on and off.
+For both the on and off edges, the signal from the electrodes were aligned to compute the mean signal and confidence intervals.
+[Some edges were removed if the the timing was inconsistent for some reason.]
+The displayed confidence intervals are a 95\% bootstrapped value for the mean.
+All VEP trials include between 153 and 208 events.
+
+\subsection{Steady-State Visual Evoked Potential}
+During the SSVEP experiment, and LED was flashed at 40 Hz with a 50\% duty cycle.
+For both a resting state and experimental period, Welsh's method was used to compute the power spectral density with a window length of 2 seconds and an overlap of 25\%.
+The ratio of the experimental power with the resting state power at each frequency is shown.
+All data within 3 Hz of a 60 Hz harmonics are excluded due to showing heavy artifacts from electrical equipment.
+The background data includes data more than 3 Hz away from harmonics of 40 Hz, and the harmonic data takes the maximum power at a frequency within 3 Hz of each harmonic.
+All experimental measurements lasted between 22.5 seconds and 57.0 seconds, and all resting state measurements lasted between 28.8 seconds and 60.7 seconds.
+\subsection{Steady-State Auditory Evoked Potential}
+[Same processing as SSVEP]
+All experimental measurements lasted between 29.0 seconds and 59.2 seconds, and all resting state measurements lasted between 4.4 seconds and 59.0 seconds.
+[Subject 2 has very short resting state measurements for SSAEP - shortest for subject 1 is 28.4 seconds]
+\subsection{Cardiac Artifacts and Removal}
+The cardiac data is high-passed.
+The maximum in a 0.18 second interval is considered the R peak.
+The segments are split 0.63 between the R peaks (this is so that the P-wave and T-wave end up on opposite sides).
+The mean is computed for each time step relative to the R peak, and a zero is averaged in for trials that do not extend that far out (the R peaks are not exactly equally centered).
+In some sense, this indicates uncertainty in what the cardiac artifacts are at that time, so a smaller adjustment is made.
+The mean for the cardiac shape is then subtraced out from each electrode.
+\label{section:cardiac}
 \begin{figure}[H]
 \begin{center}
 \includegraphics[scale=1.0]{surgical_methods.pdf}
@@ -101,7 +133,7 @@ Time     & 0:00:00 & 2:15:44 & 3:57:12 & 4:50:05 & 0:18:05 & 5:24:40 \\ % TODO: 
 \raisebox{-0.5\height}{\includegraphics[scale=0.32]{../ssavep/matlab_data/_Thu_15_05_2014_12_13_26_ssvep_ctr_40-crop.pdf}} &
 \raisebox{-0.5\height}{\includegraphics[scale=0.32]{../ssavep/matlab_data/_Thu_15_05_2014_17_18_01_ssvep_40-crop.pdf}}
 \end{tabular}
-\caption{Demonstration of position dependence for Subject 1. The performance of the endovascular electrode varies as its location is changed. The performance is consistent between the two basilar tip trials. }
+\caption{Demonstration of position dependence for Subject 1. The performance of the endovascular electrode varies as its location is changed. The performance is consistent between the two basilar tip trials. The responses measured during the experimental trials are much larger than the signals during the control trials.}
 \label{fig:position}
 % Figure 3
 \end{center}
@@ -173,7 +205,7 @@ Cardiac-Aligned  Measurements \vspace{0.7cm} \\
 \raisebox{-0.5\height}{\includegraphics[scale=0.32]{../qrs/matlab_data/_Thu_15_05_2014_14_13_26_vep__end-crop.pdf}} &
 \raisebox{-0.5\height}{\includegraphics[scale=0.32]{../vep/matlab_data/_Thu_15_05_2014_14_13_26_vep__labelled-crop.pdf}} \\
 \end{tabular}
-\caption{Cardiac contamination and cleaning. 1076 trials for qrs mean}
+\caption{Cardiac contamination and cleaning. The cardiac aligned measurements shows the mean and 95\% bootstrap confidence intervals for 1076 segments of data. The endovascular electrode is located at the mid-basilar location, which demonstrated the largest contamination from cardiac activity. The P-wave, QRS complex, and T-wave are all visible in the signal from the cardiac electrode. The raw trace show highly repeatable cardiac artifacts in the endovascular electrode, which are removed in the cleaned version. The VEP-aligned data has the same general trend before and after cardiac artifacts are accounted for, but the confidence intervals are much smaller after accounting for cardiac artifacts.}
 \label{fig:cardiac}
 % Figure 5
 \end{center}
@@ -329,7 +361,8 @@ Filename & Index & Time Step & Length & Time Step & Length \\
 \_Thu\_15.05.2014\_12\%3A31\%3A02\_ssaep\_86      & 15 / 40 & 307603  585728 & 28.9714 & 9600 288403 & 29.0420 \\
 \_Thu\_15.05.2014\_14\%3A26\%3A54\_ssaep\_86      & 24 / 40 & 301020  585728 & 29.6571 & 9600 281820 & 28.3562 \\
 \_Thu\_15.05.2014\_16\%3A12\%3A19\_ssaep\_86      & 33 / 40 & 593190 1161856 & 59.2360 & 9600 573990 & 58.7906 \\
-\_Thu\_15.05.2014\_16\%3A58\%3A34\_ssaep\_86      & 36 / 40 & 595230 1161728 & 59.0102 & 9600 576030 & 59.0031 \\ \_Thu\_15.05.2014\_12\%3A26\%3A26\_ssaep\_ctr\_86 & 12 / 40 & 305364  585856 & 29.2179 & 9600 286164 & 28.8087 \\
+\_Thu\_15.05.2014\_16\%3A58\%3A34\_ssaep\_86      & 36 / 40 & 595230 1161728 & 59.0102 & 9600 576030 & 59.0031 \\
+\_Thu\_15.05.2014\_12\%3A26\%3A26\_ssaep\_ctr\_86 & 12 / 40 & 305364  585856 & 29.2179 & 9600 286164 & 28.8087 \\
 \_Thu\_15.05.2014\_17\%3A12\%3A38\_ssaep\_86      & 40 / 40 & 595109 1161728 & 59.0228 & 9600 575909 & 58.9905
 \end{tabular}
 \end{center}

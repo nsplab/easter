@@ -1,94 +1,94 @@
-9:51:33 - SSVEP 10 Hz - Baseline Testing (scalp eeg only, no endo electrodes placed)
-9:52:56 - SSVEP 40 Hz - Baseline Testing (scalp eeg only, no endo electrodes placed)
-9:54:16 - SSVEP 50 Hz - Baseline Testing (scalp eeg only, no endo electrodes placed)
-9:55:56 - VEP 3min - Baseline Testing (scalp eeg only, no endo electrodes placed)
+09:51:33 - SSVEP 10 Hz - Baseline Testing (scalp eeg only, no endo electrodes placed)
+09:52:56 - SSVEP 40 Hz - Baseline Testing (scalp eeg only, no endo electrodes placed)
+09:54:16 - SSVEP 50 Hz - Baseline Testing (scalp eeg only, no endo electrodes placed)
+09:55:56 - VEP 3min - Baseline Testing (scalp eeg only, no endo electrodes placed)
 10:03:05 - SSAEP 12 Hz - BAD TRIAL - NO DIGITAL IN - Baseline Testing (scalp eeg only, no endo electrodes placed)
 10:04:26 - SSAEP 42 Hz - BAD TRIAL - NO DIGITAL IN - Baseline Testing (scalp eeg only, no endo electrodes placed)
 10:05:55 - SSAEP 12 Hz - Baseline Testing (scalp eeg only, no endo electrodes placed)
 10:07:25 - SSAEP 42 Hz - Baseline Testing (scalp eeg only, no endo electrodes placed)
 10:08:48 - SSAEP 86 Hz - Baseline Testing (scalp eeg only, no endo electrodes placed)
 10:10:23 - BAEP 4min - Baseline Testing (scalp eeg only, no endo electrodes placed)
-11:13:41 - SSVEP 10 hz, experiment, electrode = X-pedion-10 @ catheter tip, position = basilar tip- Navigated catheter to basilar tip
-11:14:51 - SSVEP 40 hz, experiment, electrode = X-pedion-10 @ catheter tip, position = basilar tip- Navigated catheter to basilar tip
+11:13:41 - SSVEP 10 Hz, experiment, electrode = X-pedion-10 @ catheter tip, position = basilar tip- Navigated catheter to basilar tip
+11:14:51 - SSVEP 40 Hz, experiment, electrode = X-pedion-10 @ catheter tip, position = basilar tip- Navigated catheter to basilar tip
 11:16:01 - SSVEP 50 Hz, experiment, electrode = X-pedion-10 @ catheter tip, position = basilar tip- Navigated catheter to basilar tip
 11:17:10 - VEP, experiment, electrode = X-pedion-10 @ catheter tip, position = basilar tip- Navigated catheter to basilar tip
-11:21:50 - SSVEP 10 hz, live-animal-control, electrode = X-pedion-10 @ catheter tip, position = basilar tip- Live-Animal Control
-11:23:01 - SSVEP 40  hz, live-animal-control, electrode = X-pedion-10 @ catheter tip, position = basilar tip- Live-Animal Control
-11:24:15 - SSVEP 50  hz, live-animal-control, electrode = X-pedion-10 @ catheter tip, position = basilar tip- Live-Animal Control
+11:21:50 - SSVEP 10 Hz, live-animal-control, electrode = X-pedion-10 @ catheter tip, position = basilar tip- Live-Animal Control
+11:23:01 - SSVEP 40 Hz, live-animal-control, electrode = X-pedion-10 @ catheter tip, position = basilar tip- Live-Animal Control
+11:24:15 - SSVEP 50 Hz, live-animal-control, electrode = X-pedion-10 @ catheter tip, position = basilar tip- Live-Animal Control
 11:25:22 - VEP, live-animal-control, electrode = X-pedion-10 @ catheter tip, position = basilar tip- Live-Animal Control
-11:31:23 - SSAEP 12 hz, experiment, electrode = X-pedion-10 @ catheter tip, position = basilar tip
-11:36:06 - SSAEP 42 hz, experiment, electrode = X-pedion-10 @ catheter tip, position = basilar tip
-11:37:22 - SSAEP 86 hz, experiment, electrode = X-pedion-10 @ catheter tip, position = basilar tip
-11:39:46 - SSAEP 12 hz, live-animal-control, electrode = X-pedion-10 @ catheter tip, position = basilar tip
-11:41:03 - SSAEP 42 hz, live-animal-control, electrode = X-pedion-10 @ catheter tip, position = basilar tip
-11:42:15 - SSAEP 86 hz, live-animal-control, electrode = X-pedion-10 @ catheter tip, position = basilar tip
-11:51:43 - SSAEP 12 hz, live-animal-control, electrode =  X-pedion-10 @ hub, position = basilar tip
-11:52:54 - SSAEP 42 hz, live-animal-control, electrode =  X-pedion-10 @ hub, position = basilar tip
-11:54:01 - SSAEP 86 hz, live-animal-control, electrode =  X-pedion-10 @ hub, position = basilar tip
-11:55:37 - SSAEP 12 hz, experiment, electrode =  X-pedion-10 @ hub, position = basilar tip
-11:56:47 - SSAEP 42 hz, experiment, electrode =  X-pedion-10 @ hub, position = basilar tip
-11:58:00 - SSAEP 86 hz, experiment, electrode =  X-pedion-10 @ hub, position = basilar tip
-12:03:34 - SSVEP 10 hz, experiment, electrode =  X-pedion-10 @ hub, position = basilar tip
-12:04:50 - SSVEP 40 hz, experiment, electrode =  X-pedion-10 @ hub, position = basilar tip
-12:05:58 - SSVEP 50 hz, experiment, electrode =  X-pedion-10 @ hub, position = basilar tip
+11:31:23 - SSAEP 12 Hz, experiment, electrode = X-pedion-10 @ catheter tip, position = basilar tip
+11:36:06 - SSAEP 42 Hz, experiment, electrode = X-pedion-10 @ catheter tip, position = basilar tip
+11:37:22 - SSAEP 86 Hz, experiment, electrode = X-pedion-10 @ catheter tip, position = basilar tip
+11:39:46 - SSAEP 12 Hz, live-animal-control, electrode = X-pedion-10 @ catheter tip, position = basilar tip
+11:41:03 - SSAEP 42 Hz, live-animal-control, electrode = X-pedion-10 @ catheter tip, position = basilar tip
+11:42:15 - SSAEP 86 Hz, live-animal-control, electrode = X-pedion-10 @ catheter tip, position = basilar tip
+11:51:43 - SSAEP 12 Hz, live-animal-control, electrode =  X-pedion-10 @ hub, position = basilar tip
+11:52:54 - SSAEP 42 Hz, live-animal-control, electrode =  X-pedion-10 @ hub, position = basilar tip
+11:54:01 - SSAEP 86 Hz, live-animal-control, electrode =  X-pedion-10 @ hub, position = basilar tip
+11:55:37 - SSAEP 12 Hz, experiment, electrode =  X-pedion-10 @ hub, position = basilar tip
+11:56:47 - SSAEP 42 Hz, experiment, electrode =  X-pedion-10 @ hub, position = basilar tip
+11:58:00 - SSAEP 86 Hz, experiment, electrode =  X-pedion-10 @ hub, position = basilar tip
+12:03:34 - SSVEP 10 Hz, experiment, electrode =  X-pedion-10 @ hub, position = basilar tip
+12:04:50 - SSVEP 40 Hz, experiment, electrode =  X-pedion-10 @ hub, position = basilar tip
+12:05:58 - SSVEP 50 Hz, experiment, electrode =  X-pedion-10 @ hub, position = basilar tip
 12:07:06 - VEP, experiment, electrode =  X-pedion-10 @ hub, position = basilar tip
-12:11:10 - SSVEP 10 hz, live-animal-control, electrode =  X-pedion-10 @ hub, position = basilar tip
-12:12:21 - SSVEP 40 hz, live-animal-control, electrode =  X-pedion-10 @ hub, position = basilar tip
-12:13:29 - SSVEP 50 hz, live-animal-control, electrode =  X-pedion-10 @ hub, position = basilar tip
+12:11:10 - SSVEP 10 Hz, live-animal-control, electrode =  X-pedion-10 @ hub, position = basilar tip
+12:12:21 - SSVEP 40 Hz, live-animal-control, electrode =  X-pedion-10 @ hub, position = basilar tip
+12:13:29 - SSVEP 50 Hz, live-animal-control, electrode =  X-pedion-10 @ hub, position = basilar tip
 12:14:37 - VEP, live-animal-control, electrode =  X-pedion-10 @ hub, position = basilar tip
-12:22:36 - SSVEP 10 hz, live-animal-control, electrode =  Ag/AgCl @ hub, position = basilar tip
-12:23:46 - SSVEP 40 hz, live-animal-control, electrode =  Ag/AgCl @ hub, position = basilar tip
-12:24:55 - SSVEP 50 hz, live-animal-control, electrode =  Ag/AgCl @ hub, position = basilar tip
+12:22:36 - SSVEP 10 Hz, live-animal-control, electrode =  Ag/AgCl @ hub, position = basilar tip
+12:23:46 - SSVEP 40 Hz, live-animal-control, electrode =  Ag/AgCl @ hub, position = basilar tip
+12:24:55 - SSVEP 50 Hz, live-animal-control, electrode =  Ag/AgCl @ hub, position = basilar tip
 12:26:04 - VEP, live-animal-control, electrode =  Ag/AgCl @ hub, position = basilar tip
-12:29:43 - SSVEP 10 hz, experiment, electrode =  Ag/AgCl @ hub, position = basilar tip
-12:30:51 - SSVEP 40 hz, experiment, electrode =  Ag/AgCl @ hub, position = basilar tip
-12:32:00 - SSVEP 50 hz, experiment, electrode =  Ag/AgCl @ hub, position = basilar tip
+12:29:43 - SSVEP 10 Hz, experiment, electrode =  Ag/AgCl @ hub, position = basilar tip
+12:30:51 - SSVEP 40 Hz, experiment, electrode =  Ag/AgCl @ hub, position = basilar tip
+12:32:00 - SSVEP 50 Hz, experiment, electrode =  Ag/AgCl @ hub, position = basilar tip
 12:33:09 - VEP, experiment, electrode =  Ag/AgCl @ hub, position = basilar tip
-12:38:56 - SSAEP 12 hz, experiment, electrode =  Ag/AgCl @ hub, position = basilar tip
-12:40:15 - SSAEP 42 hz, experiment, electrode =  Ag/AgCl @ hub, position = basilar tip
-12:41:28 - SSAEP 86 hz, experiment, electrode =  Ag/AgCl @ hub, position = basilar tip
-12:43:40 - SSAEP 12 hz, live-animal-control, electrode =  Ag/AgCl @ hub, position = basilar tip
-12:44:55 - SSAEP 42 hz, live-animal-control, electrode =  Ag/AgCl @ hub, position = basilar tip
-12:46:06 - SSAEP 86 hz, live-animal-control, electrode =  Ag/AgCl @ hub, position = basilar tip
-13:03:56 - SSAEP 12hz, experiment, electrode =  guidewire @ 10cm from catheter tip, position = basilar tip
-13:06:20 - SSAEP 42hz, experiment, electrode =  guidewire @ 10cm from catheter tip, position = basilar tip
-13:07:35 - SSAEP 86hz, experiment, electrode =  guidewire @ 10cm from catheter tip, position = basilar tip
-13:09:08 - SSAEP 12hz, live-animal-control, electrode =  guidewire @ 10cm from catheter tip, position = basilar tip
-13:10:18 - SSAEP 42hz, live-animal-control, electrode =  guidewire @ 10cm from catheter tip, position = basilar tip
-13:12:42 - SSAEP 86hz, live-animal-control, electrode =  guidewire @ 10cm from catheter tip, position = basilar tip
-13:17:59 - SSVEP 10 hz, experiment, electrode =  guidewire @ 10cm from catheter tip, position = basilar tip
-13:19:10 - SSVEP 40 hz, experiment, electrode =  guidewire @ 10cm from catheter tip, position = basilar tip
-13:20:19 - SSVEP 50 hz, experiment, electrode =  guidewire @ 10cm from catheter tip, position = basilar tip
+12:38:56 - SSAEP 12 Hz, experiment, electrode =  Ag/AgCl @ hub, position = basilar tip
+12:40:15 - SSAEP 42 Hz, experiment, electrode =  Ag/AgCl @ hub, position = basilar tip
+12:41:28 - SSAEP 86 Hz, experiment, electrode =  Ag/AgCl @ hub, position = basilar tip
+12:43:40 - SSAEP 12 Hz, live-animal-control, electrode =  Ag/AgCl @ hub, position = basilar tip
+12:44:55 - SSAEP 42 Hz, live-animal-control, electrode =  Ag/AgCl @ hub, position = basilar tip
+12:46:06 - SSAEP 86 Hz, live-animal-control, electrode =  Ag/AgCl @ hub, position = basilar tip
+13:03:56 - SSAEP 12 Hz, experiment, electrode =  guidewire @ 10cm from catheter tip, position = basilar tip
+13:06:20 - SSAEP 42 Hz, experiment, electrode =  guidewire @ 10cm from catheter tip, position = basilar tip
+13:07:35 - SSAEP 86 Hz, experiment, electrode =  guidewire @ 10cm from catheter tip, position = basilar tip
+13:09:08 - SSAEP 12 Hz, live-animal-control, electrode =  guidewire @ 10cm from catheter tip, position = basilar tip
+13:10:18 - SSAEP 42 Hz, live-animal-control, electrode =  guidewire @ 10cm from catheter tip, position = basilar tip
+13:12:42 - SSAEP 86 Hz, live-animal-control, electrode =  guidewire @ 10cm from catheter tip, position = basilar tip
+13:17:59 - SSVEP 10 Hz, experiment, electrode =  guidewire @ 10cm from catheter tip, position = basilar tip
+13:19:10 - SSVEP 40 Hz, experiment, electrode =  guidewire @ 10cm from catheter tip, position = basilar tip
+13:20:19 - SSVEP 50 Hz, experiment, electrode =  guidewire @ 10cm from catheter tip, position = basilar tip
 13:21:31 - VEP, experiment, electrode =  guidewire @ 10cm from catheter tip, position = basilar tip
-13:25:33 - SSVEP 10 hz, live-animal-control, electrode =  guidewire @ 10cm from catheter tip, position = basilar tip
-13:26:44 - SSVEP 40 hz, live-animal-control, electrode =  guidewire @ 10cm from catheter tip, position = basilar tip
-13:27:53 - SSVEP 50 hz, live-animal-control, electrode =  guidewire @ 10cm from catheter tip, position = basilar tip
+13:25:33 - SSVEP 10 Hz, live-animal-control, electrode =  guidewire @ 10cm from catheter tip, position = basilar tip
+13:26:44 - SSVEP 40 Hz, live-animal-control, electrode =  guidewire @ 10cm from catheter tip, position = basilar tip
+13:27:53 - SSVEP 50 Hz, live-animal-control, electrode =  guidewire @ 10cm from catheter tip, position = basilar tip
 13:30:15 - VEP, live-animal-control, electrode =  guidewire @ 10cm from catheter tip, position = basilar tip
-14:00:01 - SSVEP 10 hz, experiment, electrode =  guidewire @ catheter tip, position = mid-basilar
-14:02:01 - SSVEP 40 hz, experiment, electrode =  guidewire @ catheter tip, position = mid-basilar
-14:03:09 - SSVEP 50 hz, experiment, electrode =  guidewire @ catheter tip, position = mid-basilar
+14:00:01 - SSVEP 10 Hz, experiment, electrode =  guidewire @ catheter tip, position = mid-basilar
+14:02:01 - SSVEP 40 Hz, experiment, electrode =  guidewire @ catheter tip, position = mid-basilar
+14:03:09 - SSVEP 50 Hz, experiment, electrode =  guidewire @ catheter tip, position = mid-basilar
 14:04:18 - VEP, experiment, electrode =  guidewire @ catheter tip, position = mid-basilar
-14:08:46 - SSAEP 12 hz, experiment,  electrode =  guidewire @ catheter tip, position = mid-basilar
-14:09:59 - SSAEP 42 hz, electrode =  guidewire @ catheter tip, position = mid-basilar
-14:11:09 - SSAEP 86 hz,  electrode =  guidewire @ catheter tip, position = mid-basilar
-14:40:36 - SSVEP 10 hz, experiment, electrode =  guidewire @ catheter tip, position = VB junction
-14:41:46 - SSVEP 40 hz, experiment, electrode =  guidewire @ catheter tip, position = VB junction
-14:43:48 - SSVEP 50 hz, experiment, electrode =  guidewire @ catheter tip, position = VB junction
+14:08:46 - SSAEP 12 Hz, experiment,  electrode =  guidewire @ catheter tip, position = mid-basilar
+14:09:59 - SSAEP 42 Hz, electrode =  guidewire @ catheter tip, position = mid-basilar
+14:11:09 - SSAEP 86 Hz,  electrode =  guidewire @ catheter tip, position = mid-basilar
+14:40:36 - SSVEP 10 Hz, experiment, electrode =  guidewire @ catheter tip, position = VB junction
+14:41:46 - SSVEP 40 Hz, experiment, electrode =  guidewire @ catheter tip, position = VB junction
+14:43:48 - SSVEP 50 Hz, experiment, electrode =  guidewire @ catheter tip, position = VB junction
 14:44:57 - VEP, experiment, electrode =  guidewire @ catheter tip, position = VB junction
-14:50:29 - SSAEP 12 hz, experiment,  electrode =  guidewire @ catheter tip, position = VB junction
-14:51:59 - SSAEP 42 hz, electrode =  guidewire @ catheter tip, position = VB junction
-14:53:21 - SSAEP 86 hz,  electrode =  guidewire @ catheter tip, position = VB junction
-15:10:16 - SSVEP 10 hz, experiment, electrode =  guidewire @ catheter tip, position = cerevical vertebral dens
-15:11:25 - SSVEP 40 hz, experiment, electrode =  guidewire @ catheter tip, position = cerevical vertebral dens
-15:12:40 - SSVEP 50 hz, experiment, electrode =  guidewire @ catheter tip, position = cerevical vertebral dens
+14:50:29 - SSAEP 12 Hz, experiment,  electrode =  guidewire @ catheter tip, position = VB junction
+14:51:59 - SSAEP 42 Hz, electrode =  guidewire @ catheter tip, position = VB junction
+14:53:21 - SSAEP 86 Hz,  electrode =  guidewire @ catheter tip, position = VB junction
+15:10:16 - SSVEP 10 Hz, experiment, electrode =  guidewire @ catheter tip, position = cerevical vertebral dens
+15:11:25 - SSVEP 40 Hz, experiment, electrode =  guidewire @ catheter tip, position = cerevical vertebral dens
+15:12:40 - SSVEP 50 Hz, experiment, electrode =  guidewire @ catheter tip, position = cerevical vertebral dens
 15:13:50 - VEP, experiment, electrode =  guidewire @ catheter tip, position = cerevical vertebral dens
-15:18:04 - SSAEP 12 hz, experiment,  electrode =  guidewire @ catheter tip, position = cerevical vertebral dens
-15:19:16 - SSAEP 42 hz, electrode =  guidewire @ catheter tip, position = cerevical vertebral dens
-15:20:29 - SSAEP 86 hz,  electrode =  guidewire @ catheter tip, position = cerevical vertebral dens
-15:46:00 - SSVEP 10 hz, experiment, electrode =  guidewire @ catheter tip, position = basilar tip
-15:48:24 - SSVEP 40 hz, experiment, electrode =  guidewire @ catheter tip, position = basilar tip
-15:49:35 - SSVEP 50 hz, experiment, electrode =  guidewire @ catheter tip, position = basilar tip
+15:18:04 - SSAEP 12 Hz, experiment,  electrode =  guidewire @ catheter tip, position = cerevical vertebral dens
+15:19:16 - SSAEP 42 Hz, electrode =  guidewire @ catheter tip, position = cerevical vertebral dens
+15:20:29 - SSAEP 86 Hz,  electrode =  guidewire @ catheter tip, position = cerevical vertebral dens
+15:46:00 - SSVEP 10 Hz, experiment, electrode =  guidewire @ catheter tip, position = basilar tip
+15:48:24 - SSVEP 40 Hz, experiment, electrode =  guidewire @ catheter tip, position = basilar tip
+15:49:35 - SSVEP 50 Hz, experiment, electrode =  guidewire @ catheter tip, position = basilar tip
 15:50:43 - VEP, experiment, electrode =  guidewire @ catheter tip, position = basilar tip
-15:55:07 - SSAEP 12 hz, experiment,  electrode =  guidewire @ catheter tip, position = basilar tip
-15:56:42 - SSAEP 42 hz, electrode =  guidewire @ catheter tip, position = basilar tip
-15:57:52 - SSAEP 86 hz,  electrode =  guidewire @ catheter tip, position = basilar tip
+15:55:07 - SSAEP 12 Hz, experiment,  electrode =  guidewire @ catheter tip, position = basilar tip
+15:56:42 - SSAEP 42 Hz, electrode =  guidewire @ catheter tip, position = basilar tip
+15:57:52 - SSAEP 86 Hz,  electrode =  guidewire @ catheter tip, position = basilar tip

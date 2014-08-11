@@ -1,66 +1,88 @@
 % plot_all_ssavep.m
 %
-% Description: This script processes the paper figures for the SSAEP
-%              experiments or the SSVEP experiments.
+% Script to load and plot (using plot_ssavep.m) all of the SSAEP or SSVEP
+% trials in a directory. The same type of plots are generated for both SSAEP
+% and SSVEP, so there is no difference in the code.
 %
 % Arguments:
 %   ssavep: either 'ssaep' or 'ssvep' (string) - selects which experiment to plot
-%   rabbit_ID: string ('9rabbit_may_6_2014' or '10rabbit_may_15_2014')
+%   subject_ID: string with the name of the subject
+%     - 'subject1' or 'subject2'
 %   publication_quality: either 1 or 2, 1 is supposed to plot confidence
 %                        intervals (not functional as of 8/6/14), 2 does not
 %                        plot confidence intervals (is functional)
 %                        [optional - defaults to 2]
-%   trials_list: list of indices to plot
+%   index_list: list of indices to plot
 %                [optional - defaults to all experiments]
+%   filters: filters to apply to all analog channels other than cardiac
+%     [default: only high-pass filter]
+%   cardiac_filters: filters to apply to cardiac channel
+%     [default: only high-pass filter]
 %
-% Output: Figures are saved as PDFs in matlab_data.
+% Output:
+%   No return value.
+%   Figures are saved as FIG, PDF, and SVG files in figures/.
 
-function plot_all_ssavep(ssavep, rabbit_ID, publication_quality, trials_list)
+function plot_all_ssavep(ssavep, subject_ID, publication_quality, index_list, filters, cardiac_filters)
 
-[ maxNumberOfChannels, digitalInCh, original_sampling_rate_in_Hz ] = constants();
 
-pathname = ['../../../../data/easter/' rabbit_ID '/neuro/binary_data/' ssavep '/'];%path for the data in easter binary format
-pathname_comments = ['../../../../data/easter/' rabbit_ID '/neuro/neuro_experiment_log.txt'];%file containing comments written on the experiment day to use as labels for the figure titles
-                                                                           % read the comments written on the experiment day to use as labels for the figure titles
-                                                                           % each line correspondes to a single run of the VEP experiment
-                                                                           % this file needs to be prepared by hand
-                                                                           % the total # of lines should equal the number of VEP sessions
-                                                                           % the ordering of comments needs to be chronological
-                                                                           % example lines:
-                                                                           % 12:30 This is the comment about this particular session. g.tech Ground was nose.
-                                                                           % 12:45 This was the next condition. Used Faraday cage. g.tech Ground was right leg.
+%% Preliminary information about data
 
-[ channelNames, gtechGND, earth ] = rabbit_information(rabbit_ID);
+% Information about recording 
+[ maxNumberOfChannels, digitalInCh, original_sampling_rate_in_Hz, channelNames, gtechGND, earth ] = subject_information(subject_ID);
 
-[ S, allData ] = get_information(pathname, pathname_comments, upper(ssavep));
+% Load names of data files and experiment log
+[ pathname, pathname_comments ] = get_pathname(subject_ID, 'vep');
+[ files, comments ] = get_information(pathname, pathname_comments, 'vep');
 
-% Default for publication_quality argument
-if (nargin < 3)
+% Get list of channels to plot and colors for each channel
+[ channelToPlot, CM ] = plot_settings();
+
+
+%% Set necessary default values
+
+% Default publication quality is no confidence intervals
+if (nargin < 3) || isempty(publication_quality)
     publication_quality = 2;
 end
 
-% Default for trials_list argument
-if (nargin < 4)
-    trials_list = 1:numel(S);
+% Default index_list is to plot everything available
+if (nargin < 4) || isempty(index_list)
+    index_list = 1:numel(files);
 end
 
-windlengthSeconds = 2;
+% Default filters is to only use high-pass filter
+% Note: allow filters to be empty (do not enforce default)
+if (nargin < 5)
+    filters = get_filters(original_sampling_rate_in_Hz, true, false, false, false, false);
+end
+
+% Default cardiac)filters is to only use high-pass filter
+% Note: allow filters to be empty (do not enforce default)
+if (nargin < 6)
+    cardiac_filters = get_filters(original_sampling_rate_in_Hz, true, false, false, false, false);
+end
+
+% Information about how to compute power spectral density
+windlengthSeconds = 2;  % window length in seconds
 noverlapPercent = 0.25; % number overlap percent
 
-[ channelToPlot, CM ] = plot_settings();
+%% Generate the plots
+for i = index_list
 
-filters = get_filters(original_sampling_rate_in_Hz, true, false, false, false, false);
-cardiac_filters = get_filters(original_sampling_rate_in_Hz, true, false, false, false, false);
+    % Print progress
+    filename = files{i};
+    fprintf('%d / %d:\t%s\n', i, length(files), filename);
 
-for i = trials_list
-    filename = S{i};
-    fprintf('filename: %s,\t%d / %d\n', filename, i, length(S));
-
+    % Load analog channels from electrode and digital in (LED on / off)
     [ data, cleanDigitalIn ] = load_data([pathname filename], maxNumberOfChannels, digitalInCh, channelNames);
 
-    publish_ssavep(data, original_sampling_rate_in_Hz, windlengthSeconds, noverlapPercent, cleanDigitalIn, channelToPlot, filters, CM, ssavep, filename, allData(i), publication_quality, clean_name(S{i}), cardiac_filters);
+    % Plot SSAEP/SSVEP response
+    plot_ssavep(data, cleanDigitalIn, files{i}, ssavep, original_sampling_rate_in_Hz, publication_quality, windlengthSeconds, noverlapPercent, filters, cardiac_filters, channelToPlot, CM, comments(i))
 
     close all;
 
-end
+end % for i = index_list
+
+end % function [] = plot_all_ssavep
 

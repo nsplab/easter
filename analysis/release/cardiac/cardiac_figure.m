@@ -1,35 +1,30 @@
-clear;
-close all;
+% cardiac_figure.m
+%
+% This function generates the figures for the cardiac artifact cleaning.
 
-addpath('../utilities');
+function [] = cardiac_figure()
 
-rabbit_ID = '10rabbit_may_15_2014';
+% Use subject 1 vep at mid-basilar for plot
+subject_ID = 'subject1';
 experiment = 'vep';
-index = 10;
+index = 3;
 
 %% Constants
-[ channelNames, gtechGND, earth ] = rabbit_information(rabbit_ID);
-[ maxNumberOfChannels, digitalInCh, original_sampling_rate_in_Hz ] = constants();
+[ maxNumberOfChannels, digitalInCh, original_sampling_rate_in_Hz, channelNames, gtechGND, earth ] = subject_information(subject_ID);
 [ channelToPlot, CM ] = plot_settings();
 
 %% Filters
 filters = get_filters(original_sampling_rate_in_Hz, true, false, false, false, false);
 cardiac_filters = get_filters(original_sampling_rate_in_Hz, true, false, false, false, false);
 
-pathname_comments = ['../../../../data/easter/' rabbit_ID '/neuro/neuro_experiment_log.txt'];
+[ pathname, pathname_comments ] = get_pathname(subject_ID, experiment)
 
-pathname = ['../../../../data/easter/' rabbit_ID '/neuro/binary_data/' experiment '/'];
-pathname_matdata = ['../../../../data/easter/' rabbit_ID '/neuro/matlab_data/' experiment '/'];
+[ files, comments ] = get_information(pathname, pathname_comments, experiment);
 
-[ S, allData ] = get_information(pathname, pathname_comments, upper(experiment));
-
-filename = S{index};
-
-% Clean name format
-name = clean_name(S{index});
+name = files{index};
 
 %% Load data
-[ data, cleanDigitalIn ] = load_data([pathname filename], maxNumberOfChannels, digitalInCh, channelNames);
+[ data, cleanDigitalIn ] = load_data([pathname name], maxNumberOfChannels, digitalInCh, channelNames);
 
 cardiacData = data{strcmp(data, 'Bottom Precordial'), 2};
 cardiacData = run_filters(cardiacData, cardiac_filters);
@@ -69,9 +64,7 @@ set(0, 'CurrentFigure', f_end);
 hold on;
 plot(time_axis, 0.20 * cardiacData(time), 'LineWidth', 2, 'Color', 'black');
 
-%qrs_removal(0.125 * cardiacData, cardiacData, name, 'black', f1, f2, f3, f4, f5);
-qrs_removal(0.20 * cardiacData, cardiacData, name, 'black', f1, f2, f3, f4, f5);
-%qrs_removal(0.20 * cardiacData, cardiacData, name, 'black');
+cardiac_removal(0.20 * cardiacData, cardiacData, name, 'black', f1, f2, f3, f4, f5);
 
 for ii=1:length(channelToPlot)
     fprintf('ii: %d, %d\n', ii, channelToPlot(ii));
@@ -84,8 +77,8 @@ for ii=1:length(channelToPlot)
     set(0, 'CurrentFigure', f_start);
     plot(time_axis, chData(time), 'LineWidth', 2, 'Color', CM(ii, :));
 
-    chData = qrs_removal(chData, cardiacData, name, CM(ii, :), f1, f2, f3, f4, f5);
-    %chData = qrs_removal(chData, cardiacData);
+    chData = cardiac_removal(chData, cardiacData, name, CM(ii, :), f1, f2, f3, f4, f5);
+    %chData = cardiac_removal(chData, cardiacData);
 
     set(0, 'CurrentFigure', f_end);
     plot(time_axis, chData(time), 'LineWidth', 2, 'Color', CM(ii, :));
@@ -105,13 +98,13 @@ save2pdf(['matlab_data/' name '_dt.pdf'], f2, 150);
 saveas(f3, ['matlab_data/' name '_dt.fig']);
 save2pdf(['matlab_data/' name '_dt.pdf'], f3, 150);
 
-%save2pdf(['matlab_data/' name '_' int2str(channel) '_qrs.pdf'], f4, 1200);
-%save2pdf(['matlab_data/' name '_qrs.pdf'], f4, 1200);
-plot2svg(['matlab_data/' name '_qrs.svg'], f4, 'png')
+%save2pdf(['matlab_data/' name '_' int2str(channel) '_cardiac.pdf'], f4, 1200);
+%save2pdf(['matlab_data/' name '_cardiac.pdf'], f4, 1200);
+plot2svg(['matlab_data/' name '_cardiac.svg'], f4, 'png')
 
 
-%save2pdf(['matlab_data/' name '_' int2str(channel) '_qrs_all.pdf'], f3, 1200);
-save2pdf(['matlab_data/' name '_qrs_all.pdf'], f5, 150);
+%save2pdf(['matlab_data/' name '_' int2str(channel) '_cardiac_all.pdf'], f3, 1200);
+save2pdf(['matlab_data/' name '_cardiac_all.pdf'], f5, 150);
 
 font_size = 20;
 

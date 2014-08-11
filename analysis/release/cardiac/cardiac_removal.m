@@ -1,16 +1,32 @@
-function [ chData ] = qrs_removal(chData, cardiacData, name, color, f1, f2, f3, f4, f5)
+% cardiac_removal.m
+%
+% This function removes cardiac artifacts from other channels and plots
+% relevant figures if requested. The channel that is having artifacts
+% removed must be highpass filtered, or the results will be poor.
+%
+% Arguments:
+%   chData: analog channel to filter cardiac artifacts from
+%   cardiacData: cardiac recording from the same period
+%   name: filename to save to (not currently used)
+%   color: color to plot with, if requested
+%   f1: figure handle for raw cardiac data plot with detected peaks
+%   f2: figure handle for plot of time between peaks
+%   f3: figure handle for plot of time between complexes
+%   f4: figure handle for plot of averaged signals and confidence intervals
+%   f5: figure handle for plot of all signals
+%
+% Output:
+%   chData: cardiac filtered data
 
+function [ chData ] = cardiac_removal(chData, cardiacData, name, color, f1, f2, f3, f4, f5)
+
+    % fixed font size for figures
     font_size = 10;
 
     % chData must be at least high pass filtered (to get rid of drifting
-    % cardiacData probably has to be unfiltered to work
     assert(all(size(chData) == size(cardiacData)));
-    %tic
     [~,locs]=findpeaks(cardiacData,'minpeakdistance', round(0.18 * 9600));
     % TODO: could take cardiac spikes as argument, rather than cardiacData
-    % findpeaks takes a long time
-    %toc
-    %locs = locs(2:(end-1));
 
     if (nargin >= 5 && f1 ~= 0)
         %% Plot Cardiac Data with Detected Peaks
@@ -56,7 +72,7 @@ function [ chData ] = qrs_removal(chData, cardiacData, name, color, f1, f2, f3, 
     cutoff = [1; locs(1:(end-1)) + round(0.63 * diff(locs)); numel(chData) + 1];
 
     if (nargin >= 7 && f3 ~= 0)
-        %% Plot Distance between midpoints
+        %% Plot Distance between complexes
         %figure(f3);
         set(0, 'CurrentFigure', f3);
         scatter(1:numel(dt), dt / 9600 * 1000, 36, color);

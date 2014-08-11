@@ -1,3 +1,17 @@
+% get_frequency.m
+%
+% This function reads the relevant line in the experiment log to determine the
+% frequency of the stimulus.
+%
+% Arguments:
+%   comment: string of the relevant line in the experiment log
+%   filename: filename of the data (not currently used)
+%
+% Output:
+%   nominal_frequency: frequency written in the data log
+%   frequency: true frequency of stimulus (tends to be an unrounded version
+%              of nominal_frequency)
+
 function [ nominal_frequency, frequency ] = get_frequency(comment, filename)
 
 nominal_frequency = [];

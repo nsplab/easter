@@ -1,121 +1,112 @@
-%plot_all_vep.m
+% plot_all_vep.m
 %
-%Authors: M. Ebrahimi, L. Srinivasan / nspl.org
+% Script to load and plot (using plot_vep.m) all of the VEP trials in a
+% directory.
 %
-%Date: 4/17/14
+% Arguments:
+%   subject_ID: string with the name of the subject
+%     - 'subject1' or 'subject2'
+%   publication_quality: style of the plots
+%     - 1: shaded confidence intervals
+%         WARNING: MATLAB appears to have a bug that causes figures with
+%                  shading to be saved improperly as PDF and EPS files.
+%                  plot2svg.m is an alternative method of saving, which
+%                  avoids the problem.
+%     - 2: no confidence intervals
+%     - 3: dashed line for confidence intervals
+%     - 4: all trials rather than confidence intervals
+%     [default: 2]
+%   index_list: list of indices to plot
+%     [default: plot all available recordings for subject]
+%   filter_cardiac: whether or not to perform cardiac removal
+%     [default: true]
+%   preEventPlot_sec: number of seconds before event to start plotting
+%     [default: 0.05]
+%   postEventPlot_sec: number of seconds after event to stop plotting
+%     [default: 0.1]
+%   filters: filters to apply to all analog channels other than cardiac
+%     [default: only high-pass filter]
+%   cardiac_filters: filters to apply to cardiac channel
+%     [default: only high-pass filter]
 %
-%Description: This script produces one VEP graph for each VEP data set recorded in experiment given by rabbit_ID
-%
-%Requires:  rabbit_ID - tag for the experiment, set in the hardcoded variables block below.
-%
-%Output:  One figure for each VEP session, with two panels, one for the 'on' response, one for the 'off' response.
-%
-%Notes:  The g.tech digital input, channel 65, goes high for LED ON with 5rabbit and 6rabbit, but low for LED ON with 7rabbit
-%	 This is accounted for in arduino_vep.m, which checks the pathname for '7rabbit' and chooses the appropriate convention.
-%	 In subsequent rabbits after 7rabbit, the arduino code in /code/easter/ should have been changed to reflect the intuitive
-%	 convention used in 5rabbit and 6rabbit of channel 65 going high for LED ON.
-%	
-%	The analysis code assumes a fixed sampling rate of 9600 Hz and digital input channel # of 65 (both designated in arduino_vep.m)
+% Output:
+%   No return value.
+%   Figures are saved as FIG and SVG files in figures/.
 
-function plot_all_vep(rabbit_ID, publication_quality, trials_list, filter_qrs)
-
-addpath('../config');
-addpath('../utilities');
-addpath('../qrs');
-
-%///////////////////////////////////////////////
-% START BLOCK: Hardcoded variables
-%///////////////////////////////////////////////
-%rabbit_ID = '1rabbit_dec_10_2012';
-%rabbit_ID = '2rabbit_jan_23_2013';
-%rabbit_ID = '4rabbit_feb_5_2014';
-%rabbit_ID = '5rabbit_mar_4_2014';
-%rabbit_ID = '6rabbit_apr_11_2014';                                         %'7rabbit_apr_15_2014' corresponds to the experiment performed 4/15/14
-%rabbit_ID = '7rabbit_apr_15_2014';                                         %'7rabbit_apr_15_2014' corresponds to the experiment performed 4/15/14
-%rabbit_ID = '8rabbit_apr_24_2014';
-%rabbit_ID = '9rabbit_may_6_2014';
-%rabbit_ID = '10rabbit_may_15_2014';
-
-%publication_quality = 3;                                                   % generate the high quality figures with confidence intervals. this is much slower than having it set to zero
-                                                                           % 0:, 1:with confidence intervals , 2:without confidence intervals, 3: use dashed lines instead of transparent ares for confidence areas
-% TODO: for some reason, publication quality 1 (shaded confidence intervals) does not save properly to pdf or eps
-
-decimate_factor = 10;                                                      % decimate the data to speed up plotting (decimate_factor = 1 is no decimation; 10 is reasonable)
-                                                                           %(this Matlab function implements proper downsampling using anti-aliasing, with decimate.m).
+function [] = plot_all_vep(subject_ID, publication_quality, index_list, filter_cardiac, preEventPlot_sec, postEventPlot_sec, filters, cardiac_filters)
 
 
-maxNumberOfChannels = 10;                                                  %# of consecutive analog input channels, starting with channel 1, to extract from the project easter binary files
-                                                                           %(which contain 64 analog channels and the digital in channel (channel 65)
+%% Preliminary information about data
 
-digitalInCh = 65;                                                          %designate the digital input channel, which is used to record
-                                                                           %the LED state to align EEG data with onset or offset to generate VEP graphs 
+% Information about recording 
+[ maxNumberOfChannels, digitalInCh, original_sampling_rate_in_Hz, channelNames, gtechGND, earth ] = subject_information(subject_ID);
 
-original_sampling_rate_in_Hz = 9600;                                       % data is acquired with the g.Tech g.HiAmp at 9600 Hz. this is fixed for convenience. at higher rates, the 
-                                                                           % digital input channel does not work reliably.
+% Load names of data files and experiment log
+[ pathname, pathname_comments ] = get_pathname(subject_ID, 'vep');
+[ files, comments ] = get_information(pathname, pathname_comments, 'vep');
 
-pathname = ['../../../../data/easter/' rabbit_ID '/neuro/binary_data/vep/'];%path for the data in easter binary format
-%pathname_comments = ['../../../../data/easter/' rabbit_ID '/neuro/vep.txt'];%file containing comments written on the experiment day to use as labels for the figure titles
-pathname_comments = ['../../../../data/easter/' rabbit_ID '/neuro/neuro_experiment_log.txt'];%file containing comments written on the experiment day to use as labels for the figure titles
-                                                                           % read the comments written on the experiment day to use as labels for the figure titles
-                                                                           % each line correspondes to a single run of the VEP experiment
-                                                                           % this file needs to be prepared by hand
-                                                                           % the total # of lines should equal the number of VEP sessions
-                                                                           % the ordering of comments needs to be chronological
-                                                                           % example lines:
-                                                                           % 12:30 This is the comment about this particular session. g.tech Ground was nose.
-                                                                           % 12:45 This was the next condition. Used Faraday cage. g.tech Ground was right leg.
-
-pathname_matdata = ['../../../../data/easter/' rabbit_ID '/neuro/matlab_data/vep/'];
-
-[ channelNames, gtechGND, earth ] = rabbit_information(rabbit_ID);
-%///////////////////////////////////////////////
-% END BLOCK: Hardcoded variables
-%///////////////////////////////////////////////
+% Get list of channels to plot and colors for each channel
+[ channelToPlot, CM ] = plot_settings();
 
 
+%% Set necessary default values
 
-[ S, allData ] = get_information(pathname, pathname_comments, 'VEP');
-
-%////////////////////////////////////////////////////////////////////////////////////////
-% START BLOCK: Extract Data from Project Easter Binary Files to Prep for
-% function call to arduino_vep.m
-%////////////////////////////////////////////////////////////////////////////////////////
-
-
-if (nargin < 2)
+% Default publication quality is no confidence intervals
+if (nargin < 2) || isempty(publication_quality)
     publication_quality = 2;
 end
 
-if (nargin < 3)
-    trials_list = 1:numel(S);
+% Default index_list is to plot everything available
+if (nargin < 3) || isempty(index_list)
+    index_list = 1:numel(files);
 end
 
-if (nargin < 4)
-    filter_qrs = true;
+% Default filter_cardiac is to remove cardiac artifacts
+if (nargin < 4) || isempty(filter_cardiac)
+    filter_cardiac = true;
 end
 
-%filters = get_filters(original_sampling_rate_in_Hz, true, true, true, true, true);
-%filters = get_filters(original_sampling_rate_in_Hz, true, true, false, false, false);
-%filters = get_filters(original_sampling_rate_in_Hz, true, false, true, false, false);
-filters = get_filters(original_sampling_rate_in_Hz, true, false, false, false, false);
-cardiac_filters = get_filters(original_sampling_rate_in_Hz, true, false, false, false, false);
+% Default preEventPlot_sec is to plot 0.05 seconds (50 ms) before event
+if (nargin < 5) || isempty(preEventPlot_sec)
+    preEventPlot_sec = 0.05;
+end
 
-preEventPlot_sec = 0.05;                                                    %time in seconds to extend plot prior to event time (marked as time zero)
-postEventPlot_sec = 0.1;
+% Default postEventPlot_sec is to plot 0.1 seconds (100 ms) after event
+if (nargin < 6) || isempty(postEventPlot_sec)
+    postEventPlot_sec = 0.1;
+end
 
-[ channelToPlot, CM ] = plot_settings();
+% Default filters is to only use high-pass filter
+% Note: allow filters to be empty (do not enforce default)
+if (nargin < 7)
+    filters = get_filters(original_sampling_rate_in_Hz, true, false, false, false, false);
+end
 
-for i = trials_list
-    filename = S{i};
-    fprintf('filename: %s,\t%d / %d\n', filename, i, length(S));
+% Default cardiac)filters is to only use high-pass filter
+% Note: allow filters to be empty (do not enforce default)
+if (nargin < 8)
+    cardiac_filters = get_filters(original_sampling_rate_in_Hz, true, false, false, false, false);
+end
 
+
+%% Generate the plots
+for i = index_list
+
+    % Print progress
+    filename = files{i};
+    fprintf('%d / %d:\t%s\n', i, length(files), filename);
+
+    % Load analog channels from electrode and digital in (LED on / off)
     [ data, cleanDigitalIn ] = load_data([pathname filename], maxNumberOfChannels, digitalInCh, channelNames);
 
-    publish_vep_v2(data, cleanDigitalIn, original_sampling_rate_in_Hz, publication_quality, filters, cardiac_filters, preEventPlot_sec, postEventPlot_sec, allData{i}, clean_name(S{i}), channelToPlot, CM, 'On', filter_qrs);
-    publish_vep_v2(data, cleanDigitalIn, original_sampling_rate_in_Hz, publication_quality, filters, cardiac_filters, preEventPlot_sec, postEventPlot_sec, allData{i}, clean_name(S{i}), channelToPlot, CM, 'Off', filter_qrs);
+    % Plot VEP On Response
+    plot_vep(data, cleanDigitalIn, files{i}, original_sampling_rate_in_Hz, publication_quality, filter_cardiac, 'On', preEventPlot_sec, postEventPlot_sec, filters, cardiac_filters, channelToPlot, CM, comments{i});
+    % Plot VEP Off Response
+    plot_vep(data, cleanDigitalIn, files{i}, original_sampling_rate_in_Hz, publication_quality, filter_cardiac, 'Off', preEventPlot_sec, postEventPlot_sec, filters, cardiac_filters, channelToPlot, CM, comments{i});
 
     close all;
-end
 
-end
+end % for i = index_list
+
+end % function [] = plot_all_vep
 

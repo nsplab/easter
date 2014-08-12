@@ -1,3 +1,6 @@
+% example:
+% >> reduce_all_data('../data_complete', '../data');
+
 function [] = reduce_all_data(start_dir, end_dir)
 
 % print current directory

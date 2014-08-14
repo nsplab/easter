@@ -124,7 +124,6 @@ fgh = figure('Color',[1 1 1],'units','pixels','position',[0 0 (width + 2 * margi
 % make axes with correct margins
 axes('units', 'pixel', 'position', [margins margins width height]);
 hold on; % Allow all channels to be shown
-pause
 
 
 %% Miscellaneous preparation for figure

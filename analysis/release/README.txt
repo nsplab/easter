@@ -154,3 +154,9 @@ samples from each channel at the timestep.
 
 The data files can be read with util/load_data.m.
 
+
+Tutorial
+========
+
+A tutorial is available at https://www.writelatex.com/read/cxgjsstnwrxy.
+[TODO: Will the tutorial just be copied to this directory?]

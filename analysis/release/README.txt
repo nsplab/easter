@@ -126,3 +126,21 @@ samples from each channel at the timestep.
 
 The data files can be read with util/load_data.m.
 
+
+Generating Figures
+==================
+
+To generate the figures, run the command
+
+>> generate_all()
+
+in MATLAB, in this directory.
+
+The figures will be placed in the figures directory. Next, to convert some SVG
+files into PDFs, and to crop the PDF files, run
+
+$ ./convert_to_pdf.sh
+
+in the layout directory from a terminal. Finally, compile layout/figures.tex to
+generate the paper format figures.
+

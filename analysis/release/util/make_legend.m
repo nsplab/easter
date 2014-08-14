@@ -40,7 +40,6 @@ end
 if (nargin >= 1) && include_cardiac
     legend(legends, {channelNames{channelToPlot}, 'Cardiac'}, 'fontsize', fontsize);
 else
-    legends
     legend(legends, channelNames(channelToPlot), 'fontsize', fontsize);
 end
 

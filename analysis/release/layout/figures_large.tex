@@ -1,0 +1,124 @@
+\documentclass[]{article}
+
+\usepackage[margin=0.5in]{geometry}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{hyperref}
+\usepackage{multirow}
+
+\pagestyle{plain}
+
+\begin{document}
+
+\setlength{\tabcolsep}{2pt}
+\begin{figure}[H]
+\begin{center}
+\includegraphics[]{../figures/legend.pdf}
+\hspace{0.3cm}
+\begin{tabular}{c|cc|cc}
+& \multicolumn{2}{c|}{Experiment} & \multicolumn{2}{c}{Control} \\
+& Subject 1 & Subject 2 & Subject 1 & Subject 2 \\
+\hline
+\raisebox{-0.5\height}{\rotatebox{90}{VEP On}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.32]{../figures/Thu_15_05_2014_11_57_42_labelled.pdf}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.32]{../figures/Tue_06_05_2014_11_17_10.pdf}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.32]{../figures/Thu_15_05_2014_12_15_47.pdf}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.32]{../figures/Tue_06_05_2014_11_25_22.pdf}} \\
+\raisebox{-0.5\height}{\rotatebox{90}{VEP Off}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.32]{../figures/Thu_15_05_2014_11_57_42_off_labelled.pdf}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.32]{../figures/Tue_06_05_2014_11_17_10_off.pdf}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.32]{../figures/Thu_15_05_2014_12_15_47_off.pdf}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.32]{../figures/Tue_06_05_2014_11_25_22_off.pdf}} \\
+\raisebox{-0.5\height}{\rotatebox{90}{SSAEP 86 Hz}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.32]{../figures/Thu_15_05_2014_14_26_54_labelled.pdf}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.32]{../figures/Tue_06_05_2014_11_37_22.pdf}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.32]{../figures/Thu_15_05_2014_12_26_26.pdf}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.32]{../figures/Tue_06_05_2014_11_42_15.pdf}} \\
+\raisebox{-0.5\height}{\rotatebox{90}{SSVEP 40 Hz}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.32]{../figures/Thu_15_05_2014_14_20_24_labelled.pdf}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.32]{../figures/Tue_06_05_2014_11_14_51.pdf}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.32]{../figures/Thu_15_05_2014_12_13_26.pdf}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.32]{../figures/Tue_06_05_2014_11_23_01.pdf}}
+\end{tabular}
+\caption{}
+\end{center}
+\end{figure}
+\setlength{\tabcolsep}{6pt}
+
+\clearpage
+
+\setlength{\tabcolsep}{2pt}
+\begin{figure}[H]
+\begin{center}
+\begin{tabular}{c|cccc|cc}
+         & \multicolumn{4}{c|}{Experiment}                       & \multicolumn{2}{c}{Control} \\
+         &             &             &             &             & Live         & Dead \\
+\hline
+Location & Basilar Tip & Mid-Basilar & VB Junction & Basilar Tip & Basilar Tip  & Basilar Tip \\
+Time     & 11:57:42    & 14:13:26    & 15:54:54    & 16:47:47    & 12:15:47     & 17:22:22 \\
+Time     & 0:00:00 & 2:15:44 & 3:57:12 & 4:50:05 & 0:18:05 & 5:24:40 \\ % TODO: time relative to anesthesia? relative to surgery
+\hline
+\raisebox{-0.5\height}{\rotatebox{90}{VEP On}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.30]{../figures/Thu_15_05_2014_11_57_42_labelled.pdf}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.30]{../figures/Thu_15_05_2014_14_13_26.pdf}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.30]{../figures/Thu_15_05_2014_15_54_54.pdf}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.30]{../figures/Thu_15_05_2014_16_47_47.pdf}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.30]{../figures/Thu_15_05_2014_12_15_47.pdf}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.30]{../figures/Thu_15_05_2014_17_22_22.pdf}} \\
+\raisebox{-0.5\height}{\rotatebox{90}{VEP Off}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.30]{../figures/Thu_15_05_2014_11_57_42_off_labelled.pdf}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.30]{../figures/Thu_15_05_2014_14_13_26_off.pdf}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.30]{../figures/Thu_15_05_2014_15_54_54_off.pdf}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.30]{../figures/Thu_15_05_2014_16_47_47_off.pdf}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.30]{../figures/Thu_15_05_2014_12_15_47_off.pdf}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.30]{../figures/Thu_15_05_2014_17_22_22_off.pdf}} \\
+\raisebox{-0.5\height}{\rotatebox{90}{SSAEP 86 Hz}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.30]{../figures/Thu_15_05_2014_12_31_02_labelled.pdf}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.30]{../figures/Thu_15_05_2014_14_26_54.pdf}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.30]{../figures/Thu_15_05_2014_16_12_19.pdf}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.30]{../figures/Thu_15_05_2014_16_58_34.pdf}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.30]{../figures/Thu_15_05_2014_12_26_26.pdf}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.30]{../figures/Thu_15_05_2014_17_12_38.pdf}} \\
+\raisebox{-0.5\height}{\rotatebox{90}{SSVEP 40 Hz}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.30]{../figures/Thu_15_05_2014_12_08_22_labelled.pdf}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.30]{../figures/Thu_15_05_2014_14_20_24.pdf}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.30]{../figures/Thu_15_05_2014_16_02_44.pdf}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.30]{../figures/Thu_15_05_2014_16_38_47.pdf}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.30]{../figures/Thu_15_05_2014_12_13_26.pdf}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.30]{../figures/Thu_15_05_2014_17_18_01.pdf}}
+\end{tabular}
+\caption{}
+\label{fig:position}
+\end{center}
+\end{figure}
+\setlength{\tabcolsep}{6pt}
+
+\clearpage
+
+\begin{figure}[H]
+\begin{center}
+\begin{tabular}{cc|cc}
+\raisebox{-0.5\height}{\multirow{3}{*}{
+\begin{tabular}{c}
+Cardiac-Aligned  Measurements \vspace{0.7cm} \\
+\includegraphics[scale=0.64]{../figures/Thu_15_05_2014_14_13_26_cardiac.pdf}
+\end{tabular}
+}} &
+& Raw Trace & VEP-Aligned \\
+\hline
+&
+\raisebox{-0.5\height}{\rotatebox{90}{Contaminated}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.32]{../figures/Thu_15_05_2014_14_13_26_start.pdf}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.32]{../figures/Thu_15_05_2014_14_13_26_cardiac_labelled.pdf}} \\
+&
+\raisebox{-0.5\height}{\rotatebox{90}{Cleaned}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.32]{../figures/Thu_15_05_2014_14_13_26_end.pdf}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.32]{../figures/Thu_15_05_2014_14_13_26_labelled.pdf}} \\
+\end{tabular}
+\caption{}
+\end{center}
+\end{figure}
+\end{document}
+

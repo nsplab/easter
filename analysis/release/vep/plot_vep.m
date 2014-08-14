@@ -1,42 +1,86 @@
-% plot_vep.m
+function [ fgh ] = plot_vep(data, cleanDigitalIn, name, fs, publication_quality, cardiac_data, on_off, preEventPlot_sec, postEventPlot_sec, filters, cardiac_filters, CM, channelNames, comment)
+%PLOT_VEP  Plots the VEP response for a single run.
 %
-% Plots the VEP response for a single experiment. In general, if the data is
-% in the same format as the example data, it is easier to use plot_all_vep.m.
+% FGH = PLOT_VEP(DATA, CLEANDIGITALIN, NAME, FS, PUBLICATION_QUALITY, ...
+%                CARDIAC_DATA, ON_OFF, PREEVENTPLOT_SEC, POSTEVENTPLOT_SEC, ...
+%                FILTERS, CARDIAC_FILTERS, CM, CHANNELNAMES, COMMENT)
 %
-% Arguments:
-%   data: cell array of the analog channel data
-%         each row corresponds to one of the channels
-%         first column is a string of the channel name
-%         second column is an array of the data
-%   cleanDigitalIn: binary array for the digital in channel (whether or not
-%                   LED is on)
-%   name: filename to save to (does not include suffix)
-%   fs: sampling frequency
-%   publication_quality: style of the plots
+% Parameters:
+%
+%   DATA is a matrix of values from the analog channels connected to the
+%   electrodes. Each of the rows corresponds to one of the channels. Each of
+%   the columns corresponds to a sample from one of the timesteps.
+%
+%   CLEANDIGITALIN is a binary vector of the digital in channel (whether or not
+%   the LED is on at each time step).
+%
+%   NAME is a string of the filename to save to (should not include suffix).
+%
+%   FS is the sampling frequency in Hz.
+%
+%   PUBLICATION_QUALITY is an integer specifying the style of the plots.
 %     - 1: shaded confidence intervals
 %         WARNING: MATLAB appears to have a bug that causes figures with
 %                  shading to be saved improperly as PDF and EPS files.
-%                  plot2svg.m is an alternative method of saving, which
+%                  PLOT2SVG is an alternative method of saving, which
 %                  avoids the problem.
 %     - 2: no confidence intervals
 %     - 3: dashed line for confidence intervals
 %     - 4: all trials rather than confidence intervals
-%   filter_cardiac: whether or not to perform cardiac removal
-%   OnOff: string, either 'On' or 'Off'
-%          determines whether the on response or the off response is plotted
-%   preEventPlot_sec: number of seconds before event to start plotting
-%   postEventPlot_sec: number of seconds after event to stop plotting
-%   filters: filters to apply to all analog channels other than cardiac
-%   cardiac_filters: filters to apply to cardiac channel
-%   channelToPlot: list of channel indices to plot
-%   CM: list of the colors for each of the channels in the plot
-%   comment: line from the experiment log corresponding to this run
-%            Not currently used, but could be added as title.
+%
+%   CARDIAC_DATA is a vector of the values from the analog channel connected
+%   to the cardiac electrode. This vector should be empty if removal of
+%   cardiac artifacts is not desired.
+%
+%   ON_OFF is a string that determines whether the on response or the off
+%   response is plotted ('On' or 'Off').
+%
+%   PREEVENTPLOT_SEC is the number of seconds before the event to start plot.
+%
+%   POSTEVENTPLOT_SEC is the number of seconds after the event to stop plot.
+%
+%   FILTERS is a list of filters to apply to all analog channels other than
+%   the cardiac channel.
+%
+%   CARDIAC_FILTERS is a list of filters to apply to the cardiac channel.
+%
+%   CM is a matrix of the colors for each of the channels in the plot. Each
+%   row corresponds to one of the channels, and the three columns are the RGB
+%   values for the color.
+%
+%   CHANNELSNAMES is a list of strings for the names of the channels. This is not
+%   currently used, but is available to use in the legend.
+%
+%   COMMENT is a string that is the line from the experiment log corresponding
+%   to this run. This is not currently used, but is available to use as the
+%   title.
 %
 % Output:
-%   fgh: figure handle
+%
+%   FGH is the figure handle of the generated figure.
+%
+% In general, if the data is in the same format as the example data, it is
+% easier to use PLOT_ALL_VEP.
+%
+% See also PLOT_ALL_VEP.
 
-function [ fgh ] = plot_vep(data, cleanDigitalIn, name, fs, publication_quality, filter_cardiac, OnOff, preEventPlot_sec, postEventPlot_sec, filters, cardiac_filters, channelToPlot, CM, comment)
+
+%% Constants
+
+% Figure window size
+width = 275;   % width of figure (just plot itself, not labels)
+height = 225;  % height of figure (just plot itself, not labels)
+margins = 100; % extra space for labels
+
+% Axes for figure
+xrange = [-preEventPlot_sec, postEventPlot_sec] * 1000; % x-axis limits for figure
+yrange = [-26 26];                                      % y-axis limits for figure
+xticks = [-50, 0, 50, 100];                             % tick marks on x-axis
+yticks = [-26, -13, 0, 13, 26];                         % tick marks on y-axis
+
+% Figure formatting
+font_size = 20; % font size of figure labels
+dig_height = 0.7;   % fraction of vertical space for digital in to occupy
 
 
 %% Look for LED ON and OFF transitions based on digital input channel
@@ -75,51 +119,38 @@ time_axis = (-preEventPlot_samples:postEventPlot_samples) / fs * 1000;
 
 %% Create the figure
 
-% Constants for figure size
-width = 275;   % width of figure (just plot itself, not labels)
-height = 225;  % height of figure (just plot itself, not labels)
-margins = 100; % extra space for labels
-
 % make the figure with white background, with fixed size (in pixels) and invisible
 fgh = figure('Color',[1 1 1],'units','pixels','position',[0 0 (width + 2 * margins) (height + 2 * margins)], 'visible', 'off');
 % make axes with correct margins
 axes('units', 'pixel', 'position', [margins margins width height]);
-% Allow all channels to be shown
-hold on;
+hold on; % Allow all channels to be shown
+pause
 
 
 %% Miscellaneous preparation for figure
 
 % prepare to accumulate plot line handles for the figure legend
-plotline_handles = zeros(size(channelToPlot));
+plotline_handles = zeros(size(channelNames));
 
-% get unprocessed analog channel from cardiac electrode
-cardiacDataRaw = data{strcmp(data, 'Bottom Precordial'), 2};
-
-% filter cardiac data
-cardiacData = run_filters(cardiacDataRaw, cardiac_filters);
+% filter cardiac data, if cardiac data is available
+if (~isempty(cardiac_data))
+    cardiac_data = run_filters(cardiac_data, cardiac_filters);
+end
 
 % select on or off events
-event_index_LED_ONOFF = eval(['event_index_LED_' upper(OnOff)]);
-
-% Hard-coded y-axis limits for paper figures
-% (needed for setting the height of the digital in channel)
-yrange = [-26 26];
+event_index_LED_ONOFF = eval(['event_index_LED_' upper(on_off)]);
 
 
 %% Plot for each channel
-for ii=1:length(channelToPlot)
+for ii = 1:size(data, 1)
 
     % Print progress
-    fprintf(['ii: ' int2str(ii) ' / ' int2str(length(channelToPlot)) '\n']);
+    fprintf('ii: %d / %d\n', ii, size(data, 1));
 
-    % get unprocessed analog channel from electrode
-    chDataRaw = data{channelToPlot(ii),2};
-    % filter cardiac data
-    chData = run_filters(chDataRaw, filters);
-    % remove cardiac artifacts, if requested
-    if (filter_cardiac)
-        chData = cardiac_removal(chData, cardiacData);
+    chDataRaw = data(ii, :);                  % get unprocessed analog channel from electrode
+    chData = run_filters(chDataRaw, filters); % filter electrode data
+    if (~isempty(cardiac_data))               % remove cardiac artifacts, if requested
+        chData = cardiac_removal(chData, cardiac_data, fs);
     end
 
     %% Grab all channel data around valid on/off edges
@@ -146,17 +177,14 @@ for ii=1:length(channelToPlot)
         end
 
         %% plot digital in channel
-        % Select fraction of height for digital in to occupy
-        height = 0.7;
 
         % Select correct interval of digital in, and scale/shift it appropriately
         digitalInDataPlot = cleanDigitalIn((event_index_LED_ONOFF(jj)-preEventPlot_samples):(event_index_LED_ONOFF(jj)+postEventPlot_samples));
-        digitalInDataPlot = height * digitalInDataPlot * abs(yrange(2) - yrange(1));
-        digitalInDataPlot = digitalInDataPlot + yrange(1) + (1 - height) / 2 * abs(yrange(2) - yrange(1));
+        digitalInDataPlot = dig_height * digitalInDataPlot * abs(yrange(2) - yrange(1));
+        digitalInDataPlot = digitalInDataPlot + yrange(1) + (1 - dig_height) / 2 * abs(yrange(2) - yrange(1));
 
         % digital in plotted in black
         plot(time_axis, digitalInDataPlot, 'k', 'linewidth', 2);
-
 
         % copy relevant segment into list
         % Note: detrend may not really be needed if the data is high-passed
@@ -168,7 +196,6 @@ for ii=1:length(channelToPlot)
 
 
     %% compute and plot the average event-aligned LED ON response for this channel
-
     if (publication_quality == 4)
         % Version of figure showing all trials
         plotline_handles(end+1) = plot(time_axis, chData_all_single_trial_collection, 'color', CM(ii, :), 'linewidth', 1);
@@ -203,11 +230,11 @@ end
 fprintf('Number of Trials: %d\n', size(chData_all_single_trial_collection, 1));
 
 %% Special cases to change name of image
-if (strcmp(OnOff, 'Off'))
+if (strcmp(on_off, 'Off'))  % off response
     name = [name, '_off'];
 end
 
-if (~filter_cardiac)
+if (isempty(cardiac_data)) % cardiac artifacts still remain
     name = [name, '_cardiac'];
 end
 
@@ -215,16 +242,12 @@ end
 %% Figure formatting
 
 % Use fixed axes and ticks for axes
-xlim([-preEventPlot_sec, postEventPlot_sec] * 1000);
+xlim(xrange);
 ylim(yrange);
-xticks = [-50, 0, 50, 100];
-yticks = [-26, -13, 0, 13, 26];
 
 % Display full box around figures
 box on;
 
-% Constant for font size
-font_size = 20;
 
 %% Figure with labels
 % set ticks on axes
@@ -241,7 +264,7 @@ set(findall(fgh,'type','text'),'fontSize',font_size,'fontWeight','normal', 'colo
 title('|', 'color', 'white', 'fontsize', font_size);
 
 % Save labelled version of figure
-saveas(fgh, ['figures/' name '.fig']);
+saveas(fgh, ['figures/' name '_labelled.fig']);
 plot2svg(['figures/' name '_labelled.svg'], fgh, 'png');
 
 %% Figure with no labels
@@ -253,6 +276,7 @@ set(findall(fgh,'type','text'),'fontSize',font_size,'fontWeight','normal', 'colo
 ylabel('');
 
 % Save unlabelled version of figure
+saveas(fgh, ['figures/' name '.fig']);
 plot2svg(['figures/' name '.svg'], fgh, 'png');
 
 end

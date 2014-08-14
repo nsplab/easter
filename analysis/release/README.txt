@@ -19,6 +19,34 @@ and taking the ratio of the power in each band in during the experimental
 period and the resting state period.
 
 
+Generating Figures
+==================
+
+Obtaining Data
+--------------
+
+The data is available at [TODO: link], and should be placed in the data
+directory (the data should already be available if this was downloaded from
+[TODO: link].
+
+Running Code
+------------
+
+To generate the figures, run the command
+
+>> generate_all()
+
+in MATLAB, in this directory.
+
+The figures will be placed in the figures directory. Next, to convert some SVG
+files into PDFs, and to crop the PDF files, run
+
+$ ./convert_to_pdf.sh
+
+in the layout directory from a terminal. Finally, compile layout/figures.tex to
+generate the paper format figures.
+
+
 Directory Structure
 ===================
 
@@ -125,22 +153,4 @@ in config/subject_information.m, and each block of N values represents the
 samples from each channel at the timestep.
 
 The data files can be read with util/load_data.m.
-
-
-Generating Figures
-==================
-
-To generate the figures, run the command
-
->> generate_all()
-
-in MATLAB, in this directory.
-
-The figures will be placed in the figures directory. Next, to convert some SVG
-files into PDFs, and to crop the PDF files, run
-
-$ ./convert_to_pdf.sh
-
-in the layout directory from a terminal. Finally, compile layout/figures.tex to
-generate the paper format figures.
 

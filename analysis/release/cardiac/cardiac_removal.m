@@ -138,7 +138,7 @@ if (nargin >= 7 && f3 ~= 0)
     time_axis = ((1:numel(cardiac)) - max_before) / fs * 1000;
 
     % plot mean of cardiac activity
-    set(0, 'CurrentFigure', f4);
+    set(0, 'CurrentFigure', f3);
     hold on;
     plot(time_axis, cardiac, 'color', color, 'linewidth', 2);
 
@@ -165,7 +165,7 @@ if (nargin >= 8 && f4 ~= 0)
     time_axis = ((1:numel(cardiac)) - max_before) / fs * 1000;
 
     % plot all cardiac activity trials
-    set(0, 'CurrentFigure', f5);
+    set(0, 'CurrentFigure', f4);
     hold on;
     plot(time_axis, padded, 'color', color);
 

@@ -154,7 +154,7 @@ for ii=1:length(channelToPlot)
     plot(time_axis, chData(time), 'LineWidth', 2, 'Color', CM(ii, :));
 
     % Remove cardiac artifacts and generate plots
-    chData = cardiac_removal(chData, cardiac_data, fs, filename, CM(ii, :), 0, 0, f3, f4);
+    chData = cardiac_removal(chData, cardiac_data, fs, CM(ii, :), 0, 0, f3, f4);
 
     % Plot cleaned data
     set(0, 'CurrentFigure', f_end);

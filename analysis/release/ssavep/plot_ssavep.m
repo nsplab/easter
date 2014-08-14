@@ -1,50 +1,90 @@
-% plot_ssavep.m
+function [ fgh ] = plot_ssavep(data, cleanDigitalIn, name, ssavep, fs, cardiac_data, windlengthSeconds, noverlapPercent, filters, cardiac_filters, CM, channelNames, comment)
+%PLOT_SSAVEP  Plots the SSAEP/SSVEP response for a single run.
 %
-% Plots the SSAEP/SSVEP response for a single experiment. In general, if the
-% data is in the same format as the example data, it is easier to use
-% plot_all_ssavep.m.
+% FGH = PLOT_SSAVEP(DATA, CLEANDIGITALIN, NAME, EXPERIMENT, FS, ...
+%                   CARDIAC_DATA, WINDLENGTHSECONDS, NOVERLAPPERCENT, ...
+%                   FILTERS, CARDIAC_FILTERS, CM, CHANNELNAMES, COMMENT)
 %
-% Arguments:
-%   data: cell array of the analog channel data
-%         each row corresponds to one of the channels
-%         first column is a string of the channel name
-%         second column is an array of the data
-%   cleanDigitalIn: binary array for the digital in channel (whether or not
-%                   experiment is running)
-%   experiment: either 'ssaep' or 'ssvep', specifying which experiment to plot
-%   fs: sampling frequency
-%   publication_quality: style of the plots
-%     - 1: shaded confidence intervals (not functional as of 8/6/14)
-%         WARNING: MATLAB appears to have a bug that causes figures with
-%                  shading to be saved improperly as PDF and EPS files.
-%                  plot2svg.m is an alternative method of saving, which
-%                  avoids the problem.
-%     - 2: no confidence intervals
-%   windlengthSeconds: window length in seconds for power spectral density
-%   noverlapPercent: overlap percentage for power spectral density windows
-%   filters: filters to apply to all analog channels other than cardiac
-%   cardiac_filters: filters to apply to cardiac channel
-%   channelToPlot: list of channel indices to plot
-%   CM: list of the colors for each of the channels in the plot
-%   name: filename to save to (does not include suffix)
-%   filter_cardiac: whether or not to perform cardiac removal
-%   comment: line from the experiment log corresponding to this run
-%            Not currently used, but could be added as title.
+% Parameters:
+%
+%   DATA is a matrix of values from the analog channels connected to the
+%   electrodes. Each of the rows corresponds to one of the channels. Each of
+%   the columns corresponds to a sample from one of the timesteps.
+%
+%   CLEANDIGITALIN is a binary vector of the digital in channel (whether or not
+%   the LED is on at each time step).
+%
+%   NAME is a string of the filename to save to (should not include suffix).
+%
+%   SSAVEP is a string that selects which experiment to plot (ssaep or ssvep).
+%
+%
+%   CARDIAC_DATA is a vector of the values from the analog channel connected
+%   to the cardiac electrode. This vector should be empty if removal of
+%   cardiac artifacts is not desired.
+%
+%   WINDLENGTHSECONDS is the length of the windows in seconds to be used for
+%   calculating the power spectral density.
+%
+%   NOVERLAPPERCENT is the fraction of windows that overlap for calculating
+%   the power spectral density.
+%
+%   FILTERS is a list of filters to apply to all analog channels other than
+%   the cardiac channel.
+%
+%   CARDIAC_FILTERS is a list of filters to apply to the cardiac channel.
+%
+%   CM is a matrix of the colors for each of the channels in the plot. Each
+%   row corresponds to one of the channels, and the three columns are the RGB
+%   values for the color.
+%
+%   CHANNELSNAMES is a list of strings for the names of the channels. This is not
+%   currently used, but is available to use in the legend.
+%
+%   COMMENT is a string that is the line from the experiment log corresponding
+%   to this run. This is not currently used, but is available to use as the
+%   title.
 %
 % Output:
-%   fgh: figure handle
+%
+%   FGH is the figure handle of the generated figure.
+%
+% In general, if the data is in the same format as the example data, it is
+% easier to use PLOT_ALL_SSAVEP.
+%
+% See also PLOT_ALL_SSAVEP.
 
-function [ fgh ] = plot_ssavep(data, cleanDigitalIn, name, experiment, fs, publication_quality, windlengthSeconds, noverlapPercent, filters, cardiac_filters, channelToPlot, CM, comment)
 
-%% Information about plots
+%% Constants
+
+% Figure window size
+width = 275;   % width of figure (just plot itself, not labels)
+height = 225;  % height of figure (just plot itself, not labels)
+margins = 100; % extra space for labels
+
+% Axes for figure
+if (strcmp(ssavep, 'ssvep'))
+    xrange = ([0 800] / 1000);                    % x-axis limits for ssvep
+else
+    xrange = ([0 4800] / 1000);                   % x-axis limits for ssaep
+end
+yrange = (10 .^ [-1 3]);                          % y-axis limits
+xticks = linspace(xrange(1), xrange(2), 5);       % tick marks on x-axis
+yticks = logspace(log10(yrange(1)), log10(yrange(2)), 5); % tick marks on y-axis
 
 % constants for computing power spectral density (psd)
 windlength = windlengthSeconds * fs;     % window length
 noverlap = windlength * noverlapPercent; % number of overlap timesteps
 
-% Threshold for being considered close to a harmonic
+% Thresholds for being considered close to a harmonic
 threshold_60 = 3;        % Threshold for 60 Hz harmonics
 threshold_harmonics = 3; % Threshold to be considered a harmonic
+
+% whether or not to plot points on harmonics
+harmonic_points = false;
+
+
+%% Information about plots
 
 t1 = diff(cleanDigitalIn); % -1: experiment turns off, 0: no change, 1: experiment turns on
 t2 = find(t1 == 1);        % times when digital in turns on (experiment starts)
@@ -64,42 +104,38 @@ assert(numel(cutLengthE) == 1); % bad data with multiple experiment ends
 assert(cutLengthB < cutLengthE); % bad data with experiment ending before starting
 
 % get frequency of stimulus based on experiment log
-[ nominal_frequency, frequency ] = get_frequency(comment, filename);
+[ nominal_frequency, frequency ] = get_frequency(comment, name);
 
-% get unprocessed analog channel from cardiac electrode
-cardiacDataRaw = data{strcmp(data, 'Bottom Precordial'), 2};
-% filter cardiac data
-cardiacData = run_filters(cardiacDataRaw, cardiac_filters);
+% filter cardiac data, if cardiac data is available
+if (~isempty(cardiac_data))
+    cardiac_data = run_filters(cardiac_data, cardiac_filters);
+end
+
 
 %% Create the figure
-
-% Constants for figure size
-width = 275;   % width of figure (just plot itself, not labels)
-height = 225;  % height of figure (just plot itself, not labels)
-margins = 100; % extra space for labels
 
 % make the figure with white background, with fixed size (in pixels) and invisible
 fgh = figure('Color',[1 1 1],'units','pixels','position',[0 0 (width + 2 * margins) (height + 2 * margins)], 'visible', 'off');
 % make axes with correct margins
 axes('units', 'pixel', 'position', [margins margins width height]);
-% Allow all channels to be shown
-hold on;
+hold on; % Allow all channels to be shown
+
 
 % frequencies / ratio at the harmonics for each channel
-f_harmonic = cell(1, numel(channelToPlot));
-ratio_harmonic = cell(1, numel(channelToPlot));
+f_harmonic = cell(1, size(data, 1));
+ratio_harmonic = cell(1, size(data, 1));
 
-for ii=1:numel(channelToPlot)
+%% Plot for each channel
+for ii=1:size(data, 1)
 
     % Print progress
-    fprintf('ii: %d / %d\n', ii, numel(channelToPlot));
+    fprintf('ii: %d / %d\n', ii, size(data, 1));
 
-    % get unprocessed analog channel from electrode
-    chDataRaw = data{channelToPlot(ii),2};
-    % filter cardiac data
-    chData = run_filters(chDataRaw, filters);
-    % remove cardiac artifacts
-    chData = cardiac_removal(chData, cardiacData);
+    chDataRaw = data(ii, :);                  % get unprocessed analog channel from electrode
+    chData = run_filters(chDataRaw, filters); % filter electrode data
+    if (~isempty(cardiac_data))               % remove cardiac artifacts, if requested
+        chData = cardiac_removal(chData, cardiac_data, fs);
+    end
 
     % blackmanharris is a windowing function - selected somewhat arbitrarily
     % pwelch - Welch's method
@@ -111,8 +147,7 @@ for ii=1:numel(channelToPlot)
         start = (6*fs+cutLengthB);
     end
     [lpxx, f, lpxxc] = pwelch(chData(start:finish), blackmanharris(windlength), noverlap, windlength, fs, 'ConfidenceLevel', 0.95);
-    % print timestamps for experiment
-    fprintf('Experiment: %d %d\n', start, finish);
+    fprintf('Experiment: %d %d\n', start, finish); % print timestamps for experiment
 
     % power spectral density during experiment
     expPSDs = lpxx;
@@ -126,13 +161,13 @@ for ii=1:numel(channelToPlot)
     else
         resting = (cutLengthE + 1 * fs):(-1*fs+length(cleanDigitalIn));
     end
-    fprintf('Baseline: %d %d\n', resting(1), resting(end));
+    fprintf('Baseline: %d %d\n', resting(1), resting(end)); % print timestep during resting state
     [lpxx, f, lpxxc] = pwelch(chData(resting), blackmanharris(windlength), noverlap, windlength, fs, 'ConfidenceLevel', 0.95);
-    % power spectral density during control/baseline
+    % power spectral density during resting state
     ctrPSDs = lpxx;
     confMeanCtr = lpxxc';
 
-    % ratio of experimental psd to baseline psd
+    % ratio of experimental psd to resting psd
     ratio = expPSDs ./ ctrPSDs;
     
     % get harmonics of stimulus
@@ -157,20 +192,12 @@ for ii=1:numel(channelToPlot)
     ratio(near_harmonic) = nan;
 
     color = 0.65 * [1 1 1]; % default color for scalp electrodes
-    if strcmp(data{channelToPlot(ii), 1}, 'Endo')
+    if strcmp(channelNames(ii), 'Endo')
         color = CM(ii,:) + 0.6 * (1 - CM(ii,:)); % special color for endo
     end
     % Display faded data in background (not near 60 Hz or stimulus harmonics)
     plot(f(~isnan(ratio)) / 1000, ratio(~isnan(ratio)),'color', color,'linewidth',1);
     
-    % confidence intervals (not complete - 8/6/14)
-    if publication_quality == 1
-        px=[f', fliplr(f')];
-        py = [confMeanDiff(1,:),  fliplr(confMeanDiff(2,:))];
-        patch(px,py,1,'FaceColor',CM(ii,:),'EdgeColor','none');
-        alpha(.4);
-    end
-
     axis tight;
 
 end
@@ -178,7 +205,7 @@ end
 %% Plot harmonic data
 
 % Plot line for each harmonic
-for ii=1:length(channelToPlot)
+for ii=1:size(data, 1)
     % set 60 Hz harmonics to nan
     valid = ~any(abs(mod(repmat(f_harmonic{ii}, 2, 1), 60) + repmat([0;-60], 1, numel(f_harmonic{ii}))) <= threshold_60, 1);
     ratio_harmonic{ii}(~valid) = nan;
@@ -186,24 +213,17 @@ for ii=1:length(channelToPlot)
 end
 
 % Put point on each harmonic
-for ii=1:length(channelToPlot)
-    %scatter(f_harmonic{ii} / 1000, ratio_harmonic{ii},10^2,[0 0 0], 'fill');
-    %scatter(f_harmonic{ii} / 1000, ratio_harmonic{ii},6^2,CM(ii,:), 'fill');
+for ii=1:size(data, 1)
+    if (harmonic_points)
+        scatter(f_harmonic{ii} / 1000, ratio_harmonic{ii},10^2,[0 0 0], 'fill');
+        scatter(f_harmonic{ii} / 1000, ratio_harmonic{ii},6^2,CM(ii,:), 'fill');
+    end
 end
 
 %% Figure formatting
 
-% Use fixed axes and ticks for axes
-if (strcmp(experiment, 'ssvep'))
-    xrange = ([0 800] / 1000);
-else
-    xrange = ([0 f(end)] / 1000);
-end
 xlim(xrange);
-yrange = (10 .^ [-1 3]);
 ylim(yrange);
-xticks = linspace(xrange(1), xrange(2), 5);
-yticks = logspace(log10(yl(1)), log10(yl(2)), 5);
 
 % Display full box around figures
 box on;
@@ -229,7 +249,7 @@ set(findall(fgh,'type','text'),'fontSize',font_size,'fontWeight','normal', 'colo
 title('|', 'color', 'white', 'fontsize', font_size);
 
 % Save labelled version of figure
-saveas(fgh, ['figures/' name '.fig']);
+saveas(fgh, ['figures/' name '_labelled.fig']);
 plot2svg(['figures/' name '_labelled.svg'], fgh, 'png');
 save2pdf(['figures/' name '_labelled.pdf'], fgh, 150);
 
@@ -242,6 +262,7 @@ set(findall(fgh,'type','text'),'fontSize',font_size,'fontWeight','normal', 'colo
 ylabel('');
 
 % Save unlabelled version of figure
+saveas(fgh, ['figures/' name '.fig']);
 plot2svg(['figures/' name '.svg'], fgh, 'png');
 save2pdf(['figures/' name '.pdf'], fgh, 150);
 

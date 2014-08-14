@@ -1,19 +1,21 @@
-% get_filters.m
+function [ filters ] = get_filters(fs, use_hpf, use_lpf, use_nf_60, use_nf_120, use_nf_180)
+%GET_FILTERS  Returns a list of the requsted filters.
 %
-% This function returns a list of the requested filters.
+% FILTERS = GET_FILTERS(FS, USE_HPF, USE_LPF, USE_NF_60, USE_NF_120, USE_NF_180)
 %
-% Arguments:
-%   fs: sampling frequency
-%   use_hpf: use highpass filter
-%   use_lpf: use lowpass filter
-%   use_nf_60: use 60 Hz notch filter
-%   use_nf_120: use 120 Hz notch filter
-%   use_nf_180: use 180 Hz notch filter
+% Parameters:
+%
+%   FS is the sampling frequency.
+%
+%   USE_HPF is a boolean indicating if the highpass filter is needed.
+%   USE_LPF is a boolean indicating if the lowpass filter is needed.
+%   USE_NF_60 is a boolean indicating if the 60 Hz notch filter is needed.
+%   USE_NF_120 is a boolean indicating if the 120 Hz notch filter is needed.
+%   USE_NF_180 is a boolean indicating if the 180 Hz notch filter is needed.
 %
 % Output:
-%   filters: cell array of requested filters
-
-function [ filters ] = get_filters(fs, use_hpf, use_lpf, use_nf_60, use_nf_120, use_nf_180)
+%
+%   FILTERS is a cell array of requested filters.
 
 filters = {};
 

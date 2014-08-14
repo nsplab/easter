@@ -1,19 +1,25 @@
-% assert_match.m
+function [] = assert_match(files, comments)
+%ASSERT_MATCH  Checks that the data files and experiment logs match.
+%
+% ASSERT_MATCH(FILES, COMMENTS)
 %
 % This function takes a list of the data files for an experiment and the
 % relevant lines in the experiment log to verify that the two match. A match
 % requires the two to have the same number of elements and to have the same
 % hour, minute, and second.
 %
-% Arguments:
-%   files: list of the filenames for an experiment
-%   comments: list of the lines in the experiment log for the experiment
+% Parameters:
+%
+%   FILES is a list of data filenames.
+%
+%   COMMENTS is a list of relevant lines from experiment log.
 %
 % Output:
+%
 %   No return value.
+%
 %   Results in an assertion error if there is a problem with matching.
 
-function [] = assert_match(files, comments)
 
 %% Check for matching experiment log and data files
 assert(length(files) == length(comments)); % check that the experiment log and data files have the same number of VEP runs
@@ -32,8 +38,6 @@ for i = 1:length(files)
   files_minute = files{i}(19:20);
   assert(strcmp(files{i}(21), '_'))
   files_second = files{i}(22:23);
-  %assert(strcmp(files{i}(29:35), '_ssvep_')) % TODO - make this check experiment type
-  %files_extra = files{i}(34:end);
 
   % Hard coded parsing of experiment log
   comment = comments{i};

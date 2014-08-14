@@ -1,183 +1,188 @@
-% cardiac_removal.m
+function [ chData ] = cardiac_removal(chData, cardiacData, fs, color, f1, f2, f3, f4)
+%CARDIAC_REMOVAL  Removes cardiac artifact from another channel.
 %
-% This function removes cardiac artifacts from other channels and plots
-% relevant figures if requested. The channel that is having artifacts
-% removed must be highpass filtered, or the results will be poor.
+% CHDATA = CARDIAC_REMOVAL(CHDATA, CARDIACDATA, FS, COLOR, F1, F2, F3, F4)
 %
-% Arguments:
-%   chData: analog channel to filter cardiac artifacts from
-%   cardiacData: cardiac recording from the same period
-%   name: filename to save to (not currently used)
-%   color: color to plot with, if requested
-%   f1: figure handle for raw cardiac data plot with detected peaks
-%   f2: figure handle for plot of time between peaks
-%   f3: figure handle for plot of time between complexes
-%   f4: figure handle for plot of averaged signals and confidence intervals
-%   f5: figure handle for plot of all signals
+% Parameters:
+%
+%   CHDATA is an vector of data representing an analog channel from which to
+%   remove cardiac artifacts. This channel must be highpass filtered for this
+%   function to perform well.
+%
+%   CARDIACDATA is a vector of data representing a channel recording from a
+%   cardiac electrode.
+%
+%   COLOR specifies which color to plot this channel in (if plots are
+%   requested).
+%
+%   F1 is the figure handle for the plot of the cardiac signal with the
+%   detected peaks.
+%
+%   F2 is the figure handle for the plot of the time between the detected
+%   peaks.
+%
+%   F3 is the figure handle for the plot of the averaged complexes and
+%   confidence intervals for the averages.
+%
+%   F4 is the figure handle for the plot of all of the complexes, aligned to
+%   the detected R peak.
+%
+%   Note that any of F1, F2, F3, or F4 may be set to 0 or omitted if the plot
+%   is not desired.
 %
 % Output:
-%   chData: cardiac filtered data
+%
+%   CHDATA is the same as the original data, with cardiac artifacts filtered
+%   out.
 
-function [ chData ] = cardiac_removal(chData, cardiacData, name, color, f1, f2, f3, f4, f5)
 
-    % fixed font size for figures
-    font_size = 10;
+%% Constants
+font_size = 10;    % font size for labels
+min_time = 0.18;   % minimum valid amount of time between pulses in seconds
+breakpoint = 0.63; % fraction of time after R peak to keep as part of this complex
+                   % (fraction of complex between R peak and midpoint of P and T wave
+beat_range = [150 300]; % range of time between heart beats to show (ms)
+voltage_range = [-200 200]; % range of voltages to show for cardiac activity (uV)
+voltage_ticks = [-200 -100 0 100 200]; % ticks for voltages (uV)
 
-    % chData must be at least high pass filtered (to get rid of drifting
-    assert(all(size(chData) == size(cardiacData)));
-    [~,locs]=findpeaks(cardiacData,'minpeakdistance', round(0.18 * 9600));
-    % TODO: could take cardiac spikes as argument, rather than cardiacData
+assert(all(size(chData) == size(cardiacData)));
+[ ~, locs ] = findpeaks(cardiacData, 'minpeakdistance', round(min_time * fs));
+% TODO: could take cardiac spikes as argument, rather than cardiacData
 
-    if (nargin >= 5 && f1 ~= 0)
-        %% Plot Cardiac Data with Detected Peaks
-        %figure(f1);
-        set(0, 'CurrentFigure', f1);
-        hold on;
-        plot((1:numel(cardiacData)) / 9600, cardiacData, 'color', color);
-        yl = ylim;
-        for i = 1:numel(locs)
-            plot(locs(i) * [1 1] / 9600, yl, 'color', 'black');
-        end
-        plot((1:numel(cardiacData)) / 9600, cardiacData, 'color', color);
-        ylim(yl);
-        xlabel('Time (seconds)');
-        ylabel('$\mu V$', 'interpreter', 'LaTeX');
-        set(findall(f1,'type','text'),'fontSize',font_size,'fontWeight','normal', 'color', [0 0 0]); % Mostly to get rid of the italics from latex
-        title('Detected R Wave');
-        xlim([0 numel(cardiacData) / 9600]);
+if (nargin >= 5 && f1 ~= 0)
+    %% Plot Cardiac Data with Detected Peaks
+    set(0, 'CurrentFigure', f1);
+    hold on;
+
+    % Get range of data
+    yrange = [min(cardiacData), max(cardiacData)];
+
+    % Plot the detected peaks (vertical lines)
+    for i = 1:numel(locs)
+        plot(locs(i) * [1 1] / fs, yrange, 'color', 'black');
     end
 
-    if (nargin >= 6 && f2 ~= 0)
-        %% Compute Distance between R Peaks
-        dt = diff(locs);
-    
-        %% Plot Distance between r peaks
-        %figure(f2);
-        set(0, 'CurrentFigure', f2);
-        scatter(1:numel(dt), dt / 9600 * 1000, 36, color);
-        xlabel('Interval Number');
-        ylabel('Interval Length (ms)');
-        title('Time Between R Peaks');
-        xlim([0 numel(dt)]);
-        ylim([150 300]);
-    
-        %[a,b] = min(dt);
-        %%figure(f1);
-        %set(0, 'CurrentFigure', f1);
-        %xlim(locs(b) / 9600 + [-0.4 0.4]);
-        %locs(b + (-1:1)) / 9600 * 1000
-    end
+    % Plot the cardiac data
+    plot((1:numel(cardiacData)) / fs, cardiacData, 'color', color);
 
-    %% Compute interval (include first, exclude last)
-    cutoff = [1; locs(1:(end-1)) + round(0.63 * diff(locs)); numel(chData) + 1];
+    % Figure formatting and labelling
+    xlim([0 numel(cardiacData) / fs]);
+    ylim(yrange);
+    xlabel('Time (seconds)');
+    ylabel('$\mu V$', 'interpreter', 'LaTeX');
+    set(findall(f1,'type','text'),'fontSize',font_size,'fontWeight','normal', 'color', [0 0 0]); % Mostly to get rid of the italics from latex
+    title('Detected R Wave');
+end
 
-    if (nargin >= 7 && f3 ~= 0)
-        %% Plot Distance between complexes
-        %figure(f3);
-        set(0, 'CurrentFigure', f3);
-        scatter(1:numel(dt), dt / 9600 * 1000, 36, color);
-        xlabel('Interval Number');
-        ylabel('Interval Length (ms)');
-        title('Time Between Complexes');
-        xlim([0 numel(dt)]);
-        ylim([150 300]);
-        set(findall(f3,'type','text'),'fontSize',font_size,'fontWeight','normal', 'color', [0,0,0]);
-        set(gca,'FontSize',font_size);
-    
-        %[a,b] = min(dt);
-        %%figure(f1);
-        %set(0, 'CurrentFigure', f1);
-        %xlim(locs(b) / 9600 + [-0.4 0.4]);
-        %locs(b + (-1:1)) / 9600 * 1000
-    end
+if (nargin >= 6 && f2 ~= 0)
+    %% Plot Distance between R peaks
+    set(0, 'CurrentFigure', f2);
+    dt = diff(locs);
+    scatter(1:numel(dt), dt / fs * 1000, 36, color);
 
-    %% Compute start, R peak, end, and length of each interval
-    r_peak = locs;
-    start = cutoff(1:(end-1));
-    finish = cutoff(2:end);
+    % Figure formatting and labelling
+    xlim([0 numel(dt)]);
+    ylim(beat_range);
+    xlabel('Interval Number');
+    ylabel('Interval Length (ms)');
+    title('Time Between R Peaks');
 
-    assert(all(size(start) == size(r_peak)));
-    assert(all(size(start) == size(finish)));
-    assert(all(start < r_peak));
-    assert(all(r_peak < finish));
+    set(findall(f2,'type','text'),'fontSize',font_size,'fontWeight','normal', 'color', [0,0,0]);
+    set(gca,'FontSize',font_size);
+end
 
-    %dt = finish - start;
-    max_before = max(r_peak - start);
-    max_after = max(finish - r_peak);
-    median_before = median(r_peak - start);
-    median_after = median(finish - r_peak);
+%% Compute interval (include first, exclude last)
+cutoff = [1, locs(1:(end-1)) + round(breakpoint * diff(locs)), numel(chData) + 1];
 
-    %% Gather and align the channel data
-    %padded = nan(numel(r_peak), max(dt));
-    padded = zeros(numel(r_peak), max_before + max_after);
-    for i = 1:numel(r_peak)
-        padded(i, (start(i):(finish(i)-1)) - r_peak(i) + max_before + 1) = chData(start(i):(finish(i)-1));
-    end
+%% Compute start, R peak, end, and length of each interval
+r_peak = locs;
+start = cutoff(1:(end-1));
+finish = cutoff(2:end);
 
-    %% Check that every column/row has a non-nan value
-    assert(all(any(~isnan(padded),1)));
-    assert(all(any(~isnan(padded),2)));
+% Check that start, r_peak, and finish have same number of elements
+assert(all(size(start) == size(r_peak)));
+assert(all(size(start) == size(finish)));
 
-    %% Remove trials that have extreme values
-    invalid = any(abs(padded) > 1e3, 2); % for some reason after applying hpf/lpf/nf, first and last area have extreme values
-    num_invalid = sum(invalid);
-    assert(num_invalid < 15);
-    padded = padded(~invalid, :);
+assert(all(start < r_peak));  % start before peak
+assert(all(r_peak < finish)); % peak before end
 
-    qrs = nanmean(padded, 1)';
-    qrs_std = nanstd(padded, 1)';
+% Compute limit and "normal" times before / after peak
+max_before = max(r_peak - start);
+max_after = max(finish - r_peak);
+median_before = median(r_peak - start);
+median_after = median(finish - r_peak);
 
-    if (nargin >= 8 && f4 ~= 0)
-        %% Plot Mean and Confidence Interval
-        %figure(f4);
-        set(0, 'CurrentFigure', f4);
-        hold on;
-        time_axis = ((1:numel(qrs)) - max_before) / 9600 * 1000;
-        plot(time_axis, qrs, 'color', color, 'linewidth', 2);
-        confMean = bootci(100, @nanmean, padded);
-        %plot(time_axis, confMean(1,:),'--','color',color,'linewidth',2);
-        %plot(time_axis, confMean(2,:),'--','color',color,'linewidth',2);
-        px = [time_axis, fliplr(time_axis)];
-        py = [confMean(1,:), fliplr(confMean(2,:))];
-        patch(px,py,1,'FaceColor',color,'EdgeColor','none');
-    
-        xlabel('Time (ms)');
-        ylabel('$\mu V$', 'interpreter', 'LaTeX');
-        %title(sprintf('QRS Complex Shape: %d trials', size(padded, 1)));
-        %xlim([0 numel(qrs) / 9600]);
-        xlim([-median_before, median_after] / 9600 * 1000);
-        %ylim([-120 120]);
-        %ylim([-150 150]);
-        ylim([-200 200]);
-        set(findall(f4,'type','text'),'fontSize',font_size,'fontWeight','normal', 'color', [0,0,0]);
-        %set(gca, 'YTick', [-150, -100, -50, 0, 50, 100, 150]);
-        set(gca,'YTick',[-200,-100,0,100,200]);
-        %title(sprintf('QRS Complex Shape: %d trials', size(padded, 1)), 'Color', 'White');
-        set(gca,'FontSize',font_size);
-    end
+%% Gather and align the channel data
+padded = zeros(numel(r_peak), max_before + max_after);
+for i = 1:numel(r_peak)
+    padded(i, (start(i):(finish(i)-1)) - r_peak(i) + max_before + 1) = chData(start(i):(finish(i)-1));
+end
 
-    if (nargin >= 9 && f5 ~= 0)
-        %% Plot all curves
-        %figure(f5);
-        set(0, 'CurrentFigure', f5);
-        hold on;
-        plot(((1:numel(qrs)) - max_before) / 9600, padded, 'color', color);
-        xlabel('Time (seconds)');
-        ylabel('$\mu V$', 'interpreter', 'LaTeX');
-        set(findall(f5,'type','text'),'fontSize',font_size,'fontWeight','normal', 'color', [0 0 0]); % Mostly to get rid of the italics from latex
-        title(sprintf('QRS Complex Shape: %d trials', size(padded, 1)));
-        %xlim([0 numel(qrs) / 9600]);
-        xlim([-median_before, median_after] / 9600);
-        %ylim([-120 120]);
-        ylim([-200 200]);
-        set(findall(f4,'type','text'),'fontSize',font_size,'fontWeight','normal', 'color', [0,0,0]);
-        set(gca,'FontSize',font_size);
-    end
+%% Check that every column/row has a non-nan value
+assert(all(any(~isnan(padded), 1)));
+assert(all(any(~isnan(padded), 2)));
 
-    %% Remove qrs
-    filtered_data = zeros(size(chData));
-    for i = 1:numel(r_peak)
-        chData(start(i):(finish(i)-1)) = chData(start(i):(finish(i)-1)) - qrs((start(i):(finish(i)-1)) - r_peak(i) + max_before + 1);
-    end
+%% Remove trials that have extreme values
+invalid = any(abs(padded) > 1e3, 2); % for some reason after applying hpf/lpf/nf, first and last area have extreme values
+num_invalid = sum(invalid);
+assert(num_invalid < 15);            % check that few trials are removed
+padded = padded(~invalid, :);        % keep only valid trials
+
+%% Mean cardiac activity across trials
+cardiac = nanmean(padded, 1);
+
+if (nargin >= 7 && f3 ~= 0)
+    %% Plot Mean and Confidence Interval
+
+    % time centered with R peak at 0
+    time_axis = ((1:numel(cardiac)) - max_before) / fs * 1000;
+
+    % plot mean of cardiac activity
+    set(0, 'CurrentFigure', f4);
+    hold on;
+    plot(time_axis, cardiac, 'color', color, 'linewidth', 2);
+
+    % plot confidence intervals of mean
+    confMean = bootci(100, @nanmean, padded);
+    px = [time_axis, fliplr(time_axis)];
+    py = [confMean(1,:), fliplr(confMean(2,:))];
+    patch(px,py,1,'FaceColor',color,'EdgeColor','none');
+
+    % Figure formatting and labelling
+    xlim([-median_before, median_after] / fs * 1000);
+    ylim(voltage_range);
+    xlabel('Time (ms)');
+    ylabel('$\mu V$', 'interpreter', 'LaTeX');
+    set(gca,'YTick', voltage_ticks);
+    set(findall(f3,'type','text'),'fontSize',font_size,'fontWeight','normal', 'color', [0,0,0]);
+    set(gca,'FontSize',font_size);
+end
+
+if (nargin >= 8 && f4 ~= 0)
+    %% Plot all curves
+
+    % time centered with R peak at 0
+    time_axis = ((1:numel(cardiac)) - max_before) / fs * 1000;
+
+    % plot all cardiac activity trials
+    set(0, 'CurrentFigure', f5);
+    hold on;
+    plot(time_axis, padded, 'color', color);
+
+    xlim([-median_before, median_after] / fs);
+    ylim(voltage_range);
+    xlabel('Time (seconds)');
+    ylabel('$\mu V$', 'interpreter', 'LaTeX');
+    set(gca,'YTick', voltage_ticks);
+    set(findall(f4,'type','text'),'fontSize',font_size,'fontWeight','normal', 'color', [0,0,0]);
+    set(gca,'FontSize',font_size);
+end
+
+%% Remove cardiac activity
+filtered_data = zeros(size(chData));
+for i = 1:numel(r_peak)
+    chData(start(i):(finish(i)-1)) = chData(start(i):(finish(i)-1)) - cardiac((start(i):(finish(i)-1)) - r_peak(i) + max_before + 1);
+end
+
 end
 

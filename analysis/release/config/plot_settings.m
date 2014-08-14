@@ -1,16 +1,18 @@
-% plot_settings.m
+function [ channelToPlot, CM ] = plot_settings()
+%PLOT_SETTINGS  Specifies which channels to plot and colors for the channels.
 %
-% This function specifies which channels to plot and the colors to use for
-% them.
+%   [ CHANNELTOPLOT, CM ] = PLOT_SETTINGS()
 %
-% Arguments:
+% Parameters:
+%
 %   None.
 %
 % Output:
-%   channelToPlot: list of channels to be plotted
-%   CM: color matrix - colors for each channel in the plot
-
-function [ channelToPlot, CM ] = plot_settings()
+%
+%   CHANNELTOPLOT is a list of the channels to be plotted.
+%
+%   CM is a color matrix. Each row corresponds to one of the channels, and
+%   each of the columns corresponds to one of the RGB values.
 
 channelToPlot = [3,5,8,2]; 
 

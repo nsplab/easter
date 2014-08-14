@@ -1,48 +1,39 @@
-% load_data.m
+function [ data, samples ] = load_data(filename, num_channels)
+%LOAD_DATA  Loads data from binary data files.
 %
-% This function loads the requested number of analog channels and the digital in channel.
+%   [ DATA, SAMPLES ] = LOAD_DATA(FILENAME, NUM_CHANNELS) reads binary data
+%   from the file FILENAME with NUM_CHANNELS channels recorded.
+% 
+% Parameters:
 %
-% Arguments:
-%   full_filename: file to be loaded
-%   maxNumberOfChannels: number of analog channels to load
-%   digitalInCh: index of the digital in channel
-%   channelNames: list of the names of the channels
+%   FILENAME is a string that can be either a relative or absolute path.
+%
+%   NUM_CHANNELS is the number of channels recorded in the binary file.
 %
 % Output:
-%   data: cell array (maxNumberOfChannels x 2) of analog channels
-%         each row corresponds to one of the channels
-%         first column is a string of the channel name
-%         second column is an array of the data
-%   cleanDigitalIn: boolean array of digital in channel
+%
+%   DATA is a matrix of single values. Each of the NUM_CHANNELS rows
+%   corresponds to one of the channels. Each of the SAMPLES columns
+%   corresponds to a sample from one of the timesteps.
+%
+%   SAMPLES is an integer that is the number of samples for each channel in
+%   the binary file.
 
-function [ data, cleanDigitalIn ] = load_data(full_filename, maxNumberOfChannels, digitalInCh, channelNames)
+%% Constants
+sample_size = 4;      % number of bytes in each sample
+precision = 'single'; % type of variable to read as
 
-% Open data file
-fid = fopen(full_filename, 'r');
+%% Check that data is complete
+F = dir(filename);                                     % get file information
+bytes = F.bytes;                                       % file size in bytes
+assert(mod(bytes, (num_channels * sample_size)) == 0); % check same number of samples in each channel
+samples = bytes / (num_channels * sample_size);        % number of samples in each channel
 
-% Create cell array for data
-data = cell(maxNumberOfChannels, 2);
-
-% Load each of the channels
-for j=1:maxNumberOfChannels
-    fseek(fid, 4*(j-1), 'bof');                   % move to first timestamp
-    dataColumn = fread(fid, Inf, 'single', 4*64); % read only this channel
-    channelName = channelNames{j};
-
-    % record data to output
-    data(j, 1) = {channelName};
-    data(j, 2) = {dataColumn};
-end
-
-fseek(fid, 4*(digitalInCh-1), 'bof');            % fseek sets the pointer to the first value read in the file. 4 represents 4 bytes.
-                                                 % we're starting to read from the digital input channel, the first value of which is
-                                                 % 4*(digitalInCh-1) bytes into the file.
-dataColumnDig = fread(fid, Inf, 'single', 4*64); % fread iteratively reads values the file and places them into the vector 'dataColumn', 
-                                                 % representing all amplitudes from the current channel.. Inf causes fread to continue until it 
-                                                 % reaches EOF (end of file). 4*64 tells fread to skip 4*64 bytes to get the next value (assumes 65 channels recorded)
-cleanDigitalIn = (dataColumnDig>0);
-
-fclose(fid);
+%% Load data
+fid = fopen(filename, 'r');                  % Open data file
+file = fread(fid, Inf, precision);           % Load all channels
+fclose(fid);                                 % Close data file
+data = reshape(file, num_channels, samples); % Split into channels
 
 end
 

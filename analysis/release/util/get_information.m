@@ -1,15 +1,21 @@
-% get_information.m
+function [ files, comments ] = get_information(pathname, pathname_comments, experiment)
+%GET_INFORMATION  Returns a list of files and comments from experiment log.
 %
-% Arguments:
-%   pathname: directory that contains the data files
-%   pathname_comments: experiment log file
-%   experiment: string ('VEP', 'SSAEP', or 'SSVEP')
+% [ FILES, COMMENTS ] = GET_INFORMATION(PATHNAME, PATHNAME_COMMENTS, EXPERIMENT)
+%
+% Parameters:
+%   PATHNAME is the directory that contains the data files.
+%
+%   PATHNAME_COMMENTS is the filename of the experiment log file.
+%
+%   EXPERIMENT is a string specifying the experiment (VEP, SSAEP, or SSVEP).
 %
 % Output:
-%   files: list of data filenames
-%   comments: list of relevant lines from experiment log
+%
+%   FILES is a list of data filenames.
+%
+%   COMMENTS is a list of relevant lines from experiment log.
 
-function [ files, comments ] = get_information(pathname, pathname_comments, experiment)
 
 % experiment log uses capitalized 'VEP', 'SSAEP', 'SSVEP'
 experiment = upper(experiment);
@@ -18,16 +24,13 @@ tmp = dir(pathname);       % get the list of data filenames for this particular 
 files = {tmp(3:end).name}; % chop out the '.' and '..' filename entries that are in every directory
 
 fid = fopen(pathname_comments);
-if fid==-1 % if the vep.txt comments file doesn't exist, display an error message to the console and skip the textscan
-    fprintf('Experiment log not found.\n');
-    allData = []; % TODO: make this an assert?
-else
-    comments = textscan(fid,'%s','Delimiter','\n'); % read log file
-    C = strfind(comments{1}, ['- ' experiment]);    % get rows for this experiment
-    rows = find(~cellfun('isempty', C));            % grab just the relevant rows
-    comments = comments{1}(rows);
-    fclose(fid);
-end
+assert(fid ~= -1) % check that the experiment log exist
+
+comments = textscan(fid,'%s','Delimiter','\n'); % read log file
+C = strfind(comments{1}, ['- ' experiment]);    % get rows for this experiment
+rows = find(~cellfun('isempty', C));            % grab just the relevant rows
+comments = comments{1}(rows);
+fclose(fid);                                    % close file
 
 % check that the files and experiment log match
 assert_match(files, comments);

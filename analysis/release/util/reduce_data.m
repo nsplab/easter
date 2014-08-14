@@ -1,4 +1,21 @@
 function [ data ] = reduce_data(start_file, end_file, num_channels, channels_to_keep)
+%REDUCE_DATA  Creates a new data file containing only some channels.
+%
+% DATA = REDUCE_DATA(START_FILE, END_FILE, NUM_CHANNELS, CHANNELS_TO_KEEP)
+%
+% Parameters:
+%
+%   START_FILE is the filename of the original binary data file.
+%
+%   END_FILE is the filename of the reduced binary data file.
+%
+%   NUM_CHANNELS is the number of channels in the original file.
+%
+%   CHANNELS_TO_KEEP is a list of the channels to keep in the reduced file.
+%
+% Output:
+%
+%   DATA is the matrix of the remaining data.
 
 % Constants
 element_size = 4;

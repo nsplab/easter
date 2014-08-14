@@ -1,15 +1,17 @@
-% run_filters.m
+function [ data ] = run_filters(data, filters)
+%RUN_FILTERS  Processes a signal with the requested filters.
 %
-% This function processes a signal with the requested filters.
+% DATA = RUN_FILTERS(DATA, FILTERS)
 %
-% Arguments:
-%   data: signal to run the filters on
-%   filters: array of requested filters
+% Parameters:
+%
+%   DATA is a vector representing the signal to run the filters on.
+%
+%   FILTERS is a cell array of requested filters.
 %
 % Output:
-%   data: filtered version of signal
-
-function [ data ] = run_filters(data, filters)
+%
+%   DATA is the filtered version of signal.
 
 for filter = filters
     data = filtfilt(filter{1}.sosMatrix, filter{1}.ScaleValues, data);

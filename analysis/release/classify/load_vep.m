@@ -27,12 +27,15 @@ end
 % Default preEventPlot_sec is to start plot 0.05 seconds (50 ms) before event
 if (nargin < 5) || isempty(preEventPlot_sec)
     %preEventPlot_sec = 0.05;
-    preEventPlot_sec = -0.05;
+    %preEventPlot_sec = -0.05;
+    preEventPlot_sec = -0.005;
 end
 
 % Default postEventPlot_sec is to end plot 0.1 seconds (100 ms) after event
 if (nargin < 6) || isempty(postEventPlot_sec)
-    postEventPlot_sec = 0.5;
+    %postEventPlot_sec = 0.5;
+    %postEventPlot_sec = 0.1;
+    postEventPlot_sec = 0.08;
 end
 
 % Default filters is to only use high-pass filter

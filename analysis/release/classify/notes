@@ -1,0 +1,4 @@
+vep shape changes slightly over time
+  - need to keep training/testing slightly separated
+  - also might affect results
+missed main response (started at 50 ms)

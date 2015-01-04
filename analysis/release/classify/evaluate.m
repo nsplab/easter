@@ -9,7 +9,7 @@ elseif strfind(file_experiment, 'subject2')
     subject_ID = 'subject2';
 end
 
-[ accuracy, sensitivity, specificity ] = evaluate(experiment, control, subject_ID);
+[ accuracy, sensitivity, specificity ] = evaluate_h(experiment, control, subject_ID);
 
 end
 

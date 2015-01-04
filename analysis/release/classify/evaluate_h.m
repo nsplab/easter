@@ -6,33 +6,93 @@ accuracy = [];
 sensitivity = [];
 specificity = [];
 
+%% Preliminary information about plotting
+
+% Information about recording 
+[ numChannels, digitalCh, fs, channelNames, GND, earth ] = subject_information(subject_ID);
+
+% Load names of data files and experiment log
+[ pathname, experiment_log ] = get_pathname(subject_ID, 'vep');
+[ files, comments ] = get_information(['../' pathname], ['../' experiment_log], 'vep');
+
+% Get list of channels to plot and colors for each channel
+[ channelToPlot, CM ] = plot_settings();
+channelToPlot = channelToPlot([end, 1:(end-1)]);
+
+chName = channelNames(channelToPlot);
+
 %for i = 1:numel(experiment)
 %  experiment{i} = experiment{i}(:, 1:10:end);
 %  control{i} = control{i}(:, 1:10:end);
 %end
 
 %for num_trials_mean = 206%1:100
-for num_trials_mean = 1:100
+%for num_trials_mean = 1:100
 %for num_trials_mean = 1:2
+for num_trials_mean = [1, 5, 10, 50, 100]
+%for num_trials_mean = 100
 
   % preprocess - calculate mean
   exp_data = {};
   con_data = {};
   for i = 1:numel(experiment)
-    several_trial_mean = nan(size(experiment{i}, 1) - num_trials_mean + 1, ...
-                             size(experiment{i}, 2));
-    for j = 0:(size(experiment{i}, 1) - num_trials_mean)
-        several_trial_mean(j + 1, :) = mean(experiment{i}(j + (1:num_trials_mean), :), 1);
+    %several_trial_mean = nan(size(experiment{i}, 1) - num_trials_mean + 1, ...
+    %                         size(experiment{i}, 2));
+    several_trial_mean = [];
+    %for j = 0:(size(experiment{i}, 1) - num_trials_mean)
+    for j = 0:num_trials_mean:(size(experiment{i}, 1) - num_trials_mean)
+        %several_trial_mean(j + 1, :) = mean(experiment{i}(j + (1:num_trials_mean), :), 1);
+        several_trial_mean((j / num_trials_mean) + 1, :) = mean(experiment{i}(j + (1:num_trials_mean), :), 1);
     end
     exp_data{i} = several_trial_mean;
   
-    several_trial_mean = nan(size(control{i}, 1) - num_trials_mean + 1, ...
-                             size(control{i}, 2));
-    for j = 0:(size(control{i}, 1) - num_trials_mean)
-        several_trial_mean(j + 1, :) = mean(control{i}(j + (1:num_trials_mean), :), 1);
+    %several_trial_mean = nan(size(control{i}, 1) - num_trials_mean + 1, ...
+    %                         size(control{i}, 2));
+    several_trial_mean = [];
+    %for j = 0:(size(control{i}, 1) - num_trials_mean)
+    for j = 0:num_trials_mean:(size(experiment{i}, 1) - num_trials_mean)
+        %several_trial_mean(j + 1, :) = mean(control{i}(j + (1:num_trials_mean), :), 1);
+        several_trial_mean((j / num_trials_mean) + 1, :) = mean(control{i}(j + (1:num_trials_mean), :), 1);
     end
     con_data{i} = several_trial_mean;
   end
+  exp_data
+  con_data
+
+  for i = 1:numel(chName)
+    yl = [min(min([exp_data{i}; con_data{i}])),
+          max(max([exp_data{i}; con_data{i}]))];
+  end
+
+  N = size(exp_data{1}, 2);
+  f = figure;
+  hold on;
+  handle = [];
+  for i = 1:numel(chName)
+    h = plot((1:N) / fs, exp_data{i}', 'Color', CM(i, :), 'LineWidth', 3);
+    handle = [handle h(1)];
+  end
+  legend(handle, chName);
+  xlim([0 N / fs]);
+  ylim(yl);
+  title(['Experiment (Mean of ' int2str(num_trials_mean) ')']);
+  save2pdf(['experiment_' int2str(num_trials_mean) '.pdf'] , f, 150);
+
+  f = figure;
+  hold on;
+  handle = [];
+  for i = 1:numel(chName)
+    h = plot((1:N) / fs, con_data{i}', 'Color', CM(i, :), 'LineWidth', 3);
+    handle = [handle h(1)];
+  end
+  legend(handle, chName);
+  xlim([0 N / fs]);
+  ylim(yl);
+  title(['Control (Mean of ' int2str(num_trials_mean) ')']);
+  save2pdf(['control_' int2str(num_trials_mean) '.pdf'] , f, 150);
+
+  continue;
+
 
   %figure;
   %plot(exp_data{4}')
@@ -99,19 +159,6 @@ for num_trials_mean = 1:100
 end
 
 
-%% Preliminary information about plotting
-
-% Information about recording 
-[ numChannels, digitalCh, fs, channelNames, GND, earth ] = subject_information(subject_ID);
-
-% Load names of data files and experiment log
-[ pathname, experiment_log ] = get_pathname(subject_ID, 'vep');
-[ files, comments ] = get_information(['../' pathname], ['../' experiment_log], 'vep');
-
-% Get list of channels to plot and colors for each channel
-[ channelToPlot, CM ] = plot_settings();
-
-chName = channelNames(channelToPlot);
 f = figure;
 hold on;
 for i = 1:numel(chName)

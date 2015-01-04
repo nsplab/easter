@@ -15,12 +15,16 @@ for i = 1:numel(experiment)
   spec_num = 0;
   spec_den = 0;
 
+  %Guess = (data(:, 1:10:end) * model.B{i} > 0);
+  Guess = (data(:, 1:10:end) * model.B{i} > 0.5);
+
   for j = 1:size(data, 1)
     logp_exp = logmvnpdf(data(j, :), model.experiment_mean{i}, model.experiment_cov{i}, model.experiment_invcov{i}, model.experiment_logdetcov{i});
     logp_con = logmvnpdf(data(j, :), model.control_mean{i}, model.control_cov{i}, model.control_invcov{i}, model.control_logdetcov{i});
     %logp_exp = -sum((data(j, :) - model.experiment_mean{i}) .^ 2);
     %logp_con = -sum((data(j, :) - model.control_mean{i}) .^ 2);
     guess = (logp_exp > logp_con);
+    %guess = Guess(j);
     if (guess == isexp(j))
       num_correct = num_correct + 1;
     end

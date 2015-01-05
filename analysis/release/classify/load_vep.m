@@ -1,4 +1,4 @@
-function [ vep_data ] = load_vep(filename, on_off)
+function [ vep_data, digital_data, pre, post ] = load_vep(filename, on_off)
 
 if strfind(filename, 'subject1')
     subject_ID = 'subject1';
@@ -29,14 +29,19 @@ if (nargin < 5) || isempty(preEventPlot_sec)
     %preEventPlot_sec = 0.05;
     %preEventPlot_sec = -0.05;
     preEventPlot_sec = -0.005;
+    %preEventPlot_sec = 0.05;
 end
 
 % Default postEventPlot_sec is to end plot 0.1 seconds (100 ms) after event
 if (nargin < 6) || isempty(postEventPlot_sec)
     %postEventPlot_sec = 0.5;
     %postEventPlot_sec = 0.1;
-    postEventPlot_sec = 0.08;
+    %postEventPlot_sec = 0.08;
+    postEventPlot_sec = 0.1;
 end
+
+pre = 1000 * preEventPlot_sec;
+post = 1000 * postEventPlot_sec;
 
 % Default filters is to only use high-pass filter
 % Note: allow filters to be empty (do not enforce default)
@@ -105,6 +110,7 @@ event_index_LED_ONOFF = eval(['event_index_LED_' upper(on_off)]);
 
 %% process each channel
 vep_data = cell(size(data, 1), 1);
+digital_data = cell(size(data, 1), 1);
 for ii = 1:size(data, 1)
 
     chDataRaw = data(ii, :);                  % get unprocessed analog channel from electrode
@@ -118,6 +124,7 @@ for ii = 1:size(data, 1)
 
     % matrix of all single trial responses for the single channel stored in chData, aligned to the on or off edge
     chData_all_single_trial_collection = [];
+    digital = [];
 
     %for each LED on/off event, snip out that segment and append it as a row in chData_all_single_trial_responses
     for jj=2:length(event_index_LED_ONOFF)-1,
@@ -140,8 +147,11 @@ for ii = 1:size(data, 1)
         chData_all_single_trial_collection(end+1, 1:totalEventPlot_samples)...
             = detrend(chData((event_index_LED_ONOFF(jj)-preEventPlot_samples):...
                             (event_index_LED_ONOFF(jj)+postEventPlot_samples)));
+        digital = cleanDigitalIn((event_index_LED_ONOFF(jj)-preEventPlot_samples):...
+                                 (event_index_LED_ONOFF(jj)+postEventPlot_samples));
     end
     vep_data{ii} = chData_all_single_trial_collection;
+    digital_data{ii} = digital;
 end
 
 end

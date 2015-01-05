@@ -1,0 +1,55 @@
+%\documentclass[20pt]{extarticle}
+%\documentclass[14pt]{extarticle}
+\documentclass[12pt]{article}
+
+%\usepackage[margin=0.5in]{geometry}
+%\usepackage[paperwidth=5.5in, paperheight=8.5in]{geometry}
+\usepackage[top=1in, bottom=1in, left=0.5in, right=0.5in]{geometry}
+\usepackage[font={large}]{caption}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{hyperref}
+\usepackage{multirow}
+\usepackage{array}
+
+\renewcommand*{\familydefault}{\sfdefault}
+
+\pagestyle{plain}
+
+\begin{document}
+\setlength{\tabcolsep}{1pt}
+\begin{figure}[H]
+\hspace{2cm}
+\includegraphics[scale=0.8]{../../release/figures/legend.pdf} \vspace{0.0cm} \\
+\begin{center}
+\begin{tabular}{c|ccc}
+& Experiment & Live & Dead \\
+\hline
+\raisebox{-0.5\height}                                         {1} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.32] {experiment_1.pdf}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.32]{livecontrol_1.pdf}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.32]{deadcontrol_1.pdf}} \\
+\raisebox{-0.5\height}                                         {5} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.32] {experiment_5.pdf}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.32]{livecontrol_5.pdf}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.32]{deadcontrol_5.pdf}} \\
+\raisebox{-0.5\height}                                         {10} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.32] {experiment_10.pdf}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.32]{livecontrol_10.pdf}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.32]{deadcontrol_10.pdf}} \\
+\raisebox{-0.5\height}                                         {50} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.32] {experiment_50.pdf}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.32]{livecontrol_50.pdf}} &
+\raisebox{-0.5\height}{\includegraphics[scale=0.32]{deadcontrol_50.pdf}} \\
+\end{tabular}
+%\vspace{1cm}
+\caption{}
+%\caption{Performance of the electrodes at the optimal location for the endovascular location compared with the performance on the live control trials. The SSAEP and SSVEP experimental trials for Subject 1 are shown for the mid-basilar location. All other performances are shown at the basilar tip position. In each of the experiments, all experimental trials elicited a much larger response than the control experiments, which indicates that true non-artifactual responses were recorded. In addition, the endovascular electrode achieved superior signals compared to the scalp electrodes for the VEP and SSAEP experiments.}
+\label{fig:both}
+% Figure 2
+\end{center}
+\end{figure}
+\end{document}
+

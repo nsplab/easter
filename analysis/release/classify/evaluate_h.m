@@ -1,4 +1,4 @@
-function [ accuracy, sensitivity, specificity ] = evaluate(experiment, control, subject_ID)
+function [ accuracy, sensitivity, specificity ] = evaluate(experiment, control, subject_ID, digital_data, pre, post, control_type)
 
 assert(numel(experiment) == numel(control));
 
@@ -17,7 +17,11 @@ specificity = [];
 
 % Get list of channels to plot and colors for each channel
 [ channelToPlot, CM ] = plot_settings();
+
+experiment = experiment([end, 1:(end-1)]);
+control = control([end, 1:(end-1)]);
 channelToPlot = channelToPlot([end, 1:(end-1)]);
+CM = CM([end, 1:(end-1)], :);
 
 chName = channelNames(channelToPlot);
 
@@ -29,7 +33,7 @@ chName = channelNames(channelToPlot);
 %for num_trials_mean = 206%1:100
 %for num_trials_mean = 1:100
 %for num_trials_mean = 1:2
-for num_trials_mean = [1, 5, 10, 50, 100]
+for num_trials_mean = [1, 2, 5, 10, 50, 100]
 %for num_trials_mean = 100
 
   % preprocess - calculate mean
@@ -56,40 +60,56 @@ for num_trials_mean = [1, 5, 10, 50, 100]
     end
     con_data{i} = several_trial_mean;
   end
-  exp_data
-  con_data
 
+  yl = [Inf, -Inf];
   for i = 1:numel(chName)
-    yl = [min(min([exp_data{i}; con_data{i}])),
-          max(max([exp_data{i}; con_data{i}]))];
+    yl = [min([min(min([exp_data{i}; con_data{i}])), yl(1)]),
+          max([max(max([exp_data{i}; con_data{i}])), yl(2)])];
   end
+  yl = [min([ yl(1), -yl(2)])
+        max([-yl(1),  yl(2)])];
 
   N = size(exp_data{1}, 2);
   f = figure;
   hold on;
   handle = [];
   for i = 1:numel(chName)
-    h = plot((1:N) / fs, exp_data{i}', 'Color', CM(i, :), 'LineWidth', 3);
+    if (size(exp_data{i}, 1) > 10)
+      h = plot(1000 * (1:N) / fs - pre, exp_data{i}(1:10, :)', 'Color', CM(i, :), 'LineWidth', 3);
+    else
+      h = plot(1000 * (1:N) / fs - pre, exp_data{i}', 'Color', CM(i, :), 'LineWidth', 3);
+    end
     handle = [handle h(1)];
   end
-  legend(handle, chName);
-  xlim([0 N / fs]);
+  dig_height = 0.7;
+  h = plot(1000 * (1:N) / fs - pre, dig_height * digital_data{1}(1, :) * (yl(2) - yl(1)) + yl(1) + (1 - dig_height) / 2 * abs(yl(2) - yl(1)), 'Color', 'black', 'LineWidth', 3);
+  %legend(handle, chName);
+  xlim(1000 * [0 N / fs] - pre);
   ylim(yl);
   title(['Experiment (Mean of ' int2str(num_trials_mean) ')']);
+  xlabel('Time (ms)');
+  ylabel('Signal (\mu V)');
   save2pdf(['experiment_' int2str(num_trials_mean) '.pdf'] , f, 150);
 
   f = figure;
   hold on;
   handle = [];
   for i = 1:numel(chName)
-    h = plot((1:N) / fs, con_data{i}', 'Color', CM(i, :), 'LineWidth', 3);
+    if (size(con_data{i}, 1) > 10)
+      h = plot(1000 * (1:N) / fs - pre, con_data{i}(1:10, :)', 'Color', CM(i, :), 'LineWidth', 3);
+    else
+      h = plot(1000 * (1:N) / fs - pre, con_data{i}', 'Color', CM(i, :), 'LineWidth', 3);
+    end
     handle = [handle h(1)];
   end
-  legend(handle, chName);
-  xlim([0 N / fs]);
+  h = plot(1000 * (1:N) / fs - pre, dig_height * digital_data{1}(1, :) * (yl(2) - yl(1)) + yl(1) + (1 - dig_height) / 2 * abs(yl(2) - yl(1)), 'Color', 'black', 'LineWidth', 3);
+  %legend(handle, chName);
+  xlim(1000 * [0 N / fs] - pre);
   ylim(yl);
   title(['Control (Mean of ' int2str(num_trials_mean) ')']);
-  save2pdf(['control_' int2str(num_trials_mean) '.pdf'] , f, 150);
+  xlabel('Time (ms)');
+  ylabel('Signal (\mu V)');
+  save2pdf([control_type 'control_' int2str(num_trials_mean) '.pdf'] , f, 150);
 
   continue;
 
@@ -161,7 +181,10 @@ end
 
 f = figure;
 hold on;
+size(accuracy)
+size(CM)
 for i = 1:numel(chName)
+  i
   plot(accuracy(:, i), 'Color', CM(i, :), 'LineWidth', 3);
 end
 legend(chName);

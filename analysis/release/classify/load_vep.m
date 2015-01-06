@@ -28,8 +28,9 @@ end
 if (nargin < 5) || isempty(preEventPlot_sec)
     %preEventPlot_sec = 0.05;
     %preEventPlot_sec = -0.05;
-    preEventPlot_sec = -0.005;
+    %preEventPlot_sec = -0.005;
     %preEventPlot_sec = 0.05;
+    preEventPlot_sec = -0.030;
 end
 
 % Default postEventPlot_sec is to end plot 0.1 seconds (100 ms) after event
@@ -37,7 +38,8 @@ if (nargin < 6) || isempty(postEventPlot_sec)
     %postEventPlot_sec = 0.5;
     %postEventPlot_sec = 0.1;
     %postEventPlot_sec = 0.08;
-    postEventPlot_sec = 0.1;
+    %postEventPlot_sec = 0.1;
+    postEventPlot_sec = 0.060;
 end
 
 pre = 1000 * preEventPlot_sec;

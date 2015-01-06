@@ -128,10 +128,10 @@ for num_trials_mean = 1:10
   control_train    = false(size(con_data{1}, 1), 1);
   control_test     = false(size(con_data{1}, 1), 1);
 
-  experiment_train = true(size(exp_data{1}, 1), 1);
-  experiment_test  = true(size(exp_data{1}, 1), 1);
-  control_train    = true(size(con_data{1}, 1), 1);
-  control_test     = true(size(con_data{1}, 1), 1);
+  %experiment_train = true(size(exp_data{1}, 1), 1);
+  %experiment_test  = true(size(exp_data{1}, 1), 1);
+  %control_train    = true(size(con_data{1}, 1), 1);
+  %control_test     = true(size(con_data{1}, 1), 1);
   
   %experiment_train(1:50) = true;
   %experiment_test(51:end) = true;
@@ -148,10 +148,10 @@ for num_trials_mean = 1:10
   %control_train(1:50) = true;
   %control_test(end-49:end) = true;
   
-  %experiment_train(1:10) = true;
-  %experiment_test(11:end) = true;
-  %control_train(1:10) = true;
-  %control_test(11:end) = true;
+  experiment_train(1:10) = true;
+  experiment_test(11:end) = true;
+  control_train(1:10) = true;
+  control_test(11:end) = true;
   
   %experiment_train(1:floor(size(experiment{1}, 2) / 2)) = true;
   %experiment_test(ceil(size(experiment{1}, 2) / 2):end) = true;
@@ -167,8 +167,10 @@ for num_trials_mean = 1:10
   for i = 1:numel(exp_data)
     assert(all(size(exp_data{i}) == size(exp_data{1})));
   
-    e_train{i} = exp_data{i}(experiment_train, :);
-    c_train{i} = con_data{i}(control_train, :);
+    %e_train{i} = exp_data{i}(experiment_train, :);
+    %c_train{i} = con_data{i}(control_train, :);
+    e_train{i} = exp_data{i}(experiment_train, [190:250, 590:700]);
+    c_train{i} = con_data{i}(control_train, [190:250, 590:700]);
   end
   model = train(e_train, c_train);
   
@@ -180,8 +182,8 @@ for num_trials_mean = 1:10
   
     %e_test{i} = exp_data{i}(experiment_test, :);
     %c_test{i} = con_data{i}(control_test, :);
-    e_test{i} = exp_data{i}(experiment_test, :);
-    c_test{i} = con_data{i}(control_test, :);
+    e_test{i} = exp_data{i}(experiment_test, [190:250, 590:700]);
+    c_test{i} = con_data{i}(control_test, [190:250, 590:700]);
   end
   
   [acc, sen, spec] = test(model, e_test, c_test);

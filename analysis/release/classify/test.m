@@ -26,8 +26,8 @@ for i = 1:numel(experiment)
     %logp_exp = -sum((data(j, :) - model.experiment_mean{i}) .^ 2);
     %logp_con = -sum((data(j, :) - model.control_mean{i}) .^ 2);
 
-    %guess = (logp_exp > logp_con);
-    guess = predict(model.linclass{i}, data(j, :));
+    guess = (logp_exp > logp_con);
+    %guess = predict(model.linclass{i}, data(j, :));
 
     %guess
     %guess = Guess(j);

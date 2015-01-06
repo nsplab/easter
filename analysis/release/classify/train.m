@@ -36,7 +36,7 @@ for i = 1:numel(experiment)
   %mean(Y == (X * B{i} > 0.5))
 
   linclass{i} = fitcdiscr(X, Y);
-  linclass{i}
+  %linclass{i}
   %quadclass{i} = fitcdiscr(X, Y, 'discrimType','quadratic');
   %quadclass{i}
 end

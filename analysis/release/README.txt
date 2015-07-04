@@ -4,7 +4,7 @@ Introduction
 This directory contains code to generate the figures for [TODO: paper name/citation].
 The code generates plots showing the Visual Evoked Potential (VEP) response,
 the Steady-State Visual Evoked Potential (SSVEP) response, and the Steady-State
-Auditory Evoked Potential (SSAEP).
+Auditory Evoked Potential (SSAEP). for endovascular/scalp electrode in the two rabbits in the manuscript
 
 Visual Evoked Potential (VEP)
 -----------------------------
@@ -21,6 +21,11 @@ period and the resting state period.
 
 Generating Figures
 ==================
+
+Step:
+1. Download data
+check for "rabbit" and "animal" (change to subject)
+send data and code to mosalam, have him test run and edit tutorial if necessary
 
 Obtaining Data
 --------------

@@ -1,12 +1,12 @@
 function [ accuracy, sensitivity, specificity ] = evaluate(file_experiment, file_control, on_off, control_type)
 
-%experiment = load_vep_decimate(file_experiment, on_off);
-%%[ control, digital_data, pre, post, decimate_rate ] = load_vep(file_control, on_off);
-%[ control, digital_data, pre, post, decimate_rate ] = load_vep_decimate(file_control, on_off);
+experiment = load_vep_decimate(file_experiment, on_off);
+%[ control, digital_data, pre, post, decimate_rate ] = load_vep(file_control, on_off);
+[ control, digital_data, pre, post, decimate_rate ] = load_vep_decimate(file_control, on_off);
 
-experiment = load_vep(file_experiment, on_off);
-[ control, digital_data, pre, post ] = load_vep(file_control, on_off);
-decimate_rate = 1;
+%experiment = load_vep(file_experiment, on_off);
+%[ control, digital_data, pre, post ] = load_vep(file_control, on_off);
+%decimate_rate = 1;
 
 if strfind(file_experiment, 'subject1')
     subject_ID = 'subject1';

@@ -1,4 +1,4 @@
-%plot_all_ssaep.m
+%plot_all_vep.m
 %
 %Authors: M. Ebrahimi, L. Srinivasan / nspl.org
 %
@@ -17,13 +17,22 @@
 %	
 %	The analysis code assumes a fixed sampling rate of 9600 Hz and digital input channel # of 65 (both designated in arduino_vep.m)
 
+clear;
+close all;
+addpath('../utilities')
 
 %///////////////////////////////////////////////
 % START BLOCK: Hardcoded variables
 %///////////////////////////////////////////////
+rabbit_ID = '1rabbit_dec_10_2012';
+rabbit_ID = '2rabbit_jan_23_2013';
+rabbit_ID = '4rabbit_feb_5_2014';
+rabbit_ID = '5rabbit_mar_4_2014';
+rabbit_ID = '6rabbit_apr_11_2014';
 %rabbit_ID = '7rabbit_apr_15_2014';                                         %'7rabbit_apr_15_2014' corresponds to the experiment performed 4/15/14
-rabbit_ID = '8rabbit_apr_24_2014';
-%rabbit_ID = '9rabbit_may_6_2014';
+%rabbit_ID = '8rabbit_apr_24_2014';
+rabbit_ID = '9rabbit_may_6_2014';
+rabbit_ID = '10rabbit_may_15_2014';
 
 decimate_factor = 10;                                                      % decimate the data to speed up plotting (decimate_factor = 1 is no decimation; 10 is reasonable)
                                                                            %(this Matlab function implements proper downsampling using anti-aliasing, with decimate.m).
@@ -54,12 +63,21 @@ pathname_comments = ['../../../../data/easter/' rabbit_ID '/neuro/neuro_experime
 pathname_matdata = ['../../../../data/easter/' rabbit_ID '/neuro/matlab_data/ssaep/'];
 
 %Channel labels during VEP for all rabbits (5,6,7, etc.)
-switch rabbit_ID
-    case {'7rabbit_apr_15_2014', '8rabbit_apr_24_2014','9rabbit_may_6_2014'}
         channelNames_VEP = {'Disconnected','Endo','Mid head','Disconnected','Right Eye','Right Leg','Back Head','Left Eye','Bottom Precordial','Top Precordial'};
-        plot_only_neuro_and_endo_channels = 0;                             % choose to plot only neuro and endo channels, excluding disconnected or precordial channels
         gtechGND = 'Nose';
         earth = 'Left Leg';
+switch rabbit_ID
+    case '7rabbit_apr_15_2014'
+    case '8rabbit_apr_24_2014'
+    case '9rabbit_may_6_2014'
+        channelNames_VEP = {'Disconnected','Endo','Mid head','Disconnected','Right Eye','Right Leg','Back Head','Left Eye','Bottom Precordial','Top Precordial'};
+        gtechGND = 'Nose';
+        earth = 'Left Leg';
+    case '10rabbit_may_15_2014'
+        channelNames_VEP = {'Disconnected','Endo','Mid head','Disconnected','Right Eye','Right Leg','Back Head','Left Eye','Bottom Precordial','Top Precordial'};
+        gtechGND = 'Nose';
+        earth = 'Left Leg';
+        plot_only_neuro_and_endo_channels = 0;                             % choose to plot only neuro and endo channels, excluding disconnected or precordial channels
     case '6rabbit_apr_15_2014'
         channelNames_VEP = {'Disconnected','Endo','Mid head','Disconnected','Right Eye','Right Leg','Back Head','Left Eye','Bottom Precordial','Top Precordial'};
     case '5rabbit_apr_15_2014'
@@ -89,7 +107,7 @@ else
     % specific for rabbit 8
     C = strfind(allData{1}, '- SSAEP'); % get rows with '- VEP' in them
     rows = find(~cellfun('isempty', C));
-    allData{1} = allData{1}(rows);
+    allData = allData{1}(rows);
 end
 
 %////////////////////////////////////////////////////////////////////////////////////////
@@ -99,13 +117,80 @@ end
 
 ssaep_data = {};
 
-for i=1:length(S),				%for each data file in the directory
+%% Check for matching experiment log and data files
+assert(length(S) == length(allData)); % check that the experiment log and data files have the same number of VEP runs
+for i = 1:length(S)
+  % Hard coded parsing of file name
+  assert(strcmp(S{i}(1), '_'))
+  S_day = S{i}(2:4);
+  assert(strcmp(S{i}(5), '_'))
+  S_date = S{i}(6:7);
+  assert(strcmp(S{i}(8), '.'))
+  S_month = S{i}(9:10);
+  assert(strcmp(S{i}(11), '.'))
+  S_month = S{i}(12:15);
+  assert(strcmp(S{i}(16), '_'))
+  S_hour = S{i}(17:18);
+  assert(strcmp(S{i}(19:21), '%3A'))
+  S_minute = S{i}(22:23);
+  assert(strcmp(S{i}(24:26), '%3A'))
+  S_second = S{i}(27:28);
+  assert(strcmp(S{i}(29:35), '_ssaep_'))
+  S_extra = S{i}(34:end);
+
+  % Hard coded parsing of experiment log
+  header = allData{i};
+  if header(2) == ':'
+      header = ['0' header]; % one digit hour - pad with extra 0
+  end
+  header_hour = header(1:2);
+  assert(strcmp(header(3), ':'))
+  header_minute = header(4:5);
+  assert(strcmp(header(6), ':'))
+  header_second = header(7:8);
+
+  % Check for explicit match
+  %pause(0.1);
+  assert(strcmp(S_hour, header_hour));
+  assert(strcmp(S_minute, header_minute));
+  assert(strcmp(S_second, header_second));
+end
+
+length(S)
+% rabbit 10 has 29 sec baseline in i=7
+% rabbit 10 in i=37 is too short
+% rabbit 8 i = 1 has multiple start/stop
+% rabbit 8 i = 2,3,4,5,...,26 has no start
+% rabbit 7 i = 1 is only 8 seconds long, less than 1 sec baseline
+% rabbit 7 i = 2 is only 25 seconds long, 4.66 sec baseline
+% rabbit 7 i = 3 has no start/stop
+% rabbit 7 i = 4 only 34.55 sec long, 9.6 sec baseline
+% rabbit 6, i=1 only 26.17 sec, 0.3939 sec baseline
+% rabbit 6, i=2,3 has no start
+% rabbit 6, i=4 has no start/stop
+% rabbit 6, i=5 has 9 seconds of experiment
+% rabbit 6, i=6 has start=2.86, end=25.01
+% rabbit 6, i=7 has start=1.23, end=8.35
+%for i=1:length(S),				%for each data file in the directory
+%for i=2:length(S),				%for each data file in the directory
+%for i=7:length(S),				%for each data file in the directory
+%for i=26:length(S),				%for each data file in the directory
+%for i=[1:6 8:36 38:length(S)],				%for each data file in the directory
+%for i = [15 24 33 36 12] % rabbit 10
+%for i = [3] % rabbit 9/10 86 Hz baseline
+%for i = [3 15 24 33 36 12] % rabbit 10 with baseline
+%for i = [5] % rabbit 9 86 Hz baseline
+for i = length(S)
+%for i = [8 32 35 41 11] % rabbit 9
+%for i = [5 8 32 35 41 11] % rabbit 9 with baseline
+%for i = [3 5 8 32 35 41 11]
+    close all;
     filename = S{i};
-    filename
+    fprintf('filename: %s,\t%d / %d\n', filename, i, length(S));
     fid = fopen([pathname filename], 'r');
     
     ssaep_data{i,1} = filename;
-    ssaep_data{i,2} = allData{1}(i);
+    ssaep_data{i,2} = allData(i);
     
     data = cell(0,2);
     dataDecimated = cell(0,2);
@@ -137,6 +222,7 @@ for i=1:length(S),				%for each data file in the directory
     
     switch publication_quality
         case 1
+            run('publish_ssaep_v2.m');
         case 2
             run('publish_ssaep_v2.m');
         case 3
@@ -145,14 +231,14 @@ for i=1:length(S),				%for each data file in the directory
     
     
     sampling_rate_in_Hz = original_sampling_rate_in_Hz;
-    save([pathname_matdata S{i} '.mat'], 'data', 'sampling_rate_in_Hz', 'gtechGND','channelNames_VEP','cleanDigitalIn');
+    %save([pathname_matdata S{i} '.mat'], 'data', 'sampling_rate_in_Hz', 'gtechGND','channelNames_VEP','cleanDigitalIn');
     sampling_rate_in_Hz = original_sampling_rate_in_Hz / decimate_factor;
-    save([pathname_matdata S{i} '_decimated.mat'], 'dataDecimated', 'sampling_rate_in_Hz', 'gtechGND','channelNames_VEP','cleanDigitalInDecimated');
+    %save([pathname_matdata S{i} '_decimated.mat'], 'dataDecimated', 'sampling_rate_in_Hz', 'gtechGND','channelNames_VEP','cleanDigitalInDecimated');
     
-    saveas(fgh, [pathname_matdata S{i} '.fig']);
+    %saveas(fgh, [pathname_matdata S{i} '.fig']);
 end
 
-save([pathname_matdata 'ssaep_data.mat'], 'ssaep_data');
+%save([pathname_matdata 'ssaep_data.mat'], 'ssaep_data');
 
 %GND = gtechGND;                                                            %label indicating position of gtech ground (differential input to the g.HiAmp)
 %fs = original_sampling_rate_in_Hz/decimate_factor;                         %variable name 'fs' is used by arduino_vep.m

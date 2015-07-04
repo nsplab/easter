@@ -162,6 +162,8 @@ for num_trials_mean = 1:10
   %experiment_test  = true(size(exp_data{1}, 1), 1);
   %control_train    = true(size(con_data{1}, 1), 1);
   %control_test     = true(size(con_data{1}, 1), 1);
+  time_slots = [190:250, 590:700];
+  time_slots = [16:18, 22:24, 25:27];
   
   % Train
   for i = 1:numel(exp_data)
@@ -169,8 +171,8 @@ for num_trials_mean = 1:10
   
     %e_train{i} = exp_data{i}(experiment_train, :);
     %c_train{i} = con_data{i}(control_train, :);
-    e_train{i} = exp_data{i}(experiment_train, [190:250, 590:700]);
-    c_train{i} = con_data{i}(control_train, [190:250, 590:700]);
+    e_train{i} = exp_data{i}(experiment_train, time_slots);
+    c_train{i} = con_data{i}(control_train, time_slots);
   end
   model = train(e_train, c_train);
   
@@ -182,8 +184,8 @@ for num_trials_mean = 1:10
   
     %e_test{i} = exp_data{i}(experiment_test, :);
     %c_test{i} = con_data{i}(control_test, :);
-    e_test{i} = exp_data{i}(experiment_test, [190:250, 590:700]);
-    c_test{i} = con_data{i}(control_test, [190:250, 590:700]);
+    e_test{i} = exp_data{i}(experiment_test, time_slots);
+    c_test{i} = con_data{i}(control_test, time_slots);
   end
   
   [acc, sen, spec] = test(model, e_test, c_test);

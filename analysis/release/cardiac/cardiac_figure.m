@@ -110,12 +110,12 @@ cardiac_data = run_filters(cardiac_data, cardiac_filters);             % filter 
 %% Preparing figures
 
 % Open invisible screens for figures
-f_start = figure('Color',[1 1 1],'units','pixels','position',position, 'visible', 'off'); axes('units', 'pixel', 'position', [margins margins width height]); box on;
-f_end   = figure('Color',[1 1 1],'units','pixels','position',position, 'visible', 'off'); axes('units', 'pixel', 'position', [margins margins width height]); box on;
-f1      = figure('Color',[1 1 1],'units','pixels','position',position, 'visible', 'off'); axes('units', 'pixel', 'position', [margins margins width height]); box on;
-f2      = figure('Color',[1 1 1],'units','pixels','position',position, 'visible', 'off'); axes('units', 'pixel', 'position', [margins margins width height]); box on;
-f3      = figure('Color',[1 1 1],'units','pixels','position',position, 'visible', 'off'); axes('units', 'pixel', 'position', [margins margins width height]); box on;
-f4      = figure('Color',[1 1 1],'units','pixels','position',position, 'visible', 'off'); axes('units', 'pixel', 'position', [margins margins width height]); box on;
+f_start = figure('Color',[1 1 1],'units','pixels','position',position, 'visible', 'on'); axes('units', 'pixel', 'position', [margins margins width height]); box on;
+f_end   = figure('Color',[1 1 1],'units','pixels','position',position, 'visible', 'on'); axes('units', 'pixel', 'position', [margins margins width height]); box on;
+f1      = figure('Color',[1 1 1],'units','pixels','position',position, 'visible', 'on'); axes('units', 'pixel', 'position', [margins margins width height]); box on;
+f2      = figure('Color',[1 1 1],'units','pixels','position',position, 'visible', 'on'); axes('units', 'pixel', 'position', [margins margins width height]); box on;
+f3      = figure('Color',[1 1 1],'units','pixels','position',position, 'visible', 'on'); axes('units', 'pixel', 'position', [margins margins width height]); box on;
+f4      = figure('Color',[1 1 1],'units','pixels','position',position, 'visible', 'on'); axes('units', 'pixel', 'position', [margins margins width height]); box on;
 
 % Plot vertical bar at time 0
 set(0, 'CurrentFigure', f3);
@@ -128,16 +128,16 @@ plot([0 0], yrange, 'color', 'black', 'linewidth', 2);
 % Plot scaled cardiac data
 set(0, 'CurrentFigure', f_start);
 hold on;
-plot(time_axis, cardiac_scale * cardiac_data(time), 'LineWidth', 2, 'Color', 'black');
+plot(time_axis, cardiac_scale * cardiac_data(time), 'LineWidth', 2, 'Color', [0, 0.75, 0]);
 
 % Plot scaled cardiac data
 set(0, 'CurrentFigure', f_end);
 hold on;
-plot(time_axis, cardiac_scale * cardiac_data(time), 'LineWidth', 2, 'Color', 'black');
+plot(time_axis, cardiac_scale * cardiac_data(time), 'LineWidth', 2, 'Color', [0, 0.75, 0]);
 
 
 %% Plot cardiac channel
-cardiac_removal(cardiac_scale * cardiac_data, cardiac_data, fs, 'black', f1, f2, f3, f4);
+cardiac_removal(cardiac_scale * cardiac_data, cardiac_data, fs, [0, 0.75, 0], f1, f2, f3, f4);
 
 
 %% Plot all other channels
@@ -166,12 +166,16 @@ end
 %% Label starting and ending example data figures
 for f = [f_start, f_end]
     set(0, 'CurrentFigure', f);
-    xlabel('Time (ms)');
-    ylabel('$\mu V$', 'interpreter', 'LaTeX');
-    set(gca,'XTick',xticks);
-    set(gca,'YTick',yticks);
     xlim(xrange);
     ylim(yrange);
+    xlabel('Time (ms)');
+    ylabel('$\mu V$', 'interpreter', 'LaTeX');
+    xlabh = get(gca,'XLabel');
+    set(xlabh,'Position',get(xlabh,'Position') - [0 0.10 * diff(yrange) 0]);
+    ylabh = get(gca,'YLabel');
+    set(ylabh,'Position',get(ylabh,'Position') - [0.10 * diff(xrange) 0 0]);
+    set(gca,'XTick',xticks);
+    set(gca,'YTick',yticks);
     set(findall(f_start,'type','text'),'fontSize',font_size,'fontWeight','normal', 'color', [0,0,0]);
     set(gca,'FontSize',font_size);
 end
@@ -184,10 +188,14 @@ saveas(f1, ['figures/' filename '_r_peak.fig']);
 saveas(f2, ['figures/' filename '_dt.fig']);
 save2pdf(['figures/' filename '_dt.pdf'], f2, 150);
 
-plot2svg(['figures/' filename '_cardiac.svg'], f3, 'png')
+plot2svg(['figures/' filename '_cardiac_aligned.svg'], f3, 'png')
 
-save2pdf(['figures/' filename '_cardiac_all.pdf'], f4, 150);
+save2pdf(['figures/' filename '_cardiac_aligned_all.pdf'], f4, 150);
 
 save2pdf(['figures/' filename '_start.pdf'], f_start, 150);
 save2pdf(['figures/' filename '_end.pdf'], f_end, 150);
+
+plot2svg(['figures/' filename '_cardiac_aligned_all.svg'], f4, 'png');
+plot2svg(['figures/' filename '_start.svg'], f_start, 'png');
+plot2svg(['figures/' filename '_end.svg'], f_end, 'png');
 

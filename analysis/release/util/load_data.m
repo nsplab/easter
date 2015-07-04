@@ -22,7 +22,7 @@ function [ data, samples ] = load_data(filename, num_channels)
 %% Constants
 sample_size = 4;      % number of bytes in each sample
 precision = 'single'; % type of variable to read as
-
+%filename
 %% Check that data is complete
 F = dir(filename);                                     % get file information
 bytes = F.bytes;                                       % file size in bytes

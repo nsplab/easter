@@ -29,6 +29,7 @@ hold on;
 
 % Plot garbage to have something for the legend
 legends = [];
+  legends = [legends plot(0, 0, 'Color', [0 0.75 0], 'linewidth', linewidth)];
 for i = 1:numel(channelToPlot)
   legends = [legends plot(0, 0, 'Color', CM(i, :), 'linewidth', linewidth)];
 end
@@ -38,7 +39,8 @@ end
 
 % make the legend
 if (nargin >= 1) && include_cardiac
-    legend(legends, {channelNames{channelToPlot}, 'Cardiac'}, 'fontsize', fontsize);
+    %legend(legends, {channelNames{channelToPlot}, 'Cardiac'}, 'fontsize', fontsize);
+    legend(legends, {'Precordical', channelNames{channelToPlot}, 'LED Status'}, 'fontsize', fontsize);
 else
     legend(legends, channelNames(channelToPlot), 'fontsize', fontsize);
 end
@@ -49,8 +51,8 @@ set(legends, 'visible', 'off');
 set(gca, 'visible', 'off');
 
 % Save figure
-save2pdf('figures/legend.pdf', f, 1200);
-plot2svg('figures/legend.svg', f, 'png');
+save2pdf('figures/legend_cardiac.pdf', f, 1200);
+plot2svg('figures/legend_cardiac.svg', f, 'png');
 
 end
 

@@ -17,13 +17,22 @@
 %	
 %	The analysis code assumes a fixed sampling rate of 9600 Hz and digital input channel # of 65 (both designated in arduino_vep.m)
 
+clear;
+close all;
+addpath('../utilities')
 
 %///////////////////////////////////////////////
 % START BLOCK: Hardcoded variables
 %///////////////////////////////////////////////
+rabbit_ID = '1rabbit_dec_10_2012';
+rabbit_ID = '2rabbit_jan_23_2013';
+rabbit_ID = '4rabbit_feb_5_2014';
+rabbit_ID = '5rabbit_mar_4_2014';
+%rabbit_ID = '6rabbit_apr_11_2014';
 %rabbit_ID = '7rabbit_apr_15_2014';                                         %'7rabbit_apr_15_2014' corresponds to the experiment performed 4/15/14
-rabbit_ID = '8rabbit_apr_24_2014';
-%rabbit_ID = '9rabbit_may_6_2014';
+%rabbit_ID = '8rabbit_apr_24_2014';
+rabbit_ID = '9rabbit_may_6_2014';
+%rabbit_ID = '10rabbit_may_15_2014';
 
 decimate_factor = 10;                                                      % decimate the data to speed up plotting (decimate_factor = 1 is no decimation; 10 is reasonable)
                                                                            %(this Matlab function implements proper downsampling using anti-aliasing, with decimate.m).
@@ -54,14 +63,21 @@ pathname_comments = ['../../../../data/easter/' rabbit_ID '/neuro/neuro_experime
 pathname_matdata = ['../../../../data/easter/' rabbit_ID '/neuro/matlab_data/ssvep/'];
 
 %Channel labels during VEP for all rabbits (5,6,7, etc.)
+        channelNames_VEP = {'Disconnected','Endo','Mid head','Disconnected','Right Eye','Right Leg','Back Head','Left Eye','Bottom Precordial','Top Precordial'};
+        gtechGND = 'Nose';
+        earth = 'Left Leg';
 switch rabbit_ID
     case '7rabbit_apr_15_2014'
     case '8rabbit_apr_24_2014'
     case '9rabbit_may_6_2014'
         channelNames_VEP = {'Disconnected','Endo','Mid head','Disconnected','Right Eye','Right Leg','Back Head','Left Eye','Bottom Precordial','Top Precordial'};
-        plot_only_neuro_and_endo_channels = 0;                             % choose to plot only neuro and endo channels, excluding disconnected or precordial channels
         gtechGND = 'Nose';
         earth = 'Left Leg';
+    case '10rabbit_may_15_2014'
+        channelNames_VEP = {'Disconnected','Endo','Mid head','Disconnected','Right Eye','Right Leg','Back Head','Left Eye','Bottom Precordial','Top Precordial'};
+        gtechGND = 'Nose';
+        earth = 'Left Leg';
+        plot_only_neuro_and_endo_channels = 0;                             % choose to plot only neuro and endo channels, excluding disconnected or precordial channels
     case '6rabbit_apr_15_2014'
         channelNames_VEP = {'Disconnected','Endo','Mid head','Disconnected','Right Eye','Right Leg','Back Head','Left Eye','Bottom Precordial','Top Precordial'};
     case '5rabbit_apr_15_2014'
@@ -91,7 +107,7 @@ else
     % specific for rabbit 8
     C = strfind(allData{1}, '- SSVEP'); % get rows with '- VEP' in them
     rows = find(~cellfun('isempty', C));
-    allData{1} = allData{1}(rows);
+    allData = allData{1}(rows);
 end
 
 %////////////////////////////////////////////////////////////////////////////////////////
@@ -101,13 +117,67 @@ end
 
 ssvep_data = {};
 
-for i=1:length(S),				%for each data file in the directory
+%% Check for matching experiment log and data files
+assert(length(S) == length(allData)); % check that the experiment log and data files have the same number of VEP runs
+for i = 1:length(S)
+  % Hard coded parsing of file name
+  assert(strcmp(S{i}(1), '_'))
+  S_day = S{i}(2:4);
+  assert(strcmp(S{i}(5), '_'))
+  S_date = S{i}(6:7);
+  assert(strcmp(S{i}(8), '.'))
+  S_month = S{i}(12:15);
+  assert(strcmp(S{i}(16), '_'))
+  S_hour = S{i}(17:18);
+  assert(strcmp(S{i}(19:21), '%3A'))
+  S_minute = S{i}(22:23);
+  assert(strcmp(S{i}(24:26), '%3A'))
+  S_second = S{i}(27:28);
+  assert(strcmp(S{i}(29:35), '_ssvep_'))
+  S_extra = S{i}(34:end);
+
+  % Hard coded parsing of experiment log
+  header = allData{i};
+  if header(2) == ':'
+      header = ['0' header]; % one digit hour - pad with extra 0
+  end
+  header_hour = header(1:2);
+  assert(strcmp(header(3), ':'))
+  header_minute = header(4:5);
+  assert(strcmp(header(6), ':'))
+  header_second = header(7:8);
+
+  % Check for explicit match
+  assert(strcmp(S_hour, header_hour));
+  assert(strcmp(S_minute, header_minute));
+  assert(strcmp(S_second, header_second));
+end
+
+% rabbit 9, i=7 has multiple start/stop
+% rabbit 8, i = 17,18,19,20,21,22 has multiple start/stop and stops are before start
+% rabbit 6, i=6 has no start
+%for i=[1:6 8:length(S)],				%for each data file in the directory
+%for i=1:length(S),				%for each data file in the directory
+%for i=11:length(S),				%for each data file in the directory
+%for i=15:length(S),				%for each data file in the directory
+%for i=17:length(S),				%for each data file in the directory
+%for i=18:length(S),				%for each data file in the directory
+%for i=19:length(S),				%for each data file in the directory
+%for i=1:length(S),				%for each data file in the directory
+%for i=[11 23 32 35 14] % rabbit 10
+%for i=[2 11 23 32 35 14] % rabbit 10 with baseline
+%for i = [2] % rabbit 9/10 40 Hz baseline
+%for i = length(S) - 1
+%for i = [5 29 32 38 8] % rabbit 9
+for i = [2 5 29 32 38 8] % rabbit 9 with baseline
+    close all;
     filename = S{i};
-    filename
+    fprintf('filename: %s,\t%d / %d\n', filename, i, length(S));
+
     fid = fopen([pathname filename], 'r');
     
     ssvep_data{i,1} = filename;
-    ssvep_data{i,2} = allData{1}(i);
+    ssvep_data{i,2} = allData(i);
     
     data = cell(0,2);
     dataDecimated = cell(0,2);
@@ -139,6 +209,7 @@ for i=1:length(S),				%for each data file in the directory
     
     switch publication_quality
         case 1
+            run('publish_ssvep_v2.m');
         case 2
             run('publish_ssvep_v2.m');
         case 3

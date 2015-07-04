@@ -41,13 +41,13 @@ margins = 100; % extra space for labels
 position = [0 0 (width + 2 * margins) (height + 2 * margins)];
 
 % Open invisible screen for figure
-f_start = figure('Color',[1 1 1],'units','pixels','position',position, 'visible', 'off'); axes('units', 'pixel', 'position', [margins margins width height]);
-f_end = figure('Color',[1 1 1],'units','pixels','position',position, 'visible', 'off'); axes('units', 'pixel', 'position', [margins margins width height]);
-f1 = figure('Color',[1 1 1],'units','pixels','position',position, 'visible', 'off'); axes('units', 'pixel', 'position', [margins margins width height]);
-f2 = figure('Color',[1 1 1],'units','pixels','position',position, 'visible', 'off'); axes('units', 'pixel', 'position', [margins margins width height]);
-f3 = figure('Color',[1 1 1],'units','pixels','position',position, 'visible', 'off'); axes('units', 'pixel', 'position', [margins margins width height]);
-f4 = figure('Color',[1 1 1],'units','pixels','position',position, 'visible', 'off'); axes('units', 'pixel', 'position', [margins margins width height]);
-f5 = figure('Color',[1 1 1],'units','pixels','position',position, 'visible', 'off'); axes('units', 'pixel', 'position', [margins margins width height]);
+f_start = figure('Color',[1 1 1],'units','pixels','position',position, 'visible', 'off'); axes('units', 'pixel', 'position', [margins margins width height]); box on;
+f_end = figure('Color',[1 1 1],'units','pixels','position',position, 'visible', 'off'); axes('units', 'pixel', 'position', [margins margins width height]); box on;
+f1 = figure('Color',[1 1 1],'units','pixels','position',position, 'visible', 'off'); axes('units', 'pixel', 'position', [margins margins width height]); box on;
+f2 = figure('Color',[1 1 1],'units','pixels','position',position, 'visible', 'off'); axes('units', 'pixel', 'position', [margins margins width height]); box on;
+f3 = figure('Color',[1 1 1],'units','pixels','position',position, 'visible', 'off'); axes('units', 'pixel', 'position', [margins margins width height]); box on;
+f4 = figure('Color',[1 1 1],'units','pixels','position',position, 'visible', 'off'); axes('units', 'pixel', 'position', [margins margins width height]); box on;
+f5 = figure('Color',[1 1 1],'units','pixels','position',position, 'visible', 'off'); axes('units', 'pixel', 'position', [margins margins width height]); box on;
 
 interval = [10 11];
 time = interval(1)*9600:interval(2)*9600;

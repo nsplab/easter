@@ -74,9 +74,15 @@ margins = 100; % extra space for labels
 
 % Axes for figure
 xrange = [-preEventPlot_sec, postEventPlot_sec] * 1000; % x-axis limits for figure
-yrange = [-26 26];                                      % y-axis limits for figure
+%yrange = [-26 26];                                      % y-axis limits for figure
+%yrange = [-100 100];                                      % y-axis limits for figure
+%yrange = [-150 150];                                      % y-axis limits for figure
+yrange = [-70 70];                                      % y-axis limits for figure
 xticks = [-50, 0, 50, 100];                             % tick marks on x-axis
-yticks = [-26, -13, 0, 13, 26];                         % tick marks on y-axis
+%yticks = [-26, -13, 0, 13, 26];                         % tick marks on y-axis
+%yticks = [-100, -50, 0, 50, 100];                         % tick marks on y-axis
+%yticks = [-150, -75, 0, 75, 150];                         % tick marks on y-axis
+yticks = [-70, -35, 0, 35, 70];                         % tick marks on y-axis
 
 % Figure formatting
 font_size = 20; % font size of figure labels
@@ -127,9 +133,6 @@ hold on; % Allow all channels to be shown
 
 
 %% Miscellaneous preparation for figure
-
-% prepare to accumulate plot line handles for the figure legend
-plotline_handles = zeros(size(channelNames));
 
 % filter cardiac data, if cardiac data is available
 if (~isempty(cardiac_data))
@@ -183,7 +186,9 @@ for ii = 1:size(data, 1)
         digitalInDataPlot = digitalInDataPlot + yrange(1) + (1 - dig_height) / 2 * abs(yrange(2) - yrange(1));
 
         % digital in plotted in black
-        plot(time_axis, digitalInDataPlot, 'k', 'linewidth', 2);
+        if (jj == 2)
+            plot(time_axis, digitalInDataPlot, 'k', 'linewidth', 2);
+        end
 
         % copy relevant segment into list
         % Note: detrend may not really be needed if the data is high-passed
@@ -195,26 +200,52 @@ for ii = 1:size(data, 1)
 
 
     %% compute and plot the average event-aligned LED ON response for this channel
-    if (publication_quality == 4)
-        % Version of figure showing all trials
-        plotline_handles(end+1) = plot(time_axis, chData_all_single_trial_collection, 'color', CM(ii, :), 'linewidth', 1);
-    else
-        % Version of figure showing mean (and possibly confidence intervals)
+    if (publication_quality == 5)
+
+        num_trials_mean = 10;
+        several_trial_mean = nan(size(chData_all_single_trial_collection, 1) - num_trials_mean, ...
+                                 size(chData_all_single_trial_collection, 2));
+        for i = 0:(size(chData_all_single_trial_collection, 1) - num_trials_mean)
+            several_trial_mean(i + 1, :) = mean(chData_all_single_trial_collection(i + (1:num_trials_mean), :), 1);
+        end
+
+        several_trial_mean = sort(several_trial_mean, 1);
+        upperbound = several_trial_mean(round(0.975 * size(several_trial_mean, 1)), :);
+        lowerbound = several_trial_mean(round(0.025 * size(several_trial_mean, 1)), :);
+
+        % shaded confidence intervals
+        px = [time_axis, fliplr(time_axis)];
+        py = [upperbound, fliplr(lowerbound)];
+        patch_handle = patch(px, py, 1, 'FaceColor', CM(ii, :), 'EdgeColor', 'none', 'FaceAlpha', 0.2);
 
         % plot the trial-averaged response aligned to LED on/off
-        chData_trial_averaged = mean(chData_all_single_trial_collection);
-        plotline_handles(end+1) = plot(time_axis, chData_trial_averaged,'color',CM(ii,:),'linewidth',2);
+        chData_trial_averaged = mean(several_trial_mean);
+        plot(time_axis, chData_trial_averaged,'color',CM(ii,:),'linewidth',2);
+    elseif (publication_quality == 4)
+        %% Version of figure showing all trials
+        %plot(time_axis, chData_all_single_trial_collection, 'color', CM(ii, :), 'linewidth', 1);
+        num_trials_mean = 50;
+        several_trial_mean = nan(size(chData_all_single_trial_collection, 1) - num_trials_mean, ...
+                                 size(chData_all_single_trial_collection, 2));
+        for i = 0:(size(chData_all_single_trial_collection, 1) - num_trials_mean)
+            several_trial_mean(i + 1, :) = mean(chData_all_single_trial_collection(i + (1:num_trials_mean), :), 1);
+        end
+        plot(time_axis, several_trial_mean, 'color', CM(ii, :), 'linewidth', 1);
+    else
+        % Version of figure showing mean (and possibly confidence intervals)
 
         % versions that include a confidence interval
         if (publication_quality == 1) || (publication_quality == 3)
             % compute bootstrapped confidence intervals
-            confMean = bootci(100, @mean, chData_all_single_trial_collection);
+            confMean = bootci(100, {@mean, chData_all_single_trial_collection}, 'alpha', 0.05);
             if publication_quality == 1
                 % shaded confidence intervals
                 px = [time_axis, fliplr(time_axis)];
                 py = [confMean(1,:), fliplr(confMean(2,:))];
-                patch(px, py, 1, 'FaceColor', CM(ii, :), 'EdgeColor', 'none');
-                alpha(0.2);
+                patch_handle = patch(px, py, 1, 'FaceColor', CM(ii, :), 'EdgeColor', 'none', 'FaceAlpha', 0.2);
+                %alpha = 0.2;
+                %patch(px, py, 1, 'FaceColor', (1 - alpha) * [1, 1, 1] + alpha * CM(ii, :), 'EdgeColor', 'none');
+                %alpha(patch_handle, 0.2);
             end
             if publication_quality == 3
                 % dashed lines for confidence intervals
@@ -222,11 +253,19 @@ for ii = 1:size(data, 1)
                 plot(time_axis, confMean(2,:), '--', 'color', CM(ii, :), 'linewidth', 2);
             end
         end
+
+        % plot the trial-averaged response aligned to LED on/off
+        chData_trial_averaged = mean(chData_all_single_trial_collection);
+        plot(time_axis, chData_trial_averaged,'color',CM(ii,:),'linewidth',2);
     end
 end
 
 % Print the number of trials used
 fprintf('Number of Trials: %d\n', size(chData_all_single_trial_collection, 1));
+
+if (publication_quality == 5)
+    name = [name, '_mean_', int2str(num_trials_mean)];
+end
 
 %% Special cases to change name of image
 if (strcmp(on_off, 'Off'))  % off response
@@ -255,6 +294,11 @@ set(gca, 'YTick', yticks);
 % label axes
 xlabel('Time (ms)');
 ylabel('$\mu V$','Interpreter','LaTex');
+xlabh = get(gca,'XLabel');
+set(xlabh,'Position',get(xlabh,'Position') - [0 0.10 * diff(yrange) 0]);
+ylabh = get(gca,'YLabel');
+set(ylabh,'Position',get(ylabh,'Position') - [0.10 * diff(xrange) 0 0]);
+
 % set size of tick labels
 set(gca,'FontSize',font_size);
 %set size of labels
@@ -278,5 +322,6 @@ ylabel('');
 saveas(fgh, ['figures/' name '.fig']);
 plot2svg(['figures/' name '.svg'], fgh, 'png');
 
+%asdnkasdkjasd
 end
 

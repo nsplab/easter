@@ -95,9 +95,33 @@ for i = index_list
     end
 
     % Plot SSAEP/SSVEP response
-    plot_ssavep(data, cleanDigitalIn, filename, ssavep, fs, cardiac_data, windlengthSeconds, noverlapPercent, filters, cardiac_filters, CM, channelNames(channelToPlot), comments(i));
+    if (strcmp(filename, 'Tue_06_05_2014_11_37_22'))
+        [ data2, cleanDigitalIn2 ] = load_data([pathname 'Tue_06_05_2014_11_31_23'], numChannels);
+        data_all2 = load_data([pathname 'Tue_06_05_2014_11_31_23'], numChannels);                % data from all channels
+        cleanDigitalIn2 = (data_all2(digitalCh, :) > 0);                         % binary digital in channel
+        data2 = data_all2(channelToPlot, :);                                     % data for relevant channels
+        cardiac_data2 = []; % empty array if no cardiac artifact filtering
+        if (filter_cardiac)
+            % cardiac channel for removal of cardiac artifacts
+            cardiac_data2 = data_all2(strcmp(channelNames, 'Bottom Precordial'), :);
+        end
+        plot_ssavep(data, cleanDigitalIn, filename, ssavep, fs, cardiac_data, windlengthSeconds, noverlapPercent, filters, cardiac_filters, CM, channelNames(channelToPlot), comments(i), data2, cleanDigitalIn2, cardiac_data2);
+    else if (strcmp(filename, 'Tue_06_05_2014_11_42_15'))
+        [ data2, cleanDigitalIn2 ] = load_data([pathname 'Tue_06_05_2014_11_39_46'], numChannels);
+        data_all2 = load_data([pathname 'Tue_06_05_2014_11_39_46'], numChannels);                % data from all channels
+        cleanDigitalIn2 = (data_all2(digitalCh, :) > 0);                         % binary digital in channel
+        data2 = data_all2(channelToPlot, :);                                     % data for relevant channels
+        cardiac_data2 = []; % empty array if no cardiac artifact filtering
+        if (filter_cardiac)
+            % cardiac channel for removal of cardiac artifacts
+            cardiac_data2 = data_all2(strcmp(channelNames, 'Bottom Precordial'), :);
+        end
+        plot_ssavep(data, cleanDigitalIn, filename, ssavep, fs, cardiac_data, windlengthSeconds, noverlapPercent, filters, cardiac_filters, CM, channelNames(channelToPlot), comments(i), data2, cleanDigitalIn2, cardiac_data2);
+    else
+      plot_ssavep(data, cleanDigitalIn, filename, ssavep, fs, cardiac_data, windlengthSeconds, noverlapPercent, filters, cardiac_filters, CM, channelNames(channelToPlot), comments(i));
+    end
 
-    close all;
+    %close all;
 
 end % for i = index_list
 

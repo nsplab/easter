@@ -74,9 +74,10 @@ margins = 100; % extra space for labels
 %end
 xrange = [0 4800];
 %xrange = [0 1000];
-yrange = (10 .^ [-1 3]);                          % y-axis limits
+%yrange = (10 .^ [-1 3]);                          % y-axis limits
+yrange = (10 .^ [-4 1]);                          % y-axis limits
 xticks = linspace(xrange(1), xrange(2), 5);       % tick marks on x-axis
-yticks = logspace(log10(yrange(1)), log10(yrange(2)), 5); % tick marks on y-axis
+yticks = logspace(log10(yrange(1)), log10(yrange(2)), 6); % tick marks on y-axis
 
 % constants for computing power spectral density (psd)
 windlength = windlengthSeconds * fs;     % window length
@@ -94,7 +95,7 @@ SPLICING = (nargin >= 15);
 %% Create the figure
 
 % make the figure with white background, with fixed size (in pixels) and invisible
-fgh = figure('Color',[1 1 1],'units','pixels','position',[0 0 (width + 2 * margins) (height + 2 * margins)], 'visible', 'on');
+fgh = figure('Color',[1 1 1],'units','pixels','position',[0 0 (width + 2 * margins) (height + 2 * margins)], 'visible', 'off');
 % make axes with correct margins
 axes('units', 'pixel', 'position', [margins margins width height]);
 hold on; % Allow all channels to be shown
@@ -227,6 +228,7 @@ for ii=1:size(data, 1)
 
     % ratio of experimental psd to resting psd
     ratio = expPSDs ./ ctrPSDs;
+    ratio = ctrPSDs;
     
     % get harmonics of stimulus
     num_harmonics = floor(f(end)/frequency);      % highest harmonic that is relevant

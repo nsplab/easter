@@ -46,16 +46,29 @@ noverlapPercent = 0.25; % number overlap percent
 % Load names of data files and experiment log
 [ pathname, experiment_log ] = get_pathname(subject_ID, ssavep);
 [ files, comments ] = get_information(pathname, experiment_log, ssavep);
-if (strcmp(subject_ID, 'subject1') == 1)
-  pathname = 'data/subject1/ssvep/';
-  files = {'Thu_15_05_2014_12_08_22', 'Thu_15_05_2014_16_38_47'};
-else
-  pathname = 'data/subject2/ssvep/';
-  files = {'Tue_06_05_2014_11_14_51', 'Tue_06_05_2014_15_48_24'};
-end
+comments = {'1', '2', '3', '4'};
+comments = {'11:14:51 - SSVEP 40 Hz, experiment, electrode = X-pedion-10 @ catheter tip, position = basilar tip', '11:23:01 - SSVEP 40 Hz, live-animal-control, electrode = X-pedion-10 @ catheter tip, position = basilar tip', '15:48:24 - SSVEP 40 hz, experiment, electrode =  guidewire @ catheter tip, position = basilar tip', '15:48:24 - SSVEP 40 hz, experiment, electrode =  guidewire @ catheter tip, position = basilar tip', '15:48:24 - SSVEP 40 hz, experiment, electrode =  guidewire @ catheter tip, position = basilar tip', '15:48:24 - SSVEP 40 hz, experiment, electrode =  guidewire @ catheter tip, position = basilar tip'}
 
 % Get list of channels to plot and colors for each channel
 [ channelToPlot, CM ] = plot_settings();
+endo = strcmp(channelNames(channelToPlot), 'Endo');
+
+CMi = CM;
+CMi(endo, :) = [1.0 0.0 0.0];
+CMi(~endo, :) = repmat([0.0 1.0 0.0], sum(~endo), 1);
+CMf = CM;
+CMf(endo, :) = [0.0 0.0 0.0];
+CMf(~endo, :) = repmat([0.0 0.0 1.0], sum(~endo), 1);
+
+if (strcmp(subject_ID, 'subject1') == 1)
+  pathnames = {'data/subject1/ssvep/', 'data/subject1/ssaep/', 'data/subject1/ssaep/', 'data/subject1/ssvep/', 'data/subject1/ssaep/', 'data/subject1/ssaep/'};
+  files = {'Thu_15_05_2014_12_08_22', 'Thu_15_05_2014_12_28_28', 'Thu_15_05_2014_12_31_02', 'Thu_15_05_2014_16_38_47', 'Thu_15_05_2014_16_54_15', 'Thu_15_05_2014_16_58_34'};
+  CMs = {CMi, lighten(CMi, 0.25), lighten(CMi, 0.5), CMf, lighten(CMf, 0.25), lighten(CMf, 0.5)};
+else
+  pathnames = {'data/subject2/ssvep/', 'data/subject2/ssaep/', 'data/subject2/ssaep/', 'data/subject2/ssvep/', 'data/subject2/ssaep/', 'data/subject2/ssaep/'};
+  files = {'Tue_06_05_2014_11_14_51', 'Tue_06_05_2014_11_31_23', 'Tue_06_05_2014_11_37_22', 'Tue_06_05_2014_15_48_24', 'Tue_06_05_2014_15_55_07', 'Tue_06_05_2014_15_57_52'};
+  CMs = {CMi, lighten(CMi, 0.25), lighten(CMi, 0.5), CMf, lighten(CMf, 0.25), lighten(CMf, 0.5)};
+end
 
 
 %% Set necessary default values
@@ -86,9 +99,12 @@ end
 %% Generate the plots
 fgh = -1;
 for i = index_list
+    final = (i == index_list(end));
 
     % Print progress
+    pathname = pathnames{i};
     filename = files{i};
+    CM = CMs{i};
     fprintf('%d / %d:\t%s\n', i, length(files), filename);
 
     % Load analog channels from electrode and digital in (experiment active)
@@ -113,7 +129,7 @@ for i = index_list
             % cardiac channel for removal of cardiac artifacts
             cardiac_data2 = data_all2(strcmp(channelNames, 'Bottom Precordial'), :);
         end
-        fgh = plot_ssavep_baseline(data, fgh, cleanDigitalIn, filename, ssavep, fs, cardiac_data, windlengthSeconds, noverlapPercent, filters, cardiac_filters, CM, channelNames(channelToPlot), comments(i), data2, cleanDigitalIn2, cardiac_data2);
+        fgh = plot_ssavep_baseline(data, fgh, final, cleanDigitalIn, filename, ssavep, fs, cardiac_data, windlengthSeconds, noverlapPercent, filters, cardiac_filters, CM, channelNames(channelToPlot), comments(i), data2, cleanDigitalIn2, cardiac_data2);
     else if (strcmp(filename, 'Tue_06_05_2014_11_42_15'))
         [ data2, cleanDigitalIn2 ] = load_data([pathname 'Tue_06_05_2014_11_39_46'], numChannels);
         data_all2 = load_data([pathname 'Tue_06_05_2014_11_39_46'], numChannels);                % data from all channels
@@ -124,9 +140,9 @@ for i = index_list
             % cardiac channel for removal of cardiac artifacts
             cardiac_data2 = data_all2(strcmp(channelNames, 'Bottom Precordial'), :);
         end
-        fgh = plot_ssavep_baseline(data, fgh, cleanDigitalIn, filename, ssavep, fs, cardiac_data, windlengthSeconds, noverlapPercent, filters, cardiac_filters, CM, channelNames(channelToPlot), comments(i), data2, cleanDigitalIn2, cardiac_data2);
+        fgh = plot_ssavep_baseline(data, fgh, final, cleanDigitalIn, filename, ssavep, fs, cardiac_data, windlengthSeconds, noverlapPercent, filters, cardiac_filters, CM, channelNames(channelToPlot), comments(i), data2, cleanDigitalIn2, cardiac_data2);
     else
-      fgh = plot_ssavep_baseline(data, fgh, cleanDigitalIn, filename, ssavep, fs, cardiac_data, windlengthSeconds, noverlapPercent, filters, cardiac_filters, CM, channelNames(channelToPlot), comments(i));
+      fgh = plot_ssavep_baseline(data, fgh, final, cleanDigitalIn, filename, ssavep, fs, cardiac_data, windlengthSeconds, noverlapPercent, filters, cardiac_filters, CM, channelNames(channelToPlot), comments(i));
     end
 
     %close all;

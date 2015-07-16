@@ -1,4 +1,4 @@
-function [ fgh ] = plot_ssavep_baseline(data, fgh, cleanDigitalIn, name, ssavep, fs, cardiac_data, windlengthSeconds, noverlapPercent, filters, cardiac_filters, CM, channelNames, comment, data2, cleanDigitalIn2, cardiac_data2)
+function [ fgh ] = plot_ssavep_baseline(data, fgh, final, cleanDigitalIn, name, ssavep, fs, cardiac_data, windlengthSeconds, noverlapPercent, filters, cardiac_filters, CM, channelNames, comment, data2, cleanDigitalIn2, cardiac_data2)
 %PLOT_SSAVEP  Plots the SSAEP/SSVEP response for a single run.
 %
 % FGH = PLOT_SSAVEP(DATA, CLEANDIGITALIN, NAME, EXPERIMENT, FS, ...
@@ -84,31 +84,32 @@ windlength = windlengthSeconds * fs;     % window length
 noverlap = windlength * noverlapPercent; % number of overlap timesteps
 
 % Thresholds for being considered close to a harmonic
-threshold_60 = 3;        % Threshold for 60 Hz harmonics
+threshold_60 = 6;        % Threshold for 60 Hz harmonics
 threshold_harmonics = 3; % Threshold to be considered a harmonic
 
 % whether or not to plot points on harmonics
 harmonic_points = false;
 
-SPLICING = (nargin >= 16);
+SPLICING = (nargin >= 17);
 
 %% Create the figure
 
-final = (fgh ~= -1); % TODO
+%final = (fgh ~= -1); % TODO
 if (fgh == -1)
     % make the figure with white background, with fixed size (in pixels) and invisible
     fgh = figure('Color',[1 1 1],'units','pixels','position',[0 0 (width + 2 * margins) (height + 2 * margins)], 'visible', 'on');
     % make axes with correct margins
     axes('units', 'pixel', 'position', [margins margins width height]);
     hold on; % Allow all channels to be shown
-else
-    for ii=1:size(data, 1)
-        %color = 0.65 * [1 1 1]; % default color for scalp electrodes
-        %if strcmp(channelNames(ii), 'Endo')
-            %color = CM(ii,:) + 0.6 * (1 - CM(ii,:)); % special color for endo
-        %end
-        CM(ii, :) = CM(ii,:) + 0.4 * (1 - CM(ii,:)); % special color for endo
-    end
+%else
+%    for ii=1:size(data, 1)
+%        %color = 0.65 * [1 1 1]; % default color for scalp electrodes
+%        %if strcmp(channelNames(ii), 'Endo')
+%            %color = CM(ii,:) + 0.6 * (1 - CM(ii,:)); % special color for endo
+%        %end
+%        CM(ii, :) = CM(ii,:) + 0.4 * (1 - CM(ii,:)); % special color for endo
+%    end
+%    CM = lighten(CM, 0.4);
 end
 
 
@@ -317,7 +318,7 @@ set(gca, 'YTick', yticks);
 % label axes
 xlabel('Frequency (Hz)');
 %ylabel('p_{exp} / p_{rest}');
-ylabel('p_{rest}');
+ylabel('p_{rest} (V/Hz)');
 xlabh = get(gca,'XLabel');
 %set(xlabh,'Position',get(xlabh,'Position') - [0 0.020 0]);
 set(xlabh,'Position',get(xlabh,'Position') ./ [1 (yrange(2) / yrange(1)) ^ 0.05 1]);
@@ -345,7 +346,7 @@ set(0,'DefaultTextFontSize', 20);
 % Remove labels on ticks for y axis
 set(gca, 'YTickLabel', {});
 % Set text color to white
-set(findall(fgh,'type','text'),'fontSize',font_size,'fontWeight','normal', 'color', [1 1 1]);
+%set(findall(fgh,'type','text'),'fontSize',font_size,'fontWeight','normal', 'color', [1 1 1]); % TODO
 % remove label for y axis
 ylabel('');
 

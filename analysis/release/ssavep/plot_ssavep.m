@@ -72,7 +72,7 @@ margins = 100; % extra space for labels
 %else
 %    xrange = ([0 4800] / 1000);                   % x-axis limits for ssaep
 %end
-xrange = [0 4800];
+xrange = [0 1000];
 %xrange = [0 1000];
 %yrange = (10 .^ [-1 3]);                          % y-axis limits
 yrange = (10 .^ [-4 1]);                          % y-axis limits
@@ -228,8 +228,7 @@ for ii=1:size(data, 1)
 
     % ratio of experimental psd to resting psd
     ratio = expPSDs ./ ctrPSDs;
-    ratio = ctrPSDs;
-    
+
     % get harmonics of stimulus
     num_harmonics = floor(f(end)/frequency);      % highest harmonic that is relevant
     f_harmonic{ii} = zeros(1, num_harmonics);     % list of harmonic frequencies
@@ -345,6 +344,9 @@ set(0,'defaultAxesFontName', 'SansSerif');
 set(0,'defaultTextFontName', 'SansSerif');
 set(0,'DefaultAxesFontSize', 20);
 set(0,'DefaultTextFontSize', 20);
+
+% Save harmonics
+save([name '_harmonics.mat'], 'ratio_harmonic');
 
 
 end

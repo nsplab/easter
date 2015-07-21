@@ -64,7 +64,7 @@ set(0,'DefaultTextFontSize', 20);
 % Figure window size
 width = 275;   % width of figure (just plot itself, not labels)
 height = 225;  % height of figure (just plot itself, not labels)
-margins = 100; % extra space for labels
+margins = 150; % extra space for labels
 
 % Axes for figure
 %if (strcmp(ssavep, 'ssvep'))
@@ -72,8 +72,8 @@ margins = 100; % extra space for labels
 %else
 %    xrange = ([0 4800] / 1000);                   % x-axis limits for ssaep
 %end
-xrange = [0 4800];
-%xrange = [0 1000];
+%xrange = [0 4800];
+xrange = [0 1000];
 %yrange = (10 .^ [-1 3]);                          % y-axis limits
 yrange = (10 .^ [-4 1]);                          % y-axis limits
 xticks = linspace(xrange(1), xrange(2), 5);       % tick marks on x-axis
@@ -318,7 +318,7 @@ set(gca, 'YTick', yticks);
 % label axes
 xlabel('Frequency (Hz)');
 %ylabel('p_{exp} / p_{rest}');
-ylabel('p_{rest} (V/Hz)');
+ylabel('p_{rest} (V^2/Hz)');
 xlabh = get(gca,'XLabel');
 %set(xlabh,'Position',get(xlabh,'Position') - [0 0.020 0]);
 set(xlabh,'Position',get(xlabh,'Position') ./ [1 (yrange(2) / yrange(1)) ^ 0.05 1]);
@@ -333,9 +333,9 @@ set(findall(fgh,'type','text'),'fontSize',font_size,'fontWeight','normal', 'colo
 title('|', 'color', 'white', 'fontsize', font_size);
 
 % Save labelled version of figure
-saveas(fgh, ['figures/' name '_labelled.fig']);
-plot2svg(['figures/' name '_labelled.svg'], fgh, 'png');
-save2pdf(['figures/' name '_labelled.pdf'], fgh, 150);
+saveas(fgh, ['figures/' name '_baseline_labelled.fig']);
+plot2svg(['figures/' name '_baseline_labelled.svg'], fgh, 'png');
+save2pdf(['figures/' name '_baseline_labelled.pdf'], fgh, 150);
 % save2pdf messes up settings
 set(0,'defaultAxesFontName', 'SansSerif');
 set(0,'defaultTextFontName', 'SansSerif');
@@ -351,9 +351,9 @@ set(gca, 'YTickLabel', {});
 ylabel('');
 
 % Save unlabelled version of figure
-saveas(fgh, ['figures/' name '.fig']);
-plot2svg(['figures/' name '.svg'], fgh, 'png');
-save2pdf(['figures/' name '.pdf'], fgh, 150);
+saveas(fgh, ['figures/' name '_baseline.fig']);
+plot2svg(['figures/' name '_baseline.svg'], fgh, 'png');
+save2pdf(['figures/' name '_baseline.pdf'], fgh, 150);
 % save2pdf messes up settings
 set(0,'defaultAxesFontName', 'SansSerif');
 set(0,'defaultTextFontName', 'SansSerif');

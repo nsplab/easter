@@ -78,11 +78,12 @@ xrange = [-preEventPlot_sec, postEventPlot_sec] * 1000; % x-axis limits for figu
 %yrange = [-100 100];                                      % y-axis limits for figure
 %yrange = [-150 150];                                      % y-axis limits for figure
 yrange = [-70 70];                                      % y-axis limits for figure
+yrange = [-20 20];                                      % y-axis limits for figure
 xticks = [-50, 0, 50, 100];                             % tick marks on x-axis
 %yticks = [-26, -13, 0, 13, 26];                         % tick marks on y-axis
 %yticks = [-100, -50, 0, 50, 100];                         % tick marks on y-axis
 %yticks = [-150, -75, 0, 75, 150];                         % tick marks on y-axis
-yticks = [-70, -35, 0, 35, 70];                         % tick marks on y-axis
+yticks = [-20, -10, 0, 10, 20];                         % tick marks on y-axis
 
 % Figure formatting
 font_size = 20; % font size of figure labels
@@ -126,7 +127,7 @@ time_axis = (-preEventPlot_samples:postEventPlot_samples) / fs * 1000;
 %% Create the figure
 
 % make the figure with white background, with fixed size (in pixels) and invisible
-fgh = figure('Color',[1 1 1],'units','pixels','position',[0 0 (width + 2 * margins) (height + 2 * margins)], 'visible', 'off');
+fgh = figure('Color',[1 1 1],'units','pixels','position',[0 0 (width + 2 * margins) (height + 2 * margins)], 'visible', 'on');
 % make axes with correct margins
 axes('units', 'pixel', 'position', [margins margins width height]);
 hold on; % Allow all channels to be shown

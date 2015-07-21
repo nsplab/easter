@@ -78,6 +78,7 @@ for i = index_list
     cleanDigitalIn = (data_all(digitalCh, :) > 0);          % binary digital in channel
     %finish = numel(cleanDigitalIn);
     finish = find(cleanDigitalIn == 1, 1, 'first') - 1;
+finish = 5387 * 44;
     cleanDigitalIn = mod(floor((1:numel(data_all(digitalCh, :))) / 5387), 2);
     %diff(find(diff(cleanDigitalIn) ~= 0)) % 5387
 

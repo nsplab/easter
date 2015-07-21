@@ -37,16 +37,16 @@ end
 
 %plot_all_vep('subject1', 1);
 %plot_all_vep('subject1', 4);
-plot_all_vep('subject1', 5);
+%plot_all_vep('subject1', 5);
 %plot_all_vep('subject1', 1, [3], false);
-%plot_all_ssavep('ssaep', 'subject1');
-%plot_all_ssavep('ssvep', 'subject1');
+plot_all_ssavep('ssaep', 'subject1');
+plot_all_ssavep('ssvep', 'subject1');
 
 %plot_all_vep('subject2', 1);
 %plot_all_vep('subject2', 4);
-plot_all_vep('subject2', 5);
-%plot_all_ssavep('ssaep', 'subject2');
-%plot_all_ssavep('ssvep', 'subject2');
+%plot_all_vep('subject2', 5);
+plot_all_ssavep('ssaep', 'subject2');
+plot_all_ssavep('ssvep', 'subject2');
 
 %cardiac_figure('subject1', 'vep', 3, [10, 11]); % Use subject 1 vep at mid-basilar for plot
 
